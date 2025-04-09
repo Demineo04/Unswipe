@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Internet for Firebase, Billing, Network -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Usage Stats Access (Requires user grant via Settings) -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+
+    <!-- Run background tasks after boot -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Listen for unlocks (ACTION_USER_PRESENT doesn't require special permission) -->
+
+    <!-- Accessibility Service (Requires user grant via Settings) -->
+    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE"
+        tools:ignore="ProtectedPermissions" />
+
+    <!-- Needed by ConfirmationActivity started from Service -->
+    <!-- SYSTEM_ALERT_WINDOW is generally NOT needed unless drawing overlays,
+         starting an Activity with NEW_TASK is usually sufficient -->
+    <!-- <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> -->
+
+
+    <!-- Post Notifications (Android 13+) - Needed for reminders, etc. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+    <!-- Billing -->
+    <uses-permission android:name="com.android.vending.BILLING" />
+
+    <!-- Query All Packages (Needed potentially by AccessibilityService/UsageStats to get app names/icons reliably) -->
+    <!-- Use with caution and justify in Privacy Policy -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+
+
+    <application
+        android:name=".UnswipeApp"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.App.Starting"  <!-- Use Splash theme here -->
+        tools:targetApi="31">
+
+        <!-- Splash Screen Theme applied via Theme.App.Starting -->
+
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.App.Starting"  <!-- Use Splash theme here too -->
+            android:windowSoftInputMode="adjustResize"> <!-- Recommended for forms -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Confirmation Dialog Activity -->
+        <activity
+            android:name=".ui.confirmation.ConfirmationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Unswipe.DialogActivity" <!-- Use a Dialog theme -->
+            android:launchMode="singleTask" <!-- Important for behavior -->
+            android:excludeFromRecents="true" <!-- Hide from recent apps -->
+            android:taskAffinity="" <!-- Prevent sharing task stack -->
+            />
+
+
+        <!-- Accessibility Service Declaration -->
+        <service
+            android:name=".data.services.SwipeAccessibilityService"
+            android:exported="false"
+            android:label="@string/accessibility_service_label" <!-- Define in strings.xml -->
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <!-- Configuration is now primarily done via AccessibilityServiceInfo object in code -->
+            <!-- But keep meta-data pointing to a minimal config file for system discovery -->
+             <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <!-- Unlock & Boot Receiver -->
+        <receiver
+            android:name=".data.receivers.UnlockReceiver"
+            android:enabled="true"
+            android:exported="false"> <!-- Keep exported=false for security -->
+             <intent-filter>
+                 <!-- Listen for user presenting screen (unlock) -->
+                 <action android:name="android.intent.action.USER_PRESENT" />
+                 <!-- Listen for boot to potentially reschedule alarms/workers -->
+                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+             </intent-filter>
+        </receiver>
+
+        <!-- Hilt-WorkManager Initializer -->
+        <!-- Ensure WorkManager is initialized correctly, especially after removing default initializer -->
+         <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <!-- This entry prevents the default WorkManager initialization -->
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+            <!-- If you have other Initializers, add them here -->
+         </provider>
+
+         <!-- Add Firebase Service declarations if using FCM etc. -->
+
+    </application>
+
+</manifest> 

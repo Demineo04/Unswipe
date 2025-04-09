@@ -1,0 +1,26 @@
+<!-- res/values/strings.xml -->
+<resources>
+    <string name="app_name">Unswipe</string>
+
+    <!-- Accessibility Service -->
+    <string name="accessibility_service_label">Unswipe Usage &amp; Swipe Detection</string>
+    <string name="accessibility_service_description">Allows Unswipe to detect app usage, swipes within certain apps (like TikTok, Instagram), and block distracting apps upon launch to help you manage screen time effectively. Unswipe needs this permission to count swipes and show confirmation prompts.</string>
+
+    <!-- Confirmation Dialog -->
+    <string name="confirmation_title">Hold On!</string>
+    <string name="confirmation_message">Do you really want to open %1$s right now?</string> <!-- %1$s will be replaced by app name -->
+    <string name="confirmation_confirm_button">Yes, Open It</string>
+    <string name="confirmation_cancel_button">No, Cancel</string>
+
+    <!-- Add other strings for Login, Register, Dashboard, Settings etc. -->
+    <string name="login_email_label">Email</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_button">Login</string>
+    <string name="login_register_prompt">Don\'t have an account? Register</string>
+    <string name="register_button">Register</string>
+    <string name="register_login_prompt">Already have an account? Login</string>
+    <string name="dashboard_streak_label">Current Streak</string>
+    <string name="dashboard_time_remaining_label">Time Remaining Today</string>
+    <!-- ... etc -->
+
+</resources> 
