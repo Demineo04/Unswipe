@@ -5,6 +5,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services") // Firebase
     id("kotlinx-serialization") // For DataStore (optional, if using with serialization)
+    id("org.jetbrains.kotlin.plugin.compose")
     // id("androidx.navigation.safeargs.kotlin") // If using Safe Args with Navigation
 }
 
