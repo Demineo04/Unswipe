@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "493600718531",
+    "project_id": "unswipe-3efc9",
+    "storage_bucket": "unswipe-3efc9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:493600718531:android:9b02f813831cd76d562c76",
+        "android_client_info": {
+          "package_name": "com.unswipe.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVoDfIC3zgBqn2ol5EVs7QLbhsux17ahU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
