@@ -67,6 +67,17 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
+    // --- Compose ---
+    val composeBom = platform("androidx.compose:compose-bom:2024.02.01") // Or your BOM version
+    implementation(composeBom)
+    // ... other compose dependencies ...
+
+    // --- Material Components (Provides Material 3 Themes) --- ADD THIS LINE
+    implementation("com.google.android.material:material:1.11.0") // Use latest stable version
+
+    // --- Core Splash Screen API --- ADD THIS LINE
+    implementation("androidx.core:core-splashscreen:1.0.1") // Use latest stable version
+
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
