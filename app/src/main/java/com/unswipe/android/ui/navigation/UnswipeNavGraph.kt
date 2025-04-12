@@ -1,117 +1,116 @@
-package com.unswipe.android.ui.navigation
+package com.unswipe.android.ui.navigation // Ensure package is correct
 
+// --- NECESSARY IMPORTS ---
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.getValue // Needed for 'by collectAsState()' delegate
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.unswipe.android.ui.auth.AuthViewModel
-import com.unswipe.android.ui.auth.LoginScreen
-import com.unswipe.android.ui.auth.RegisterScreen
-import com.unswipe.android.ui.dashboard.DashboardScreen
-import com.unswipe.android.ui.dashboard.DashboardViewModel
-import com.unswipe.android.ui.settings.SettingsScreen // Assuming SettingsScreen exists
-import com.unswipe.android.ui.settings.SettingsViewModel // Assuming SettingsViewModel exists
+import com.unswipe.android.ui.auth.AuthViewModel // Import ViewModel
+import com.unswipe.android.ui.auth.LoginScreen // Import Screen Composable
+import com.unswipe.android.ui.auth.RegisterScreen // Import Screen Composable
+import com.unswipe.android.ui.dashboard.DashboardScreen // Import Screen Composable
+import com.unswipe.android.ui.dashboard.DashboardViewModel // Import ViewModel
+// Import other ViewModels and Screens as you create them (e.g., Settings)
 
+// Sealed class defining the different screens/destinations in your app
+sealed class Screen(val route: String) {
+    object Login : Screen("login")
+    object Register : Screen("register")
+    object Dashboard : Screen("dashboard")
+    // Add other screens like object Settings : Screen("settings")
+}
+
+// The main navigation graph composable
 @Composable
 fun UnswipeNavGraph(
-    modifier: Modifier = Modifier,
+    // Use rememberNavController to keep track of backstack and state
     navController: NavHostController = rememberNavController(),
-    authViewModel: AuthViewModel = hiltViewModel(), // Shared AuthViewModel for auth state
-    startDestination: String = Screen.Auth.route // Default to auth flow
+    // Get the AuthViewModel using Hilt - shared across auth screens and potentially needed here
+    authViewModel: AuthViewModel = hiltViewModel()
 ) {
+    // Observe the authentication state from the AuthViewModel
+    // 'getValue' import is needed for the 'by' keyword
     val authState by authViewModel.authState.collectAsState()
 
-    // Observe auth state and navigate accordingly
-    LaunchedEffect(authState) {
-        if (authState is AuthViewModel.AuthState.Authenticated) {
-            // Navigate to main app graph, clearing auth backstack
-            navController.navigate(Screen.Main.route) {
-                popUpTo(Screen.Auth.route) { inclusive = true }
-                launchSingleTop = true // Avoid multiple copies
-            }
-        } else if (authState is AuthViewModel.AuthState.Unauthenticated) {
-            // Navigate to login screen within auth graph, clearing main backstack if user logs out
-            if (navController.currentBackStackEntry?.destination?.route?.startsWith(Screen.Main.route) == true) {
-                navController.navigate(Screen.Login.route) {
-                     popUpTo(Screen.Main.route) { inclusive = true }
-                     launchSingleTop = true
-                }
-            }
-             // If already in auth graph, popping backstack might handle it, or stay put.
-        }
+    // Determine the starting screen based on whether the user is authenticated
+    val startDestination = when (authState) {
+        is AuthViewModel.AuthState.Authenticated -> Screen.Dashboard.route
+        else -> Screen.Login.route // Default to Login if loading or unauthenticated
     }
 
+    // NavHost defines the container for navigation
+    NavHost(navController = navController, startDestination = startDestination) {
 
-    NavHost(
-        navController = navController,
-        startDestination = startDestination, // Start with Auth or Main based on initial check? Auth is safer.
-        modifier = modifier
-    ) {
-        authGraph(navController, authViewModel)
-        mainGraph(navController, authViewModel) // Pass authViewModel for logout action
-    }
-}
-
-// --- Authentication Flow ---
-fun NavGraphBuilder.authGraph(
-    navController: NavHostController,
-    authViewModel: AuthViewModel // Receive the shared ViewModel
-) {
-    navigation(startDestination = Screen.Login.route, route = Screen.Auth.route) {
+        // Define the Login screen destination
         composable(Screen.Login.route) {
+            // Call the LoginScreen composable
             LoginScreen(
-                viewModel = authViewModel, // Use the shared instance
-                onNavigateToRegister = { navController.navigate(Screen.Register.route) { launchSingleTop = true } },
-                onLoginSuccess = { /* Navigation handled by LaunchedEffect */ }
+                // Pass the SAME AuthViewModel instance down
+                viewModel = authViewModel,
+                // Lambda function to navigate to the Register screen
+                onNavigateToRegister = { navController.navigate(Screen.Register.route) },
+                // Lambda function to navigate to Dashboard on successful login
+                onLoginSuccess = {
+                    // Navigate to Dashboard and clear the auth screens from the backstack
+                    navController.navigate(Screen.Dashboard.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                        launchSingleTop = true // Avoid multiple Dashboard instances
+                    }
+                }
             )
         }
-        composable(Screen.Register.route) {
-             RegisterScreen(
-                 viewModel = authViewModel, // Use the shared instance
-                 onNavigateToLogin = { navController.popBackStack() }, // Go back to login
-                 onRegisterSuccess = { /* Navigation handled by LaunchedEffect */ }
-             )
-        }
-    }
-}
 
-// --- Main App Content Flow ---
-fun NavGraphBuilder.mainGraph(
-    navController: NavHostController,
-    authViewModel: AuthViewModel // Needed for logout action
-) {
-    navigation(startDestination = Screen.Dashboard.route, route = Screen.Main.route) {
+        // Define the Register screen destination
+        composable(Screen.Register.route) {
+            // Call the RegisterScreen composable
+            RegisterScreen(
+                // Pass the SAME AuthViewModel instance down
+                viewModel = authViewModel,
+                // Lambda function to navigate back (likely to Login)
+                onNavigateToLogin = { navController.popBackStack() },
+                // Lambda function to navigate to Dashboard on successful registration
+                onRegisterSuccess = {
+                    // Navigate to Dashboard and clear the auth screens from the backstack
+                    navController.navigate(Screen.Dashboard.route) {
+                        popUpTo(Screen.Login.route) { inclusive = true }
+                        launchSingleTop = true // Avoid multiple Dashboard instances
+                    }
+                }
+            )
+        }
+
+        // Define the Dashboard screen destination
         composable(Screen.Dashboard.route) {
+            // Get the DashboardViewModel using Hilt, scoped to this destination
             val dashboardViewModel: DashboardViewModel = hiltViewModel()
+
+            // Call the DashboardScreen composable
             DashboardScreen(
                 viewModel = dashboardViewModel,
-                onNavigateToSettings = { navController.navigate(Screen.Settings.route) { launchSingleTop = true } },
-                // Add navigation actions for other dashboard items if needed
+                // Lambda function to navigate to settings (implement later)
+                onNavigateToSettings = { /* navController.navigate(Screen.Settings.route) */ },
+                // Lambda function to handle logout
+                onLogout = {
+                    authViewModel.logout() // Call logout on the shared AuthViewModel
+                    // Navigation back to Login will happen automatically when
+                    // the 'authState' changes (observed at the top of UnswipeNavGraph)
+                    // and the NavHost recomposes with the new startDestination.
+                    // Optionally, add explicit navigation for immediate feedback:
+                    // navController.navigate(Screen.Login.route) {
+                    //    popUpTo(Screen.Dashboard.route) { inclusive = true }
+                    // }
+                }
             )
         }
-        composable(Screen.Settings.route) {
-             val settingsViewModel: SettingsViewModel = hiltViewModel()
-             SettingsScreen(
-                 viewModel = settingsViewModel,
-                 onLogout = {
-                     authViewModel.logout()
-                     // Navigation back to login is handled by LaunchedEffect observing authState
-                 },
-                 onNavigateBack = { navController.popBackStack() },
-                 onNavigateToAppSelection = { /* navController.navigate(...) */ },
-                 onNavigateToPremium = { /* navController.navigate(...) */ }
-             )
-        }
-        // Add other destinations within the main app flow:
-        // composable(Screen.AppSelection.route) { ... }
-        // composable(Screen.Premium.route) { ... }
+
+        // Add other destinations like Settings here later
+        // composable(Screen.Settings.route) {
+        //      val settingsViewModel: SettingsViewModel = hiltViewModel()
+        //      SettingsScreen(viewModel = settingsViewModel, ...)
+        // }
     }
-} 
+}
