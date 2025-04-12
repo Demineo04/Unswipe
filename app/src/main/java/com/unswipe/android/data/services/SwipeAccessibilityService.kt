@@ -154,7 +154,7 @@ class SwipeAccessibilityService : AccessibilityService() {
                 val blockedApps = settingsRepository.getBlockedApps().firstOrNull()
                 trackedAppPackages = blockedApps ?: DEFAULT_TARGET_PACKAGES // Use default if null/empty?
                 // Fetch if confirmation is enabled globally (add to SettingsRepository)
-                isConfirmationEnabled = settingsRepository.isConfirmationGloballyEnabled().firstOrNull() ?: true // Example method needed in SettingsRepo
+                // isConfirmationEnabled = settingsRepository.isConfirmationGloballyEnabled().firstOrNull() ?: true // Example method needed in SettingsRepo
 
                 Log.d(TAG, "Updating tracked packages: $trackedAppPackages, Confirmation enabled: $isConfirmationEnabled")
 

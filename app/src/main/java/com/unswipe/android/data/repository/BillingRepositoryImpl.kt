@@ -8,6 +8,7 @@ import android.util.Log
 import com.android.billingclient.api.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.unswipe.android.di.IoDispatcher
 import com.unswipe.android.di.MainDispatcher
 import com.unswipe.android.domain.repository.BillingRepository
