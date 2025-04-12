@@ -6,7 +6,7 @@ import android.app.Activity
 import android.app.Application
 import android.util.Log
 import com.android.billingclient.api.*
-import com.google.firebase.auth.FirebaseAuth // Added for User ID
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.unswipe.android.di.IoDispatcher
 import com.unswipe.android.di.MainDispatcher
@@ -19,255 +19,239 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import javax.inject.Singleton // Billing setup often happens once
+import javax.inject.Singleton
 
-@Singleton // Mark as Singleton if BillingClient connection should be managed once
-class BillingRepositoryImpl @Inject constructor( // <-- Hilt knows how to make this
-    private val application: Application,          // <-- Hilt provides Application context
-    private val billingClient: BillingClient,      // <-- Hilt provides this from AppModule
-    private val settingsRepository: SettingsRepository, // <-- Hilt provides SettingsRepositoryImpl via Binds
-    private val firestore: FirebaseFirestore,    // <-- Hilt provides this from FirebaseModule
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher, // <-- Hilt provides Dispatcher
-    @MainDispatcher private val mainDispatcher: CoroutineDispatcher // <-- For potential UI callbacks
-) : BillingRepository, PurchasesUpdatedListener, BillingClientStateListener { // <-- Implement necessary listeners
+@Singleton
+class BillingRepositoryImpl @Inject constructor(
+    private val application: Application,
+    private val billingClient: BillingClient,
+    private val settingsRepository: SettingsRepository,
+    private val firestore: FirebaseFirestore,
+    private val firebaseAuth: FirebaseAuth, // Added dependency
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @MainDispatcher private val mainDispatcher: CoroutineDispatcher
+) : BillingRepository, PurchasesUpdatedListener, BillingClientStateListener {
 
-    // Scope for this repository
     private val repositoryScope = CoroutineScope(ioDispatcher + SupervisorJob())
-
-    // Use MutableStateFlow to hold and observe premium status
     private val _premiumStatusFlow = MutableStateFlow<Boolean>(false)
 
-    // Hardcode your subscription ID (replace with your actual ID from Play Console)
-    private val PREMIUM_SUB_ID = "unswipe_premium_monthly" // Or whatever you name it
+    // IMPORTANT: Replace with your actual Subscription ID from Google Play Console
+    private val PREMIUM_SUB_ID = "unswipe_premium_monthly"
+
+    companion object {
+        private const val TAG = "BillingRepo"
+    }
 
     init {
-        Log.d("BillingRepo", "Initializing BillingRepositoryImpl")
+        Log.d(TAG, "Initializing BillingRepositoryImpl")
         startBillingConnection()
     }
 
     private fun startBillingConnection() {
         if (!billingClient.isReady) {
-            Log.d("BillingRepo", "Starting BillingClient connection.")
-            billingClient.startConnection(this) // 'this' implements BillingClientStateListener
+            Log.d(TAG, "Starting BillingClient connection.")
+            billingClient.startConnection(this)
         } else {
-            Log.d("BillingRepo", "BillingClient already connected.")
-            // Query purchases if already connected maybe?
+            Log.d(TAG, "BillingClient already connected.")
             repositoryScope.launch { queryPurchases() }
         }
     }
 
     // --- BillingClientStateListener Implementation ---
-
     override fun onBillingSetupFinished(billingResult: BillingResult) {
-        Log.d("BillingRepo", "Billing setup finished. Code: ${billingResult.responseCode}")
+        Log.d(TAG, "Billing setup finished. Code: ${billingResult.responseCode}")
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-            // Query purchases and product details once setup is successful
             repositoryScope.launch {
                 queryPurchases()
-                // Optionally query product details here or on demand
             }
         } else {
-            Log.e("BillingRepo", "Billing setup failed: ${billingResult.debugMessage}")
-            // Handle setup failure - maybe retry later?
+            Log.e(TAG, "Billing setup failed: ${billingResult.debugMessage}")
         }
     }
 
     override fun onBillingServiceDisconnected() {
-        Log.w("BillingRepo", "Billing service disconnected. Trying to reconnect.")
-        // Implement retry logic if desired, e.g., exponential backoff
-        startBillingConnection() // Simple retry attempt
+        Log.w(TAG, "Billing service disconnected. Trying to reconnect.")
+        startBillingConnection() // Simple retry
     }
 
     // --- PurchasesUpdatedListener Implementation ---
-
     override fun onPurchasesUpdated(billingResult: BillingResult, purchases: MutableList<Purchase>?) {
-        Log.d("BillingRepo", "onPurchasesUpdated. Code: ${billingResult.responseCode}, Purchases: ${purchases?.size}")
+        Log.d(TAG, "onPurchasesUpdated. Code: ${billingResult.responseCode}, Purchases: ${purchases?.size}")
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
             for (purchase in purchases) {
-                // Process valid purchases, typically requires acknowledgement
-                if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED && !purchase.isAcknowledged) {
-                    // Grant entitlement and acknowledge
-                    handlePurchase(purchase)
-                } else if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED && purchase.isAcknowledged){
-                    // Already acknowledged, just ensure premium status is correct
-                    updatePremiumStatusFromPurchase(purchase)
+                // Launch a coroutine to handle potentially suspending work
+                repositoryScope.launch { // <-- FIX: Launch coroutine here
+                    if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+                        if (!purchase.isAcknowledged) {
+                            handlePurchase(purchase) // Call suspend fun
+                        } else {
+                            // Already acknowledged, just ensure status is up-to-date
+                            updatePremiumStatusFromPurchase(purchase) // Call suspend fun
+                        }
+                    } else if (purchase.purchaseState == Purchase.PurchaseState.PENDING) {
+                        Log.d(TAG,"Purchase is pending: ${purchase.purchaseToken}")
+                        // Optionally handle pending state (e.g., show message)
+                    }
+                    // Handle other states if necessary
                 }
             }
         } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
-            Log.i("BillingRepo", "Purchase flow cancelled by user.")
-            // Handle cancellation (e.g., show a message) - optional
+            Log.i(TAG, "Purchase flow cancelled by user.")
         } else {
-            Log.e("BillingRepo", "Purchase update error: ${billingResult.debugMessage}")
-            // Handle other errors (e.g., item already owned, network error)
+            Log.e(TAG, "Purchase update error: ${billingResult.debugMessage}")
         }
     }
 
     // --- Core Billing Logic ---
+    private suspend fun handlePurchase(purchase: Purchase) { // Marked suspend
+        Log.d(TAG,"Handling purchase: ${purchase.purchaseToken}")
+        // TODO: CRITICAL FOR PRODUCTION: Implement backend verification FIRST!
+        // Send purchase.purchaseToken to your server for verification before acknowledging/granting.
 
-    private fun handlePurchase(purchase: Purchase) {
-        repositoryScope.launch {
-            // CRITICAL FOR PRODUCTION: Verify purchase on your backend FIRST!
-            // Send purchase.purchaseToken to your server, verify with Google Play API,
-            // then update your canonical source of truth (e.g., Firestore) from the server.
-
-            // For now, proceed with client-side acknowledgement & update (less secure)
-
-            // Acknowledge the purchase (required within 3 days)
-            if (!purchase.isAcknowledged) {
-                val acknowledgePurchaseParams = AcknowledgePurchaseParams.newBuilder()
-                    .setPurchaseToken(purchase.purchaseToken)
-                    .build()
-                val ackResult = billingClient.acknowledgePurchase(acknowledgePurchaseParams) // suspending call
-                Log.d("BillingRepo", "Acknowledge result for ${purchase.orderId}: ${ackResult.responseCode} ${ackResult.debugMessage}")
-                if (ackResult.responseCode != BillingClient.BillingResponseCode.OK) {
-                    Log.e("BillingRepo", "Failed to acknowledge purchase: ${purchase.purchaseToken}")
-                    // Handle acknowledgement failure if needed
-                }
+        // Acknowledge if needed
+        if (!purchase.isAcknowledged) {
+            val acknowledgePurchaseParams = AcknowledgePurchaseParams.newBuilder()
+                .setPurchaseToken(purchase.purchaseToken)
+                .build()
+            // billingClient.acknowledgePurchase is a suspend function
+            val ackResult = billingClient.acknowledgePurchase(acknowledgePurchaseParams)
+            Log.d(TAG, "Acknowledge result for ${purchase.orderId}: ${ackResult.responseCode} ${ackResult.debugMessage}")
+            if (ackResult.responseCode != BillingClient.BillingResponseCode.OK) {
+                Log.e(TAG, "Failed to acknowledge purchase: ${purchase.purchaseToken}")
             }
-            // Update status based on the acknowledged purchase
-            updatePremiumStatusFromPurchase(purchase)
         }
+        // Update status after potential acknowledgement
+        updatePremiumStatusFromPurchase(purchase)
     }
 
-    private suspend fun queryPurchases() {
-        Log.d("BillingRepo", "Querying purchases...")
+    private suspend fun queryPurchases() { // Marked suspend
+        Log.d(TAG, "Querying purchases...")
+        if (!billingClient.isReady) {
+            Log.w(TAG, "Querying purchases called but BillingClient not ready.")
+            return // Or try reconnecting?
+        }
         val params = QueryPurchasesParams.newBuilder()
-            .setProductType(BillingClient.ProductType.SUBS) // Query subscriptions
+            .setProductType(BillingClient.ProductType.SUBS)
             .build()
         try {
-            // Use queryPurchasesAsync (non-suspending, uses listener) or manage suspending calls carefully
-            val purchasesResult = billingClient.queryPurchasesAsync(params) // Returns PurchasesResult via listener pattern is tricky here, let's simulate flow update
-            // A better approach might use a separate flow updated by listeners.
-            // For simplicity here, let's assume we refetch/update flow after operations.
-            // Placeholder: Assume queryPurchasesAsync updates some internal state that _premiumStatusFlow reacts to.
-            // In a real app, you'd structure this more robustly, maybe using callbackFlow.
-
-            // Let's simulate checking active subs directly for now (less ideal than listener approach)
-            val subsResult = billingClient.queryPurchasesAsync(QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.SUBS).build())
+            // Use suspend version directly
+            val purchasesResult = billingClient.queryPurchasesAsync(params)
             var currentlyPremium = false
-            subsResult.purchasesList.forEach { purchase ->
-                if(purchase.products.contains(PREMIUM_SUB_ID) && purchase.purchaseState == Purchase.PurchaseState.PURCHASED){
+            Log.d(TAG, "Query purchases result code: ${purchasesResult.billingResult.responseCode}, List size: ${purchasesResult.purchasesList.size}")
+
+            purchasesResult.purchasesList.forEach { purchase ->
+                if (purchase.products.contains(PREMIUM_SUB_ID) && purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
                     currentlyPremium = true
+                    // Acknowledge if needed during query (sometimes necessary if missed)
                     if (!purchase.isAcknowledged) {
-                        handlePurchase(purchase) // Acknowledge if needed
+                        Log.w(TAG, "Found unacknowledged purchase during query, handling: ${purchase.purchaseToken}")
+                        handlePurchase(purchase)
                     }
                 }
             }
+
+            // Update flow and local settings if status changed
             if (_premiumStatusFlow.value != currentlyPremium) {
-                Log.d("BillingRepo", "Updating premium status from query: $currentlyPremium")
+                Log.d(TAG, "Updating premium status from query: $currentlyPremium")
                 _premiumStatusFlow.value = currentlyPremium
-                settingsRepository.setPremiumStatus(currentlyPremium)
-                // Update firestore if needed (use with caution)
+                settingsRepository.setPremiumStatus(currentlyPremium) // Call suspend fun
+                // Update firestore cautiously if needed (prefer backend)
                 // updateUserPremiumStatusInFirestore(currentlyPremium)
+            } else {
+                Log.d(TAG, "Premium status from query hasn't changed ($currentlyPremium)")
             }
 
-
         } catch (e: Exception) {
-            Log.e("BillingRepo", "Error querying purchases", e)
+            Log.e(TAG, "Error querying purchases", e)
         }
     }
 
-    private suspend fun updatePremiumStatusFromPurchase(purchase: Purchase) {
-        if (purchase.products.contains(PREMIUM_SUB_ID) && purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+    // Needs to be suspend because it calls settingsRepository.setPremiumStatus (which is suspend)
+    private suspend fun updatePremiumStatusFromPurchase(purchase: Purchase) { // Marked suspend
+        val isTargetProduct = purchase.products.contains(PREMIUM_SUB_ID)
+        val isPurchased = purchase.purchaseState == Purchase.PurchaseState.PURCHASED
+
+        if (isTargetProduct && isPurchased) {
             if (!_premiumStatusFlow.value) {
-                Log.d("BillingRepo", "Granting premium status.")
+                Log.d(TAG, "Granting premium status for product: ${purchase.products.firstOrNull()}")
                 _premiumStatusFlow.value = true
                 settingsRepository.setPremiumStatus(true)
-                // updateUserPremiumStatusInFirestore(true) // Use with caution
+                // updateUserPremiumStatusInFirestore(true)
             }
         } else {
-            // Handle cases where purchase is for wrong product or state is not PURCHASED (e.g. PENDING)
-            // Potentially revoke premium if a subscription expires and queryPurchases confirms this.
-            // queryPurchases() logic should handle setting back to false if no active sub found.
+            // This function might not be the place to revoke premium.
+            // queryPurchases() should handle setting status to false if no active sub is found.
+            Log.d(TAG,"updatePremiumStatusFromPurchase called for non-target or non-purchased state: ${purchase.purchaseState} for products ${purchase.products}")
         }
     }
 
     // --- Implement BillingRepository interface methods ---
-
     override fun getPremiumStatusFlow(): Flow<Boolean> {
-        // Refresh status when collected?
-        repositoryScope.launch { queryPurchases() }
-        return _premiumStatusFlow.asStateFlow() // Expose the state flow
+        repositoryScope.launch { queryPurchases() } // Refresh on collect
+        return _premiumStatusFlow.asStateFlow()
     }
 
     override suspend fun getSubscriptionProductDetails(productId: String): ProductDetails? = withContext(ioDispatcher) {
-        if (!billingClient.isReady) {
-            Log.e("BillingRepo", "Billing client not ready trying to get product details")
-            return@withContext null
-        }
-        Log.d("BillingRepo", "Querying product details for $productId")
+        if (!billingClient.isReady) return@withContext null
+        Log.d(TAG, "Querying product details for $productId")
         val productList = listOf(
             QueryProductDetailsParams.Product.newBuilder()
                 .setProductId(productId)
-                .setProductType(BillingClient.ProductType.SUBS) // SUBS for subscription
+                .setProductType(BillingClient.ProductType.SUBS)
                 .build()
         )
         val params = QueryProductDetailsParams.newBuilder().setProductList(productList).build()
         try {
-            val result = billingClient.queryProductDetails(params) // Use suspending version
-            Log.d("BillingRepo", "Product details query result: ${result.billingResult.responseCode}, List size: ${result.productDetailsList?.size}")
+            val result = billingClient.queryProductDetails(params) // Suspend version
             result.productDetailsList?.firstOrNull { it.productId == productId }
         } catch (e: Exception){
-            Log.e("BillingRepo", "Error querying product details", e)
+            Log.e(TAG, "Error querying product details", e)
             null
         }
     }
 
-    // Note: Requires Activity context passed from the ViewModel/UI layer
     override fun launchPurchaseFlow(activity: Activity, productDetails: ProductDetails) {
         if (!billingClient.isReady) {
-            Log.e("BillingRepo", "Billing client not ready trying to launch purchase flow")
-            // Maybe show an error to the user via a callback or Flow
+            Log.e(TAG, "Billing client not ready for purchase flow")
             return
         }
-        // Find the correct offer token (e.g., base plan, could be more complex)
         val offerToken = productDetails.subscriptionOfferDetails?.firstOrNull()?.offerToken
         if (offerToken == null) {
-            Log.e("BillingRepo", "No valid offer token found for ${productDetails.productId}")
+            Log.e(TAG, "No valid offer token found for ${productDetails.productId}")
             return
         }
-
-        Log.d("BillingRepo", "Launching purchase flow for ${productDetails.productId} with offer token.")
+        Log.d(TAG, "Launching purchase flow for ${productDetails.productId}")
         val productDetailsParamsList = listOf(
             BillingFlowParams.ProductDetailsParams.newBuilder()
                 .setProductDetails(productDetails)
-                .setOfferToken(offerToken) // Set the chosen offer token
+                .setOfferToken(offerToken)
                 .build()
         )
         val billingFlowParams = BillingFlowParams.newBuilder()
             .setProductDetailsParamsList(productDetailsParamsList)
-            // Optional: Obfuscated account/profile ID for fraud prevention
-            // .setObfuscatedAccountId(...)
-            // .setObfuscatedProfileId(...)
             .build()
 
         val billingResult = billingClient.launchBillingFlow(activity, billingFlowParams)
-        Log.d("BillingRepo", "Launch billing flow result code: ${billingResult.responseCode}")
         if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
-            Log.e("BillingRepo", "Failed to launch billing flow: ${billingResult.debugMessage}")
-            // Handle error (e.g., show message to user)
+            Log.e(TAG, "Failed to launch billing flow: ${billingResult.debugMessage}")
         }
     }
 
-    // Re-check subscription status, e.g., on app resume
     override suspend fun checkSubscriptions() {
         if (billingClient.isReady) {
             queryPurchases()
         } else {
-            Log.w("BillingRepo", "checkSubscriptions called but billing client not ready.")
-            // Optionally try to reconnect
-            // startBillingConnection()
+            Log.w(TAG, "checkSubscriptions called but billing client not ready.")
         }
     }
 
-
     // Optional: Helper to update Firestore (use with caution, prefer backend)
     private fun updateUserPremiumStatusInFirestore(isPremium: Boolean) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return // Need auth instance
-        Log.d("BillingRepo", "Attempting to update Firestore premium status for $userId to $isPremium")
+        val userId = firebaseAuth.currentUser?.uid ?: return
+        Log.d(TAG, "Attempting to update Firestore premium status for $userId to $isPremium")
         firestore.collection("users").document(userId)
-            .set(mapOf("isPremium" to isPremium), com.google.firebase.firestore.SetOptions.merge()) // Use merge to avoid overwriting other fields
-            .addOnSuccessListener { Log.d("BillingRepo", "Firestore premium status updated successfully.") }
-            .addOnFailureListener { e -> Log.e("BillingRepo", "Error updating Firestore premium status", e) }
+            .set(mapOf("isPremium" to isPremium), SetOptions.merge())
+            .addOnSuccessListener { Log.d(TAG, "Firestore premium status updated successfully.") }
+            .addOnFailureListener { e -> Log.e(TAG, "Error updating Firestore premium status", e) }
     }
 }

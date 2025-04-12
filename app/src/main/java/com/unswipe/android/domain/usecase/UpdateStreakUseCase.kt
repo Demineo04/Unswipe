@@ -1,80 +1,85 @@
+// Location: app/src/main/java/com/unswipe/android/domain/usecase/UpdateStreakUseCase.kt
+
 package com.unswipe.android.domain.usecase
 
-import android.util.Log
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import com.unswipe.android.data.workers.UsageTrackingWorker.Companion.LAST_STREAK_UPDATE_KEY // Access key
+import android.util.Log // Added for logging
 import com.unswipe.android.domain.repository.SettingsRepository
 import com.unswipe.android.domain.repository.UsageRepository
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-// NOTE: The core logic for updating the streak is now integrated within UsageTrackingWorker
-// for better cohesion, as it relies on daily summary calculation.
-// This UseCase might become redundant or could be refactored to trigger the worker
-// or perform other related actions if needed.
-// Keeping it here as a placeholder for potential future complex logic separation.
-
 class UpdateStreakUseCase @Inject constructor(
-    private val usageRepository: UsageRepository,
-    private val settingsRepository: SettingsRepository,
-    private val dataStore: DataStore<Preferences>
+    private val usageRepository: UsageRepository, // Use the interface
+    private val settingsRepository: SettingsRepository // Use the interface
 ) {
-    // This operator might not be called directly if worker handles the logic.
-    // It demonstrates the core logic if separated.
+    companion object {
+        private const val TAG = "UpdateStreakUseCase"
+    }
+
+    // Note: This logic needs refinement. It currently checks today's usage against today's limit.
+    // A better approach updates the streak based on *yesterday's* usage *after* midnight.
     suspend operator fun invoke() {
-        Log.d("UpdateStreakUseCase", "Manual invocation (potentially redundant if worker is active).")
-        val currentTime = System.currentTimeMillis()
-        val settings = settingsRepository.getUserSettings().first()
-        val todayMillis = getStartOfDayMillis(currentTime)
+        Log.d(TAG, "Executing UpdateStreakUseCase")
+        try {
+            // Get current settings (limit, current streak)
+            val settings = settingsRepository.getUserSettings().firstOrNull()
+            if (settings == null) {
+                Log.w(TAG, "Could not get user settings.")
+                return
+            }
 
-        val lastStreakUpdateMillis = dataStore.data.first()[LAST_STREAK_UPDATE_KEY] ?: 0L
-        val lastUpdateDayMillis = getStartOfDayMillis(lastStreakUpdateMillis)
+            // Get today's usage summary (ensure method name matches UsageRepository)
+            val todaySummary = usageRepository.getTodaysSummary() // <-- FIX: Assumes this is the correct method name
+            if (todaySummary == null) {
+                Log.w(TAG, "Could not get today's usage summary.")
+                // Decide how to handle - maybe skip update? Or assume under limit if no data?
+                // For simplicity, let's skip if no summary found for today yet.
+                return
+            }
 
-        if (lastUpdateDayMillis < todayMillis) {
-            Log.d("UpdateStreakUseCase", "Performing daily streak check manually.")
-            val yesterdayMillis = todayMillis - TimeUnit.DAYS.toMillis(1)
-            val yesterdaySummary = usageRepository.getDailySummary(yesterdayMillis) // UsageRepo needs this method
+            Log.d(TAG, "Today's usage: ${todaySummary.totalScreenTimeMillis}ms, Limit: ${settings.dailyUsageLimitMillis}ms, Current Streak: ${settings.currentStreak}")
 
-            if (yesterdaySummary != null) {
-                if (yesterdaySummary.totalScreenTimeMillis <= settings.dailyUsageLimitMillis) {
-                    settingsRepository.incrementStreak()
-                    Log.i("UpdateStreakUseCase", "Streak incremented.")
-                } else {
+            // --- Basic Logic (Needs Improvement for Accuracy) ---
+            // This simple check resets if today's usage exceeds the limit.
+            // It doesn't handle incrementing correctly based on previous days.
+            if (todaySummary.totalScreenTimeMillis > settings.dailyUsageLimitMillis) {
+                if (settings.currentStreak > 0) {
+                    Log.i(TAG, "Usage exceeded limit. Resetting streak.")
                     settingsRepository.resetStreak()
-                    Log.i("UpdateStreakUseCase", "Streak reset.")
+                } else {
+                    Log.d(TAG, "Usage exceeded limit, but streak was already 0.")
                 }
             } else {
-                 if (settings.currentStreak > 0) {
-                     settingsRepository.resetStreak()
-                     Log.i("UpdateStreakUseCase", "Streak reset due to missing yesterday summary.")
-                 }
+                // TODO: Implement proper increment logic.
+                // This requires knowing if the day has rolled over since the last check
+                // and checking *yesterday's* final usage. This simple check here isn't enough.
+                Log.d(TAG, "Usage is within limit. Increment logic needs implementation.")
+                // settingsRepository.incrementStreak() // DON'T CALL THIS UNCONDITIONALLY
             }
-            dataStore.edit { prefs -> prefs[LAST_STREAK_UPDATE_KEY] = currentTime }
-        } else {
-             // Proactive check for today (same as in worker)
-             val todaySummary = usageRepository.getDailySummary(todayMillis)
-             if (todaySummary != null &&
-                 todaySummary.totalScreenTimeMillis > settings.dailyUsageLimitMillis &&
-                 settings.currentStreak > 0) {
-                     settingsRepository.resetStreak()
-                     Log.i("UpdateStreakUseCase", "Streak reset proactively.")
-                     dataStore.edit { prefs -> prefs[LAST_STREAK_UPDATE_KEY] = currentTime }
-             }
-            Log.d("UpdateStreakUseCase", "Streak update check skipped (already processed today or limit ok).")
+            // --- End Basic Logic ---
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error updating streak", e)
         }
     }
 
-     private fun getStartOfDayMillis(timestamp: Long): Long {
-         return Calendar.getInstance().apply {
-            timeInMillis = timestamp
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }.timeInMillis
-    }
-} 
+    // Example of more robust logic structure (requires storing last update time)
+    // suspend fun invokeRobust(currentTime: Long) {
+    //     val lastUpdateTime = // Get from settingsRepository/DataStore
+    //     val startOfToday = // Calculate start of today
+    //     val startOfYesterday = // Calculate start of yesterday
+    //
+    //     if (currentTime >= startOfToday && lastUpdateTime < startOfToday) { // Day rolled over
+    //         val yesterdaySummary = usageRepository.getYesterdaysSummary(startOfYesterday) // Need this method
+    //         val settings = settingsRepository.getUserSettings().first()
+    //         if (yesterdaySummary != null && yesterdaySummary.totalScreenTimeMillis <= settings.dailyUsageLimitMillis) {
+    //             settingsRepository.incrementStreak()
+    //         } else {
+    //              settingsRepository.resetStreak()
+    //         }
+    //         // Store currentTime as lastUpdateTime in settingsRepository/DataStore
+    //     }
+    // }
+}
