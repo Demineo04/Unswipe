@@ -12,7 +12,7 @@ import com.unswipe.android.data.model.UsageEvent
     version = 1, // Increment version on schema changes
     exportSchema = false // Set to true for schema export during development/migration testing
 )
-@TypeConverters(Converters::class) // Add if you need type converters (e.g., for Date, Enum)
+// @TypeConverters(Converters::class) // Add if you need type converters (e.g., for Date, Enum)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun usageDao(): UsageDao
 } 
