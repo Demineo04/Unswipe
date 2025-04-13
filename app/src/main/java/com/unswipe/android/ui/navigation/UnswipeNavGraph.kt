@@ -15,6 +15,8 @@ import com.unswipe.android.ui.auth.RegisterScreen // Import Screen Composable
 import com.unswipe.android.ui.dashboard.DashboardScreen // Import Screen Composable
 import com.unswipe.android.ui.dashboard.DashboardViewModel // Import ViewModel
 // Import other ViewModels and Screens as you create them (e.g., Settings)
+// import com.unswipe.android.ui.settings.SettingsScreen
+// import com.unswipe.android.ui.settings.SettingsViewModel
 
 // Sealed class defining the different screens/destinations in your app
 sealed class Screen(val route: String) {
@@ -99,16 +101,12 @@ fun UnswipeNavGraph(
                     // Navigation back to Login will happen automatically when
                     // the 'authState' changes (observed at the top of UnswipeNavGraph)
                     // and the NavHost recomposes with the new startDestination.
-                    // Optionally, add explicit navigation for immediate feedback:
-                    // navController.navigate(Screen.Login.route) {
-                    //    popUpTo(Screen.Dashboard.route) { inclusive = true }
-                    // }
                 }
             )
         }
 
         // Add other destinations like Settings here later
-        // composable(Screen.Settings.route) {
+        // composable(Screen.Settings.route) { // Example
         //      val settingsViewModel: SettingsViewModel = hiltViewModel()
         //      SettingsScreen(viewModel = settingsViewModel, ...)
         // }
