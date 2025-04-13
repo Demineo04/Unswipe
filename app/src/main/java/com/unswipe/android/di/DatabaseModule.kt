@@ -2,8 +2,8 @@ package com.unswipe.android.di
 
 import android.content.Context
 import androidx.room.Room
-import com.unswipe.android.data.local.AppDatabase
-import com.unswipe.android.data.local.dao.UsageDao
+import com.unswipe.android.data.local.AppDatabase // Import DB class
+import com.unswipe.android.data.local.dao.UsageDao // Import DAO interface
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,20 +17,19 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase { // Provides the DB
         return Room.databaseBuilder(
             context,
             AppDatabase::class.java,
             "unswipe_database"
         )
-        // .addMigrations(...) // Add migrations if schema changes
-        .fallbackToDestructiveMigration() // Use only during development! Replace with proper migrations.
-        .build()
+            .fallbackToDestructiveMigration() // DEV ONLY - Replace with real migrations
+            .build()
     }
 
     @Provides
-    @Singleton
-    fun provideUsageDao(appDatabase: AppDatabase): UsageDao {
+    @Singleton // DAOs provided by Hilt are typically Singletons scoped to the DB instance
+    fun provideUsageDao(appDatabase: AppDatabase): UsageDao { // Provides the DAO from the DB
         return appDatabase.usageDao()
     }
-} 
+}
