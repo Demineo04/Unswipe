@@ -2,7 +2,7 @@
 
 package com.unswipe.android.ui.auth
 
-/*
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseUser
@@ -104,5 +104,5 @@ class AuthViewModel @Inject constructor(
     }
 }
 
-*/
+
 
