@@ -45,7 +45,7 @@ class UnlockReceiver : BroadcastReceiver() {
                         UsageEvent(
                             timestamp = System.currentTimeMillis(),
                             packageName = "android", // System event
-                            eventType = EventType.SCREEN_UNLOCK
+                            eventType = EventType.SCREEN_UNLOCK.name // Use .name to get the String "SCREEN_UNLOCK"
                         )
                     )
                     Log.d(TAG, "Unlock event logged to DB.")

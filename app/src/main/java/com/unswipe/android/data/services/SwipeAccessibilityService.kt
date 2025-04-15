@@ -97,7 +97,7 @@ class SwipeAccessibilityService : AccessibilityService() {
                     UsageEvent(
                         timestamp = System.currentTimeMillis(),
                         packageName = packageName,
-                        eventType = EventType.SWIPE
+                        eventType = EventType.SWIPE.name // Use .name to get the String "SWIPE"
                     )
                 )
             } catch (e: Exception) {

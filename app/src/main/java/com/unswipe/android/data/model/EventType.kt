@@ -1,17 +1,9 @@
-package com.unswipe.android.data.model // Or your chosen package
+package com.unswipe.android.data.model // Or wherever you place it
 
 enum class EventType {
-    DEVICE_UNLOCKED,
-    SCREEN_ON,
-    SCREEN_OFF,
-    APP_USAGE_START,
-    APP_USAGE_STOP,
-    ACCESSIBILITY_EVENT,
-
-    // --- Add these two lines ---
-    SCREEN_UNLOCK,
-    SWIPE
-    // --------------------------
-
-    // Add any other event types your application needs here
+    APP_OPEN,      // Based on your commented code
+    APP_CLOSE,     // Based on your commented code
+    SWIPE,         // Based on your commented code AND previous error
+    SCREEN_UNLOCK  // Based on your commented code AND previous error
+    // Add any others you might need (e.g., SCREEN_ON, SCREEN_OFF?)
 }
