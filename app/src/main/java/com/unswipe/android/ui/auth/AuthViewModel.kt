@@ -56,7 +56,7 @@ class AuthViewModel @Inject constructor(
         when (event) {
             is AuthEvent.Login -> loginUser(event.email, event.pass)
             is AuthEvent.Register -> registerUser(event.email, event.pass)
-            is AuthEvent.Logout -> logoutUser()
+            is AuthEvent.Logout -> logout()
             is AuthEvent.ClearError -> {
                 // Clear error only if currently in error state
                 if (_authState.value is AuthState.Error) {
