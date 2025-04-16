@@ -1,133 +1,123 @@
-// Location: app/src/main/java/com/unswipe/android/ui/dashboard/DashboardScreen.kt
+// Location: app/src/main/java/com/unswipe/android/ui/dashboard/DashboardViewModel.kt
 
 package com.unswipe.android.ui.dashboard
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import java.util.concurrent.TimeUnit
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.unswipe.android.domain.repository.AuthRepository // Assuming you have this
+import com.unswipe.android.domain.repository.SettingsRepository // Assuming you have this
+import com.unswipe.android.domain.repository.UsageRepository // Assuming you have this
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-@OptIn(ExperimentalMaterial3Api::class) // For Scaffold/TopAppBar
-@Composable
-fun DashboardScreen(
-    viewModel: DashboardViewModel = hiltViewModel(), // Get ViewModel via Hilt
-    onNavigateToSettings: () -> Unit,
-    onLogout: () -> Unit
-) {
-    // Collect the dashboard state
-    val dashboardData by viewModel.dashboardState.collectAsState()
+// --- State Definition (Should match what DashboardScreen expects) ---
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Unswipe Dashboard") },
-                actions = {
-                    IconButton(onClick = onNavigateToSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = "Settings")
-                    }
-                    IconButton(onClick = onLogout) {
-                        Icon(Icons.Default.ExitToApp, contentDescription = "Logout")
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues) // Apply padding from Scaffold
-                .padding(16.dp), // Add our own padding
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp) // Spacing between elements
-        ) {
-            if (dashboardData == null) {
-                // Show loading state
-                CircularProgressIndicator()
-                Text("Loading dashboard...")
-            } else {
-                // Display actual data once loaded
-                DashboardContent(data = dashboardData!!) // Use !! because we checked for null
-            }
-        }
+// Represents usage summary for one day (for the weekly chart)
+data class DailyUsageSummary(
+    val dateMillis: Long,
+    val totalScreenTimeMillis: Long
+)
+
+// Holds all the data needed by the DashboardScreen UI
+data class DashboardUiState(
+    // Removed isLoading flag, we'll use nullability of the state itself
+    val timeUsedTodayMillis: Long,
+    val timeLimitMillis: Long,
+    val currentStreak: Int,
+    val swipesToday: Int,
+    val unlocksToday: Int,
+    val weeklyProgress: List<DailyUsageSummary>, // List of daily summaries
+    val isPremium: Boolean
+)
+
+@HiltViewModel
+class DashboardViewModel @Inject constructor(
+    // --- Inject your actual repositories/use cases ---
+    private val usageRepository: UsageRepository,
+    private val settingsRepository: SettingsRepository,
+    private val authRepository: AuthRepository
+    // Add other dependencies as needed
+) : ViewModel() {
+
+    // Private MutableStateFlow - Nullable to represent loading state
+    private val _dashboardState = MutableStateFlow<DashboardUiState?>(null)
+    // Public immutable StateFlow for the UI to observe
+    val dashboardState: StateFlow<DashboardUiState?> = _dashboardState.asStateFlow()
+
+    init {
+        loadDashboardData()
     }
-}
 
-// Separate composable for the main content area
-@Composable
-fun DashboardContent(data: DashboardData) {
-    // --- Time Usage ---
-    val timeUsedMinutes = TimeUnit.MILLISECONDS.toMinutes(data.timeUsedTodayMillis)
-    val timeLimitMinutes = TimeUnit.MILLISECONDS.toMinutes(data.timeLimitMillis)
-    val timeRemainingMinutes = maxOf(0, timeLimitMinutes - timeUsedMinutes)
+    private fun loadDashboardData() {
+        viewModelScope.launch {
+            _dashboardState.value = null // Set to null to indicate loading start
 
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp)) {
-            Text("Today's Usage", style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text("Used: $timeUsedMinutes min")
-            Text("Limit: $timeLimitMinutes min")
-            Text("Remaining: $timeRemainingMinutes min", style = MaterialTheme.typography.bodyLarge)
-            // Add a simple progress bar maybe?
-            if (timeLimitMinutes > 0) {
-                LinearProgressIndicator(
-                    progress = { (data.timeUsedTodayMillis.toFloat() / data.timeLimitMillis.toFloat()).coerceIn(0f, 1f) }, // Use brace syntax for Compose 1.6+
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+            try {
+                // --- Fetch data concurrently or sequentially ---
+                // Example: Fetching different pieces of data.
+                // Replace these with actual calls to your repositories.
+                // Use Flow's combine operator if your repo functions return Flows.
+                // If they are suspend functions, you might use async/await for concurrency.
+
+                // --- Placeholder Data Fetching Logic ---
+                // TODO: Replace with real repository calls
+                val todaysStats = usageRepository.getTodaysUsageStats() // Assume returns object with swipes, unlocks, timeUsed
+                val limit = settingsRepository.getTimeLimitMillis() // Assume returns Long
+                val streak = usageRepository.getCurrentStreak() // Assume returns Int
+                val weeklyData = usageRepository.getWeeklyUsageSummary() // Assume returns List<DailyUsageSummary>
+                val premiumStatus = authRepository.isUserPremium() // Assume returns Boolean
+                // --- End Placeholder Logic ---
+
+
+                // --- Construct the state object ---
+                _dashboardState.value = DashboardUiState(
+                    timeUsedTodayMillis = todaysStats.timeUsedMillis, // Adjust based on your actual stats object
+                    timeLimitMillis = limit,
+                    currentStreak = streak,
+                    swipesToday = todaysStats.swipes, // Adjust based on your actual stats object
+                    unlocksToday = todaysStats.unlocks, // Adjust based on your actual stats object
+                    weeklyProgress = weeklyData,
+                    isPremium = premiumStatus
                 )
+
+            } catch (e: Exception) {
+                // TODO: Handle errors appropriately (e.g., show an error message)
+                // For now, just stop loading maybe? Or set a specific error state.
+                _dashboardState.value = DashboardUiState( // Example error state (could be improved)
+                    timeUsedTodayMillis = 0, timeLimitMillis = 0, currentStreak = 0,
+                    swipesToday = 0, unlocksToday = 0, weeklyProgress = emptyList(),
+                    isPremium = false
+                ) // Or keep it null and let the UI show a generic error
+                // Log.e("DashboardViewModel", "Error loading dashboard data", e)
             }
         }
     }
 
-    // --- Streak ---
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp)) {
-            Text("Current Streak", style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text("${data.currentStreak} days", style = MaterialTheme.typography.headlineMedium)
-        }
+    // Optional: Add functions for UI events if needed (e.g., refresh)
+    fun onRefresh() {
+        loadDashboardData()
     }
-
-    // --- Swipes & Unlocks ---
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.padding(16.dp).fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Swipes Today", style = MaterialTheme.typography.titleSmall)
-                Text("${data.swipesToday}", style = MaterialTheme.typography.bodyLarge)
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Unlocks Today", style = MaterialTheme.typography.titleSmall)
-                Text("${data.unlocksToday}", style = MaterialTheme.typography.bodyLarge)
-            }
-        }
-    }
-
-    // --- Weekly Chart (Placeholder) ---
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp)) {
-            Text("Weekly Progress (Placeholder)", style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(8.dp))
-            // TODO: Implement a Composable chart (e.g., using Canvas or a library)
-            // to display data.weeklyProgress list
-            Text("Chart showing last 7 days usage would go here.")
-            data.weeklyProgress.forEach { summary ->
-                val date = remember(summary.dateMillis) { /* Format date */ }
-                val minutes = TimeUnit.MILLISECONDS.toMinutes(summary.totalScreenTimeMillis)
-                // Text("$date: $minutes min") // Example text output
-            }
-        }
-    }
-
-    if (data.isPremium) {
-        Text("Premium Active", style = MaterialTheme.typography.labelSmall)
-    }
-
 }
+
+// --- Dummy Repository Interfaces (Replace with your actual ones) ---
+// These are just for the example above to compile. Delete them and use your real ones.
+
+interface UsageRepository {
+    suspend fun getTodaysUsageStats(): TodayStats // Define TodayStats data class
+    suspend fun getCurrentStreak(): Int
+    suspend fun getWeeklyUsageSummary(): List<DailyUsageSummary>
+}
+data class TodayStats(val swipes: Int, val unlocks: Int, val timeUsedMillis: Long) // Example structure
+
+interface SettingsRepository {
+    suspend fun getTimeLimitMillis(): Long
+}
+
+/* // Already defined AuthRepository in AuthViewModel example
+interface AuthRepository {
+    suspend fun isUserPremium(): Boolean
+    // ... other auth methods
+}
+*/
