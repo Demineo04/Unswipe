@@ -74,4 +74,7 @@ interface SettingsRepository {
      */
     suspend fun isAppBlocked(packageName: String): Boolean
 
+    suspend fun getTimeLimitMillis(): Long
+
+
 }

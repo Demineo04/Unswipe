@@ -14,17 +14,16 @@ import com.unswipe.android.ui.auth.LoginScreen // Import Screen Composable
 import com.unswipe.android.ui.auth.RegisterScreen // Import Screen Composable
 import com.unswipe.android.ui.dashboard.DashboardScreen // Import Screen Composable
 import com.unswipe.android.ui.dashboard.DashboardViewModel // Import ViewModel
+// Import your actual Screen definition:
+import com.unswipe.android.ui.navigation.Screen // <-- Ensure this points to your central Screen definition
+
 // Import other ViewModels and Screens as you create them (e.g., Settings)
 // import com.unswipe.android.ui.settings.SettingsScreen
 // import com.unswipe.android.ui.settings.SettingsViewModel
 
-// Sealed class defining the different screens/destinations in your app
-sealed class Screen(val route: String) {
-    object Login : Screen("login")
-    object Register : Screen("register")
-    object Dashboard : Screen("dashboard")
-    // Add other screens like object Settings : Screen("settings")
-}
+
+// --- DUPLICATE Screen definition REMOVED ---
+
 
 // The main navigation graph composable
 @Composable
@@ -39,74 +38,64 @@ fun UnswipeNavGraph(
     val authState by authViewModel.authState.collectAsState()
 
     // Determine the starting screen based on whether the user is authenticated
+    // Use the routes defined in the central Screen sealed class
     val startDestination = when (authState) {
-        is AuthViewModel.AuthState.Authenticated -> Screen.Dashboard.route
-        else -> Screen.Login.route // Default to Login if loading or unauthenticated
+        is AuthViewModel.AuthState.Authenticated -> Screen.Dashboard.route // Use route from central Screen.kt
+        else -> Screen.Login.route // Use route from central Screen.kt
     }
 
     // NavHost defines the container for navigation
     NavHost(navController = navController, startDestination = startDestination) {
 
         // Define the Login screen destination
-        composable(Screen.Login.route) {
+        composable(Screen.Login.route) { // Use route from central Screen.kt
             // Call the LoginScreen composable
             LoginScreen(
-                // Pass the SAME AuthViewModel instance down
                 viewModel = authViewModel,
-                // Lambda function to navigate to the Register screen
-                onNavigateToRegister = { navController.navigate(Screen.Register.route) },
-                // Lambda function to navigate to Dashboard on successful login
+                onNavigateToRegister = { navController.navigate(Screen.Register.route) }, // Use route from central Screen.kt
                 onLoginSuccess = {
-                    // Navigate to Dashboard and clear the auth screens from the backstack
-                    navController.navigate(Screen.Dashboard.route) {
-                        popUpTo(Screen.Login.route) { inclusive = true }
-                        launchSingleTop = true // Avoid multiple Dashboard instances
+                    navController.navigate(Screen.Dashboard.route) { // Use route from central Screen.kt
+                        popUpTo(Screen.Login.route) { inclusive = true } // Use route from central Screen.kt
+                        launchSingleTop = true
                     }
                 }
             )
         }
 
         // Define the Register screen destination
-        composable(Screen.Register.route) {
+        composable(Screen.Register.route) { // Use route from central Screen.kt
             // Call the RegisterScreen composable
             RegisterScreen(
-                // Pass the SAME AuthViewModel instance down
                 viewModel = authViewModel,
-                // Lambda function to navigate back (likely to Login)
                 onNavigateToLogin = { navController.popBackStack() },
-                // Lambda function to navigate to Dashboard on successful registration
                 onRegisterSuccess = {
-                    // Navigate to Dashboard and clear the auth screens from the backstack
-                    navController.navigate(Screen.Dashboard.route) {
-                        popUpTo(Screen.Login.route) { inclusive = true }
-                        launchSingleTop = true // Avoid multiple Dashboard instances
+                    navController.navigate(Screen.Dashboard.route) { // Use route from central Screen.kt
+                        popUpTo(Screen.Login.route) { inclusive = true } // Use route from central Screen.kt
+                        launchSingleTop = true
                     }
                 }
             )
         }
 
         // Define the Dashboard screen destination
-        composable(Screen.Dashboard.route) {
+        composable(Screen.Dashboard.route) { // Use route from central Screen.kt
             // Get the DashboardViewModel using Hilt, scoped to this destination
             val dashboardViewModel: DashboardViewModel = hiltViewModel()
 
             // Call the DashboardScreen composable
             DashboardScreen(
                 viewModel = dashboardViewModel,
-                // Lambda function to navigate to settings (implement later)
-                onNavigateToSettings = { /* navController.navigate(Screen.Settings.route) */ },
-                // Lambda function to handle logout
+                // Example navigation to Settings:
+                onNavigateToSettings = { navController.navigate(Screen.Settings.route) }, // Use route from central Screen.kt
                 onLogout = {
-                    authViewModel.logout() // Call logout on the shared AuthViewModel
-                    // Navigation back to Login will happen automatically when
-                    // the 'authState' changes (observed at the top of UnswipeNavGraph)
-                    // and the NavHost recomposes with the new startDestination.
+                    authViewModel.logout()
+                    // Navigation will update automatically based on authState change
                 }
             )
         }
 
         // Add other destinations like Settings here later
-        // composable(Screen.Settings.route) { // Example
+        // composable(Screen.Settings.route) { // Use route from central Screen.kt
         //      val settingsViewModel: SettingsViewModel = hiltViewModel()
         //      SettingsScreen(viewModel = settingsViewModel, ...)
         // }

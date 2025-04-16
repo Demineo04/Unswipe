@@ -1,6 +1,7 @@
 package com.unswipe.android.domain.repository
 
 import com.unswipe.android.data.model.DailyUsageSummary // Or a domain model equivalent
+import com.unswipe.android.domain.model.TodayStats       // Adjust import if needed
 import com.unswipe.android.data.model.UsageEvent // Or a domain model equivalent
 import com.unswipe.android.domain.model.DashboardData // Assuming you created this in domain/model
 import kotlinx.coroutines.flow.Flow
@@ -34,5 +35,11 @@ interface UsageRepository {
      * Deletes old usage events and/or summaries from the local database to manage storage.
      */
     suspend fun clearOldData(olderThanTimestamp: Long)
+
+    suspend fun getTodaysUsageStats(): TodayStats
+
+    suspend fun getCurrentStreak(): Int
+
+    suspend fun getWeeklyUsageSummary(): List<DailyUsageSummary>
 
 }

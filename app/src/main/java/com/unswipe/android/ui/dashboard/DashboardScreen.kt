@@ -4,25 +4,36 @@ package com.unswipe.android.ui.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.unswipe.android.domain.repository.AuthRepository // Assuming you have this
-import com.unswipe.android.domain.repository.SettingsRepository // Assuming you have this
-import com.unswipe.android.domain.repository.UsageRepository // Assuming you have this
+// --- Ensure these imports point to your ACTUAL repository interfaces ---
+import com.unswipe.android.domain.repository.AuthRepository
+import com.unswipe.android.domain.repository.SettingsRepository
+import com.unswipe.android.domain.repository.UsageRepository
+
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import java.lang.Exception // Import Exception for catch block
 
-// --- State Definition (Should match what DashboardScreen expects) ---
+// --- Data Class Definitions ADDED HERE ---
+// Define the data structures needed by this ViewModel.
+// Ideally, these might live in domain/model if shared, but defining them here
+// resolves the immediate unresolved reference errors.
 
-// Represents usage summary for one day (for the weekly chart)
 data class DailyUsageSummary(
     val dateMillis: Long,
     val totalScreenTimeMillis: Long
 )
 
-// Holds all the data needed by the DashboardScreen UI
+data class TodayStats(
+    // --- Ensure these fields MATCH what your getTodaysUsageStats() function actually returns ---
+    val swipes: Int,
+    val unlocks: Int,
+    val timeUsedMillis: Long
+)
+
+// Holds all the data needed by the DashboardScreen UI (references the classes above)
 data class DashboardUiState(
-    // Removed isLoading flag, we'll use nullability of the state itself
     val timeUsedTodayMillis: Long,
     val timeLimitMillis: Long,
     val currentStreak: Int,
@@ -31,10 +42,12 @@ data class DashboardUiState(
     val weeklyProgress: List<DailyUsageSummary>, // List of daily summaries
     val isPremium: Boolean
 )
+// --- End Data Class Definitions ---
+
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
-    // --- Inject your actual repositories/use cases ---
+    // --- Hilt injects your REAL repository implementations here ---
     private val usageRepository: UsageRepository,
     private val settingsRepository: SettingsRepository,
     private val authRepository: AuthRepository
@@ -55,42 +68,37 @@ class DashboardViewModel @Inject constructor(
             _dashboardState.value = null // Set to null to indicate loading start
 
             try {
-                // --- Fetch data concurrently or sequentially ---
-                // Example: Fetching different pieces of data.
-                // Replace these with actual calls to your repositories.
-                // Use Flow's combine operator if your repo functions return Flows.
-                // If they are suspend functions, you might use async/await for concurrency.
-
-                // --- Placeholder Data Fetching Logic ---
-                // TODO: Replace with real repository calls
-                val todaysStats = usageRepository.getTodaysUsageStats() // Assume returns object with swipes, unlocks, timeUsed
-                val limit = settingsRepository.getTimeLimitMillis() // Assume returns Long
-                val streak = usageRepository.getCurrentStreak() // Assume returns Int
-                val weeklyData = usageRepository.getWeeklyUsageSummary() // Assume returns List<DailyUsageSummary>
-                val premiumStatus = authRepository.isUserPremium() // Assume returns Boolean
-                // --- End Placeholder Logic ---
+                // --- Fetch data ---
+                // CRITICAL: Ensure your REAL repository interfaces DECLARE these functions!
+                val todaysStats: TodayStats = usageRepository.getTodaysUsageStats()
+                val limit: Long = settingsRepository.getTimeLimitMillis()
+                val streak: Int = usageRepository.getCurrentStreak()
+                val weeklyData: List<DailyUsageSummary> = usageRepository.getWeeklyUsageSummary()
+                val premiumStatus: Boolean = authRepository.isUserPremium()
+                // --- End Data Fetching ---
 
 
                 // --- Construct the state object ---
+                // Access fields defined in the TodayStats data class ABOVE
                 _dashboardState.value = DashboardUiState(
-                    timeUsedTodayMillis = todaysStats.timeUsedMillis, // Adjust based on your actual stats object
+                    timeUsedTodayMillis = todaysStats.timeUsedMillis, // Uses field from TodayStats
                     timeLimitMillis = limit,
                     currentStreak = streak,
-                    swipesToday = todaysStats.swipes, // Adjust based on your actual stats object
-                    unlocksToday = todaysStats.unlocks, // Adjust based on your actual stats object
-                    weeklyProgress = weeklyData,
+                    swipesToday = todaysStats.swipes,       // Uses field from TodayStats
+                    unlocksToday = todaysStats.unlocks,     // Uses field from TodayStats
+                    weeklyProgress = weeklyData,            // Uses DailyUsageSummary
                     isPremium = premiumStatus
                 )
 
             } catch (e: Exception) {
-                // TODO: Handle errors appropriately (e.g., show an error message)
-                // For now, just stop loading maybe? Or set a specific error state.
-                _dashboardState.value = DashboardUiState( // Example error state (could be improved)
-                    timeUsedTodayMillis = 0, timeLimitMillis = 0, currentStreak = 0,
-                    swipesToday = 0, unlocksToday = 0, weeklyProgress = emptyList(),
+                // TODO: Implement proper error handling
+                // Log the error (e.g., using Timber or Log.e)
+                _dashboardState.value = DashboardUiState(
+                    timeUsedTodayMillis = -1L, timeLimitMillis = -1L, currentStreak = -1,
+                    swipesToday = -1, unlocksToday = -1,
+                    weeklyProgress = emptyList(), // Now knows emptyList() is List<DailyUsageSummary>
                     isPremium = false
-                ) // Or keep it null and let the UI show a generic error
-                // Log.e("DashboardViewModel", "Error loading dashboard data", e)
+                )
             }
         }
     }
@@ -100,24 +108,3 @@ class DashboardViewModel @Inject constructor(
         loadDashboardData()
     }
 }
-
-// --- Dummy Repository Interfaces (Replace with your actual ones) ---
-// These are just for the example above to compile. Delete them and use your real ones.
-
-interface UsageRepository {
-    suspend fun getTodaysUsageStats(): TodayStats // Define TodayStats data class
-    suspend fun getCurrentStreak(): Int
-    suspend fun getWeeklyUsageSummary(): List<DailyUsageSummary>
-}
-data class TodayStats(val swipes: Int, val unlocks: Int, val timeUsedMillis: Long) // Example structure
-
-interface SettingsRepository {
-    suspend fun getTimeLimitMillis(): Long
-}
-
-/* // Already defined AuthRepository in AuthViewModel example
-interface AuthRepository {
-    suspend fun isUserPremium(): Boolean
-    // ... other auth methods
-}
-*/
