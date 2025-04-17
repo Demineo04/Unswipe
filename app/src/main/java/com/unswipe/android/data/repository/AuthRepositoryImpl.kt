@@ -47,6 +47,10 @@ class AuthRepositoryImpl @Inject constructor( // <-- Hilt knows how to make this
         }
     }
 
+    override suspend fun isUserPremium(): Boolean {
+        TODO("Not yet implemented")
+    }
+
     // Note: Implementing a robust Flow for auth state changes requires
     // using FirebaseAuth.addAuthStateListener and callbackFlow.
     // This is a simplified placeholder.

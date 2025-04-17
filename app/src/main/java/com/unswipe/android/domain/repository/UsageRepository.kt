@@ -1,6 +1,6 @@
 package com.unswipe.android.domain.repository
 
-import com.unswipe.android.data.model.DailyUsageSummary // Or a domain model equivalent
+import com.unswipe.android.domain.model.DailyUsageSummary
 import com.unswipe.android.domain.model.TodayStats       // Adjust import if needed
 import com.unswipe.android.data.model.UsageEvent // Or a domain model equivalent
 import com.unswipe.android.domain.model.DashboardData // Assuming you created this in domain/model

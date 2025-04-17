@@ -1,6 +1,6 @@
 package com.unswipe.android.domain.model
 
-import com.unswipe.android.data.model.DailyUsageSummary
+import com.unswipe.android.domain.model.DailyUsageSummary
 import java.util.concurrent.TimeUnit
 
 data class DashboardData(

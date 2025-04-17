@@ -108,4 +108,8 @@ class SettingsRepositoryImpl @Inject constructor(
         return isBlocked
         // Or throw NotImplementedError("Implement if needed directly")
     }
+
+    override suspend fun getTimeLimitMillis(): Long {
+        TODO("Not yet implemented")
+    }
 }
