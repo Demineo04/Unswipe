@@ -3,13 +3,12 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    // Removed: id("kotlin-kapt")
-    id("com.google.devtools.ksp") // <-- ADDED KSP Plugin
+    id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
-    id("com.google.gms.google-services") // Firebase
-    id("kotlinx-serialization") // For DataStore (optional, if using with serialization)
+    id("com.google.gms.google-services")
+    // Use the correct plugin ID corresponding to the root definition
+    id("org.jetbrains.kotlin.plugin.serialization") // Correct ID
     id("org.jetbrains.kotlin.plugin.compose")
-    // id("androidx.navigation.safeargs.kotlin") // If using Safe Args with Navigation
 }
 
 android {
