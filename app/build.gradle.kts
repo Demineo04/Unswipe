@@ -50,9 +50,6 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    buildFeatures {
-        compose = true
-    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -92,13 +89,13 @@ dependencies {
 
     // Hilt (Dependency Injection)
     implementation("com.google.dagger:hilt-android:$hilt_version")
-    ksp("com.google.dagger:hilt-compiler:$hilt_version") // <-- Use ksp
+    ksp("com.google.dagger:hilt-compiler:$hilt_version") // <-- Keep: Main Hilt KSP compiler
     implementation("androidx.hilt:hilt-navigation-compose:$androidx_hilt_version")
 
     // Room (Local Database)
     implementation("androidx.room:room-runtime:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
-    ksp("androidx.room:room-compiler:$room_version") // <-- Use ksp
+    ksp("androidx.room:room-compiler:$room_version") // <-- Keep: Room KSP compiler
 
     // DataStore (Preferences)
     implementation("androidx.datastore:datastore-preferences:1.0.0") // Use latest stable version
@@ -113,8 +110,7 @@ dependencies {
 
     // WorkManager (Background Tasks)
     implementation("androidx.work:work-runtime-ktx:2.9.0") // Use latest stable version
-    implementation("androidx.hilt:hilt-work:$androidx_hilt_version")
-    ksp("androidx.hilt:hilt-compiler:$androidx_hilt_version") // <-- Use ksp for androidx hilt compiler
+    implementation("androidx.hilt:hilt-work:$androidx_hilt_version") // Keep Hilt/Work integration runtime
 
     // Testing
     testImplementation("junit:junit:4.13.2")
