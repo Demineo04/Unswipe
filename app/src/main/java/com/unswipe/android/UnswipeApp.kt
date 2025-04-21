@@ -27,15 +27,14 @@ class UnswipeApp : Application() { // <-- Changed: Removed implements Configurat
     }
 
     // Provide HiltWorkerFactory for WorkManager DI
-    /* // Commented out entire block
+
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
             .setMinimumLoggingLevel(android.util.Log.INFO) // Adjust logging level
             .build()
-    */
 
-    /* // Commented out entire function
+
     private fun setupRecurringWork() {
         val workManager = WorkManager.getInstance(applicationContext)
 
@@ -57,5 +56,5 @@ class UnswipeApp : Application() { // <-- Changed: Removed implements Configurat
         )
         android.util.Log.d("UnswipeApp", "UsageTrackingWorker enqueued.")
     }
-    */
+
 }

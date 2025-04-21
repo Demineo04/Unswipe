@@ -12,7 +12,7 @@ import javax.inject.Inject
 // Make sure the UI model for daily summary exists and is imported
 // import com.unswipe.android.ui.dashboard.DailyUsageSummary as UiDailyUsageSummary
 
-/*
+
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val usageRepository: UsageRepository
@@ -78,4 +78,4 @@ class DashboardViewModel @Inject constructor(
     // --- Event Handling (Placeholder) ---
     // fun onRefresh() { /* Trigger repo data fetch? */ }
 }
-*/
+
