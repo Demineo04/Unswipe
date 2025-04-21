@@ -59,7 +59,7 @@ android {
 
 dependencies {
     // Define versions consistently
-    val hilt_version = "2.51.1" // Use the version defined in root build.gradle.kts
+    val hilt_version = "2.50" // Use the version defined in root build.gradle.kts
     val room_version = "2.6.1" // Use latest stable Room version
     val androidx_hilt_version = "1.2.0" // Use latest stable AndroidX Hilt extensions version
     val compose_bom_version = "2024.02.01" // Use latest stable Compose BOM version
@@ -108,8 +108,8 @@ dependencies {
     implementation("com.android.billingclient:billing-ktx:6.1.0") // Use latest stable version
 
     // WorkManager (Background Tasks)
-    implementation("androidx.work:work-runtime-ktx:2.9.0") // Use latest stable version
-    implementation("androidx.hilt:hilt-work:$androidx_hilt_version") // Keep Hilt/Work integration runtime
+    // implementation("androidx.work:work-runtime-ktx:2.9.0") // Use latest stable version
+    // implementation("androidx.hilt:hilt-work:$androidx_hilt_version") // Keep Hilt/Work integration runtime
 
     // Testing
     testImplementation("junit:junit:4.13.2")
