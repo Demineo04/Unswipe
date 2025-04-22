@@ -6,11 +6,13 @@ import com.unswipe.android.domain.model.DashboardData
 import com.unswipe.android.domain.repository.UsageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
-import java.util.concurrent.TimeUnit // Needed for formatting example
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-
-// Make sure the UI model for daily summary exists and is imported
-// import com.unswipe.android.ui.dashboard.DailyUsageSummary as UiDailyUsageSummary
+import java.time.format.TextStyle // Example for date formatting
+import java.util.Locale // Example for date formatting
+import java.time.LocalDate // If your domain model uses LocalDate
+import com.unswipe.android.ui.dashboard.DashboardUiState
+import com.unswipe.android.ui.dashboard.DailyUsageSummary as UiDailyUsageSummary // Use an alias for clarity
 
 
 @HiltViewModel
@@ -36,36 +38,50 @@ class DashboardViewModel @Inject constructor(
         )
 
     // --- Helper function for mapping ---
+    // --- Helper function for mapping ---
     private fun mapDomainToUiState(domainData: DashboardData?): DashboardUiState {
         if (domainData == null) {
-            // Handle the case where the initial value or an error resulted in null
-            // Could return Loading state or an Initial/Empty state
-            return DashboardUiState.Loading // Or DashboardUiState(isLoading=false, error="Data unavailable")
+            return DashboardUiState.Loading
         }
 
         // Perform the mapping from domainData properties to DashboardUiState properties
         return DashboardUiState(
             isLoading = false, // Data has arrived
-            timeUsedTodayFormatted = formatMillis(domainData.timeUsedTodayMillis), // Example formatting
-            timeRemainingFormatted = formatMillis(domainData.timeRemainingMillis), // Use calculated property
-            usagePercentage = domainData.usagePercentage, // Use calculated property
+            timeUsedTodayFormatted = formatMillis(domainData.timeUsedTodayMillis),
+            timeRemainingFormatted = formatMillis(domainData.timeRemainingMillis),
+            usagePercentage = domainData.usagePercentage,
             currentStreak = domainData.currentStreak,
             swipesToday = domainData.swipesToday,
             unlocksToday = domainData.unlocksToday,
+
+            // --- IMPLEMENTED MAPPING for weeklyProgress ---
             weeklyProgress = domainData.weeklyProgress.map { domainSummary ->
                 // Map domain.model.DailyUsageSummary to ui.dashboard.DailyUsageSummary
-                com.unswipe.android.ui.dashboard.DailyUsageSummary(
-                    // Assign properties based on what ui.dashboard.DailyUsageSummary needs
-                    // Example: dayLabel = domainSummary.date.dayOfWeek.name.take(1),
-                    // Example: usagePercentage = (domainSummary.totalUsageMillis.toFloat() / domainData.timeLimitMillis.toFloat()).coerceIn(0f, 1f)
+                // *** YOU MUST IMPLEMENT THE LOGIC BASED ON YOUR DOMAIN/UI MODELS ***
+                UiDailyUsageSummary(
+                    // Example: Assuming domainSummary.date is LocalDate
+                    dayLabel = domainSummary.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                    // Example: Calculate percentage (handle division by zero)
+                    usagePercentage = if (domainData.timeLimitMillis > 0) {
+                        (domainSummary.totalUsageMillis.toFloat() / domainData.timeLimitMillis.toFloat()).coerceIn(0f, 1f)
+                    } else {
+                        0f
+                    },
+                    // Example: Check if it's today
+                    isToday = domainSummary.date.isEqual(LocalDate.now())
                 )
             },
+            // ---------------------------------------------
+
             isPremium = domainData.isPremium,
-            showUsagePermissionPrompt = !domainData.hasUsageStatsPermission, // Example logic
-            showAccessibilityPrompt = !domainData.isAccessibilityEnabled, // Example logic
+            showUsagePermissionPrompt = !domainData.hasUsageStatsPermission,
+            showAccessibilityPrompt = !domainData.isAccessibilityEnabled,
             error = null // No error if mapping succeeded
         )
     }
+
+// Keep the rest of the ViewModel code (constructor, uiState flow definition, formatMillis)
+// ... (rest of the code as you had it) ...
 
     // Example formatting function (place appropriately, maybe in a utils file)
     private fun formatMillis(millis: Long): String {
