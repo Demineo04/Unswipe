@@ -15,7 +15,7 @@ import com.unswipe.android.ui.dashboard.DashboardUiState
 import com.unswipe.android.ui.dashboard.DailyUsageSummary as UiDailyUsageSummary // Use an alias for clarity
 
 
-@HiltViewModel
+// @HiltViewModel //
 class DashboardViewModel @Inject constructor(
     private val usageRepository: UsageRepository
 ) : ViewModel() {
