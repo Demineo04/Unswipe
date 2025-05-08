@@ -26,7 +26,7 @@ class SwipeAccessibilityService : AccessibilityService() {
 
     @Inject lateinit var usageDao: UsageDao
     @Inject lateinit var settingsRepository: SettingsRepository
-    @Inject lateinit var packageManager: PackageManager // Inject PackageManager
+    @Inject lateinit var injectedPackageManager: PackageManager
 
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
@@ -108,8 +108,8 @@ class SwipeAccessibilityService : AccessibilityService() {
 
     private fun showConfirmation(packageName: String) {
         val appName = try {
-            val appInfo: ApplicationInfo = packageManager.getApplicationInfo(packageName, 0)
-            packageManager.getApplicationLabel(appInfo).toString()
+            val appInfo: ApplicationInfo = injectedPackageManager.getApplicationInfo(packageName, 0)
+            injectedPackageManager.getApplicationLabel(appInfo).toString()
         } catch (e: PackageManager.NameNotFoundException) {
             Log.w(TAG, "Could not get app name for $packageName", e)
             packageName // Fallback

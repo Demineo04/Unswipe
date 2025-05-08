@@ -34,10 +34,15 @@ interface UsageDao {
     @Query("SELECT * FROM daily_summaries ORDER BY dateMillis DESC LIMIT 1")
     suspend fun getLatestDailySummary(): DailyUsageSummary?
 
+    @Query("SELECT * FROM daily_summaries WHERE dateMillis >= :startDateMillis ORDER BY dateMillis ASC")
+    suspend fun getSummariesSince(startDateMillis: Long): List<DailyUsageSummary>
 
     @Query("DELETE FROM usage_events WHERE timestamp < :olderThanTimestamp")
     suspend fun deleteOldUsageEvents(olderThanTimestamp: Long)
 
     @Query("DELETE FROM daily_summaries WHERE dateMillis < :olderThanTimestamp")
     suspend fun deleteOldSummaries(olderThanTimestamp: Long)
+
+    @Query("SELECT COUNT(*) FROM usage_events WHERE timestamp >= :startTimeMillis AND eventType = :eventType")
+    suspend fun getEventCountSince(startTimeMillis: Long, eventType: String): Int
 } 

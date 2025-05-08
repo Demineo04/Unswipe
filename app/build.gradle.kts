@@ -12,14 +12,14 @@ plugins {
 
 android {
     namespace = "com.unswipe.android"
-    // Consider using compileSdk = 34 if you aren't specifically developing for Android 15 yet
-    compileSdk = 35
+    // Align compileSdk with AGP 8.4.1 tested version
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.unswipe.android"
         minSdk = 24
-        // Consider using targetSdk = 34 unless testing Android 15 features
-        targetSdk = 35
+        // Align targetSdk with compileSdk
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -60,9 +60,9 @@ android {
 
 dependencies {
     // Core Android & Kotlin
-    implementation("androidx.core:core-ktx:1.16.0") // Note: Very new, consider 1.12.0 or 1.13.x for more stability
+    implementation("androidx.core:core-ktx:1.13.1") // Downgraded from 1.16.0
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7") // Note: Very new
-    implementation("androidx.activity:activity-compose:1.10.1") // Note: Very new
+    implementation("androidx.activity:activity-compose:1.9.0") // Downgraded from 1.10.1
 
     // Compose
     implementation(platform("androidx.compose:compose-bom:2025.04.00")) // Note: Very new BOM
@@ -103,7 +103,7 @@ dependencies {
     implementation("com.android.billingclient:billing-ktx:6.1.0")
 
     // WorkManager (Background Tasks)
-    implementation("androidx.work:work-runtime-ktx:2.10.0") // Note: Very new, consider 2.9.0
+    implementation("androidx.work:work-runtime-ktx:2.9.0") // Downgraded from 2.10.0
     implementation("androidx.hilt:hilt-work:1.2.0")
 
     // Testing

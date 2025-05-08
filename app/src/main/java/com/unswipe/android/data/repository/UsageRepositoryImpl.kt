@@ -9,6 +9,7 @@ import com.unswipe.android.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine // Needed for getDashboardDataFlow
 import kotlinx.coroutines.flow.flow // Example for simple flow creation
+import kotlinx.coroutines.flow.transformLatest // Needed for refactored getDashboardDataFlow
 import java.time.LocalDate // Example for date handling
 import java.util.Calendar // Example for date calculations
 import javax.inject.Inject
@@ -18,11 +19,11 @@ import javax.inject.Inject
 import com.unswipe.android.domain.model.DailyUsageSummary as DomainDailyUsageSummary
 import com.unswipe.android.domain.model.TodayStats as DomainTodayStats // Renamed TodayStats in domain
 import com.unswipe.android.domain.model.DashboardData
-import com.unswipe.android.domain.model.UsageEvent as DomainUsageEvent // If you create a domain UsageEvent
+// import com.unswipe.android.domain.model.UsageEvent as DomainUsageEvent // Removed unused alias
 
 // Import your DATA models (that DAO returns)
 import com.unswipe.android.data.model.DailyUsageSummary as DataDailyUsageSummary
-import com.unswipe.android.data.model.UsageEvent as DataUsageEvent // Use data model if domain one not created
+import com.unswipe.android.data.model.UsageEvent // Removed 'as DataUsageEvent' alias
 
 
 // Assuming TodayStats is now correctly defined in domain/model:
@@ -41,7 +42,7 @@ class UsageRepositoryImpl @Inject constructor(
 
     // Assuming UsageRepository interface uses DataUsageEvent for now
     // If interface changes to DomainUsageEvent, map it here before calling DAO
-    override suspend fun logUsageEvent(event: DataUsageEvent) {
+    override suspend fun logUsageEvent(event: UsageEvent) {
         try {
             usageDao.insertUsageEvent(event) // Directly call DAO
         } catch (e: Exception) {
@@ -52,41 +53,36 @@ class UsageRepositoryImpl @Inject constructor(
 
     // This is complex and combines multiple data sources
     override fun getDashboardDataFlow(): Flow<DashboardData> {
-        // Combine flows from settings, DAO queries, permission checks etc.
-        // This is a simplified example - real implementation needs more robust data fetching/combining
+        // Combine the flows that trigger updates
         return combine(
-            settingsRepository.getTimeLimitMillisFlow(), // Flow<Long> from SettingsRepository
-            settingsRepository.isPremiumFlow(),         // Flow<Boolean> from SettingsRepository
-            // Add other flows: e.g., a flow that periodically checks usage stats,
-            // a flow observing DAO changes for swipes/unlocks today, etc.
-        ) { timeLimit, isPremium /*, otherDataFromFlows */ ->
+            settingsRepository.getDailyLimitFlow(),
+            settingsRepository.getStreakFlow()
+            // Add other necessary flows here (e.g., premium status flow when available)
+        ) { limit, streak -> // Receive the latest values from the combined flows
+            // Pass the non-suspend values to a Pair or intermediate data class
+            Pair(limit, streak)
+        }.transformLatest { (timeLimit, currentStreak) -> // Use transformLatest for suspend operations
+            // --- Perform suspend calls here ---
+            val stats = getTodaysUsageStats() // Suspend call OK here
+            val weekly = getWeeklyUsageSummary() // Suspend call OK here
 
-            // --- Fetch non-flow data or calculate within combine ---
-            // Note: Performing blocking calls or heavy computation here isn't ideal.
-            // Consider structuring flows so they emit calculated data.
-
-            // Example: Get stats (replace with actual suspend fun calls if needed,
-            // but better to get this data via flows if possible)
-            val stats = getTodaysUsageStats() // Get today's stats
-            val streak = getCurrentStreak()   // Get current streak
-            val weekly = getWeeklyUsageSummary() // Get weekly summary
-
-            // Permissions / System status checks
+            // Permissions / System status checks (Keep as non-suspend for now)
             val hasUsagePerms = hasUsageStatsPermission(context)
             val isAccessEnabled = isAccessibilityServiceEnabled(context)
 
             // --- Map to DashboardData Domain Model ---
-            DashboardData(
-                timeUsedTodayMillis = stats.totalUsageMillis, // From calculated TodayStats
-                timeLimitMillis = timeLimit, // From SettingsRepository flow
-                currentStreak = streak, // From getCurrentStreak()
-                swipesToday = stats.swipeCount, // From calculated TodayStats
-                unlocksToday = stats.unlockCount, // From calculated TodayStats
-                weeklyProgress = weekly, // From getWeeklyUsageSummary()
-                isPremium = isPremium, // From SettingsRepository flow
+            val dashboardData = DashboardData(
+                timeUsedTodayMillis = stats.totalUsageMillis,
+                timeLimitMillis = timeLimit, // From combined flow
+                currentStreak = currentStreak, // From combined flow
+                swipesToday = stats.swipeCount,
+                unlocksToday = stats.unlockCount,
+                weeklyProgress = weekly,
+                isPremium = false, // Still hardcoded
                 hasUsageStatsPermission = hasUsagePerms,
                 isAccessibilityEnabled = isAccessEnabled
             )
+            emit(dashboardData) // Emit the result
         }
         // TODO: Add error handling (.catch operator) and potentially emit Loading states
     }
@@ -95,7 +91,7 @@ class UsageRepositoryImpl @Inject constructor(
         try {
             // Fetch DATA model from DAO (example query)
             val todayStart = getStartOfDayInMillis()
-            val dataSummary: DataDailyUsageSummary? = usageDao.getSummaryForDay(todayStart) // Adjust DAO query as needed
+            val dataSummary: DataDailyUsageSummary? = usageDao.getDailySummary(todayStart) // Corrected from getSummaryForDay
 
             // Map DATA model to DOMAIN model (if not null)
             return dataSummary?.let { ds ->
@@ -119,8 +115,8 @@ class UsageRepositoryImpl @Inject constructor(
 
     override suspend fun clearOldData(olderThanTimestamp: Long) {
         try {
-            usageDao.deleteEventsOlderThan(olderThanTimestamp) // Assuming DAO method exists
-            usageDao.deleteSummariesOlderThan(olderThanTimestamp) // Assuming DAO method exists
+            usageDao.deleteOldUsageEvents(olderThanTimestamp) // Corrected from deleteEventsOlderThan
+            usageDao.deleteOldSummaries(olderThanTimestamp) // Corrected from deleteSummariesOlderThan
         } catch (e: Exception) {
             println("Error clearing old data: ${e.message}")
         }
@@ -180,8 +176,8 @@ class UsageRepositoryImpl @Inject constructor(
         return DomainDailyUsageSummary(
             // Example: Map properties assuming they have similar names/types
             // If using LocalDate in Domain, convert Long from Data
-            date = LocalDate.ofEpochDay(dataSummary.date / (24*60*60*1000)), // Example conversion
-            totalUsageMillis = dataSummary.totalUsageMillis,
+            date = LocalDate.ofEpochDay(dataSummary.dateMillis / (24*60*60*1000)), // Corrected to use dateMillis
+            totalUsageMillis = dataSummary.totalScreenTimeMillis, // Corrected to use totalScreenTimeMillis
             swipeCount = dataSummary.swipeCount ?: 0, // Handle nulls if needed
             unlockCount = dataSummary.unlockCount ?: 0
         )

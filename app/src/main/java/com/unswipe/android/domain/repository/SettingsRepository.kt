@@ -42,6 +42,11 @@ interface SettingsRepository {
     fun getStreakFlow(): Flow<Int>
 
     /**
+     * Gets the current streak count.
+     */
+    suspend fun getCurrentStreak(): Int
+
+    /**
      * Updates the user's premium status (e.g., after a billing change).
      */
     suspend fun setPremiumStatus(isPremium: Boolean)

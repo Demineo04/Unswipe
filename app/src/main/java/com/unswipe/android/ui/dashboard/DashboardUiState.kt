@@ -5,6 +5,7 @@ package com.unswipe.android.ui.dashboard
 
 import java.util.concurrent.TimeUnit
 
+// Represents the overall state for the Dashboard UI
 data class DashboardUiState(
     val isLoading: Boolean = true,
     val timeUsedTodayFormatted: String = "",

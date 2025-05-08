@@ -39,12 +39,12 @@ class UpdateStreakUseCase @Inject constructor(
                 return
             }
 
-            Log.d(TAG, "Today's usage: ${todaySummary.totalScreenTimeMillis}ms, Limit: ${settings.dailyUsageLimitMillis}ms, Current Streak: ${settings.currentStreak}")
+            Log.d(TAG, "Today's usage: ${todaySummary.totalUsageMillis}ms, Limit: ${settings.dailyUsageLimitMillis}ms, Current Streak: ${settings.currentStreak}")
 
             // --- Basic Logic (Needs Improvement for Accuracy) ---
             // This simple check resets if today's usage exceeds the limit.
             // It doesn't handle incrementing correctly based on previous days.
-            if (todaySummary.totalScreenTimeMillis > settings.dailyUsageLimitMillis) {
+            if (todaySummary.totalUsageMillis > settings.dailyUsageLimitMillis) {
                 if (settings.currentStreak > 0) {
                     Log.i(TAG, "Usage exceeded limit. Resetting streak.")
                     settingsRepository.resetStreak()

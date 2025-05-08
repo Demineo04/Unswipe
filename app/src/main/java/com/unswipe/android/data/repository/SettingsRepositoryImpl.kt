@@ -112,4 +112,13 @@ class SettingsRepositoryImpl @Inject constructor(
     override suspend fun getTimeLimitMillis(): Long {
         TODO("Not yet implemented")
     }
+
+    // Implement the new suspend function
+    override suspend fun getCurrentStreak(): Int {
+        var streak = 0 // Default value
+        dataStore.data.map { prefs -> prefs[CURRENT_STREAK_KEY] ?: 0 }.collect { value ->
+            streak = value
+        }
+        return streak
+    }
 }

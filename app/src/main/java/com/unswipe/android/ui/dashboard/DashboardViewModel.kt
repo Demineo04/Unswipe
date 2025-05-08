@@ -13,6 +13,7 @@ import java.util.Locale // Example for date formatting
 import java.time.LocalDate // If your domain model uses LocalDate
 import com.unswipe.android.ui.dashboard.DashboardUiState
 import com.unswipe.android.ui.dashboard.DailyUsageSummary as UiDailyUsageSummary // Use an alias for clarity
+import com.unswipe.android.domain.model.DailyUsageSummary as DomainDailyUsageSummary
 
 
 // @HiltViewModel //
@@ -57,17 +58,14 @@ class DashboardViewModel @Inject constructor(
             // --- IMPLEMENTED MAPPING for weeklyProgress ---
             weeklyProgress = domainData.weeklyProgress.map { domainSummary ->
                 // Map domain.model.DailyUsageSummary to ui.dashboard.DailyUsageSummary
-                // *** YOU MUST IMPLEMENT THE LOGIC BASED ON YOUR DOMAIN/UI MODELS ***
                 UiDailyUsageSummary(
-                    // Example: Assuming domainSummary.date is LocalDate
+                    // Use correct DomainDailyUsageSummary properties
                     dayLabel = domainSummary.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
-                    // Example: Calculate percentage (handle division by zero)
                     usagePercentage = if (domainData.timeLimitMillis > 0) {
                         (domainSummary.totalUsageMillis.toFloat() / domainData.timeLimitMillis.toFloat()).coerceIn(0f, 1f)
                     } else {
                         0f
                     },
-                    // Example: Check if it's today
                     isToday = domainSummary.date.isEqual(LocalDate.now())
                 )
             },
@@ -85,10 +83,15 @@ class DashboardViewModel @Inject constructor(
 
     // Example formatting function (place appropriately, maybe in a utils file)
     private fun formatMillis(millis: Long): String {
-        val hours = TimeUnit.MILLISECONDS.toHours(millis)
-        val minutes = TimeUnit.MILLISECONDS.toMinutes(millis) % 60
-        return String.format("%dh %02dm", hours, minutes)
-        // Or use Duration class for more complex formatting
+        // Basic placeholder implementation
+        val minutes = java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(millis)
+        return "${minutes}m"
+    }
+
+    // TODO: Add permission/accessibility check logic
+    private fun checkPermissions(): Pair<Boolean, Boolean> {
+        // Placeholder
+        return Pair(first = false, second = false) // (hasUsageStatsPermission, isAccessibilityEnabled)
     }
 
     // --- Event Handling (Placeholder) ---
