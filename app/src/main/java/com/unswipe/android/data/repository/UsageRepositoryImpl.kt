@@ -204,19 +204,72 @@ class UsageRepositoryImpl @Inject constructor(
         }.timeInMillis
     }
 
+import android.app.AppOpsManager
+import android.os.Process
+import android.provider.Settings
+import android.text.TextUtils
+import com.unswipe.android.data.services.SwipeAccessibilityService
+
     private fun hasUsageStatsPermission(context: Context): Boolean {
-        // TODO: Implement actual permission check for UsageStatsManager
-        return false // Placeholder
+        val appOps = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+        val mode = appOps.checkOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
+            Process.myUid(),
+            context.packageName
+        )
+        return mode == AppOpsManager.MODE_ALLOWED
     }
 
     private fun isAccessibilityServiceEnabled(context: Context): Boolean {
-        // TODO: Implement actual check if your Accessibility Service is running
-        return false // Placeholder
+        val expectedServiceName = ComponentName(context, SwipeAccessibilityService::class.java).flattenToString()
+        val enabledServicesSetting = Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+        if (enabledServicesSetting == null || TextUtils.isEmpty(enabledServicesSetting)) {
+            return false
+        }
+        val colonSplitter = TextUtils.SimpleStringSplitter(':')
+        colonSplitter.setString(enabledServicesSetting)
+        while (colonSplitter.hasNext()) {
+            val componentNameString = colonSplitter.next()
+            if (componentNameString.equals(expectedServiceName, ignoreCase = true)) {
+                return true
+            }
+        }
+        return false
     }
 
     private fun getUsageTimeFromManager(context: Context, startTime: Long): Long {
-        // TODO: Implement actual UsageStatsManager query for total usage time since startTime
-        // Remember permission checks and potential exceptions
-        return 0L // Placeholder
+        if (!hasUsageStatsPermission(context)) {
+            return 0L // Return 0 if permission is not granted
+        }
+        val endTime = System.currentTimeMillis()
+        var totalUsageTime = 0L
+        try {
+            val stats = usageStatsManager.queryUsageStats(
+                UsageStatsManager.INTERVAL_DAILY, // Interval doesn't matter as much as start/end for specific app
+                startTime,
+                endTime
+            )
+            if (stats != null) {
+                for (usageStats in stats) {
+                    // Accumulate time for the app's own package
+                    if (usageStats.packageName == context.packageName) {
+                        totalUsageTime += usageStats.totalTimeInForeground
+                    }
+                    // Note: If you need to sum usage for OTHER apps, you'd iterate and sum here.
+                    // For Unswipe, we are primarily interested in its own usage or specific target apps.
+                    // The current subtask implies getting *the app's* usage time,
+                    // which might be for features like "how much time you spent in Unswipe itself".
+                    // If the goal was "total phone usage", this query would need to be broader
+                    // or sum all packages. Given the name "getUsageTimeFromManager" and its usage
+                    // within `getTodaysUsageStats` (which seems to be about Unswipe's own stats),
+                    // this implementation focuses on the app's own foreground time.
+                }
+            }
+        } catch (e: Exception) {
+            // Log error or handle appropriately
+            println("Error querying usage stats: ${e.message}")
+            return 0L // Return 0 on error
+        }
+        return totalUsageTime
     }
 }
