@@ -54,14 +54,7 @@ class UsageRepositoryImpl @Inject constructor(
     // This is complex and combines multiple data sources
     override fun getDashboardDataFlow(): Flow<DashboardData> {
         // Combine the flows that trigger updates
-        return combine(
-            settingsRepository.getDailyLimitFlow(),
-            settingsRepository.getStreakFlow()
-            // Add other necessary flows here (e.g., premium status flow when available)
-        ) { limit, streak -> // Receive the latest values from the combined flows
-            // Pass the non-suspend values to a Pair or intermediate data class
-            Pair(limit, streak)
-        }.transformLatest { (timeLimit, currentStreak) -> // Use transformLatest for suspend operations
+        return settingsRepository.getDailyLimitFlow().transformLatest { timeLimit ->
             // --- Perform suspend calls here ---
             val stats = getTodaysUsageStats() // Suspend call OK here
             val weekly = getWeeklyUsageSummary() // Suspend call OK here
@@ -74,7 +67,6 @@ class UsageRepositoryImpl @Inject constructor(
             val dashboardData = DashboardData(
                 timeUsedTodayMillis = stats.totalUsageMillis,
                 timeLimitMillis = timeLimit, // From combined flow
-                currentStreak = currentStreak, // From combined flow
                 swipesToday = stats.swipeCount,
                 unlocksToday = stats.unlockCount,
                 weeklyProgress = weekly,
@@ -142,14 +134,6 @@ class UsageRepositoryImpl @Inject constructor(
             unlockCount = unlocks
             // Add other relevant stats fields as defined in DomainTodayStats
         )
-    }
-
-    override suspend fun getCurrentStreak(): Int {
-        // TODO: Implement streak calculation logic
-        // Could depend on SettingsRepository or calculated from daily summaries in DAO
-        // Example: Fetch last N summaries, check consecutive days meeting criteria
-        return settingsRepository.getCurrentStreak() // Example: Delegating to SettingsRepository
-        // OR calculate based on usageDao.getRecentSummaries(...)
     }
 
     // Make sure the interface returns List<DomainDailyUsageSummary>

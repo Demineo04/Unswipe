@@ -51,7 +51,6 @@ class DashboardViewModel @Inject constructor(
             timeUsedTodayFormatted = formatMillis(domainData.timeUsedTodayMillis),
             timeRemainingFormatted = formatMillis(domainData.timeRemainingMillis),
             usagePercentage = domainData.usagePercentage,
-            currentStreak = domainData.currentStreak,
             swipesToday = domainData.swipesToday,
             unlocksToday = domainData.unlocksToday,
 

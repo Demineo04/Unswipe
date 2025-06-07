@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit
 data class DashboardData(
     val timeUsedTodayMillis: Long,
     val timeLimitMillis: Long,
-    val currentStreak: Int,
     val swipesToday: Int,
     val unlocksToday: Int,
     val weeklyProgress: List<DailyUsageSummary>, // Last 7 days, oldest first
@@ -29,7 +28,6 @@ data class DashboardData(
         val Loading = DashboardData(
             timeUsedTodayMillis = 0L,
             timeLimitMillis = TimeUnit.HOURS.toMillis(3), // Default limit
-            currentStreak = 0,
             swipesToday = 0,
             unlocksToday = 0,
             weeklyProgress = emptyList(),
