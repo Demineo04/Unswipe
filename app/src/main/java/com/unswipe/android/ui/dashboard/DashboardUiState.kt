@@ -11,7 +11,6 @@ data class DashboardUiState(
     val timeUsedTodayFormatted: String = "",
     val timeRemainingFormatted: String = "",
     val usagePercentage: Float = 0f,
-    val currentStreak: Int = 0,
     val swipesToday: Int = 0,
     val unlocksToday: Int = 0,
     val weeklyProgress: List<DailyUsageSummary> = emptyList(), // Use UI model

@@ -21,30 +21,6 @@ interface SettingsRepository {
      */
     fun getDailyLimitFlow(): Flow<Long>
 
-    /**
-     * Updates the user's current streak count directly (use with caution).
-     */
-    suspend fun updateStreak(streak: Int)
-
-    /**
-     * Resets the user's streak count to zero.
-     */
-    suspend fun resetStreak()
-
-    /**
-     * Increments the user's streak count by one.
-     */
-    suspend fun incrementStreak()
-
-    /**
-     * Gets a Flow that emits the current streak count whenever it changes.
-     */
-    fun getStreakFlow(): Flow<Int>
-
-    /**
-     * Gets the current streak count.
-     */
-    suspend fun getCurrentStreak(): Int
 
     /**
      * Updates the user's premium status (e.g., after a billing change).
