@@ -16,7 +16,7 @@ import com.unswipe.android.ui.dashboard.DailyUsageSummary as UiDailyUsageSummary
 import com.unswipe.android.domain.model.DailyUsageSummary as DomainDailyUsageSummary
 
 
-// @HiltViewModel //
+@HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val usageRepository: UsageRepository
 ) : ViewModel() {
@@ -51,7 +51,6 @@ class DashboardViewModel @Inject constructor(
             timeUsedTodayFormatted = formatMillis(domainData.timeUsedTodayMillis),
             timeRemainingFormatted = formatMillis(domainData.timeRemainingMillis),
             usagePercentage = domainData.usagePercentage,
-            currentStreak = domainData.currentStreak,
             swipesToday = domainData.swipesToday,
             unlocksToday = domainData.unlocksToday,
 

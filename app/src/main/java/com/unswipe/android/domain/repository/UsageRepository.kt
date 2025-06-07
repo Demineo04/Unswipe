@@ -20,7 +20,7 @@ interface UsageRepository {
     fun getDashboardDataFlow(): Flow<DashboardData>
 
     /**
-     * Gets the daily summary for today (might be needed by streak logic).
+     * Gets the daily summary for today.
      * Should ideally calculate based on UsageStats and locally logged events (swipes/unlocks).
      */
     suspend fun getTodaysSummary(): DailyUsageSummary? // Or a domain model equivalent
@@ -37,8 +37,6 @@ interface UsageRepository {
     suspend fun clearOldData(olderThanTimestamp: Long)
 
     suspend fun getTodaysUsageStats(): TodayStats
-
-    suspend fun getCurrentStreak(): Int
 
     suspend fun getWeeklyUsageSummary(): List<DailyUsageSummary>
 
