@@ -17,7 +17,6 @@ class SettingsRepositoryImpl @Inject constructor(
     // Define Preference Keys (example)
     companion object {
         val DAILY_LIMIT_KEY = longPreferencesKey("daily_limit_millis")
-        val CURRENT_STREAK_KEY = intPreferencesKey("current_streak")
         val IS_PREMIUM_KEY = booleanPreferencesKey("is_premium")
         val BLOCKED_APPS_KEY = stringSetPreferencesKey("blocked_apps")
         // Define others as needed
@@ -29,7 +28,6 @@ class SettingsRepositoryImpl @Inject constructor(
         return dataStore.data.map { prefs ->
             UserSettings(
                 dailyUsageLimitMillis = prefs[DAILY_LIMIT_KEY] ?: 10800000L, // Default 3 hours
-                currentStreak = prefs[CURRENT_STREAK_KEY] ?: 0,
                 isPremium = prefs[IS_PREMIUM_KEY] ?: false,
                 blockedApps = prefs[BLOCKED_APPS_KEY] ?: emptySet()
             )
@@ -48,28 +46,6 @@ class SettingsRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateStreak(streak: Int) {
-        dataStore.edit { settings ->
-            settings[CURRENT_STREAK_KEY] = streak
-        }
-    }
-
-    override suspend fun resetStreak() {
-        updateStreak(0)
-    }
-
-    override suspend fun incrementStreak() {
-        dataStore.edit { settings ->
-            val currentStreak = settings[CURRENT_STREAK_KEY] ?: 0
-            settings[CURRENT_STREAK_KEY] = currentStreak + 1
-        }
-    }
-
-    override fun getStreakFlow(): Flow<Int> {
-        return dataStore.data.map { prefs ->
-            prefs[CURRENT_STREAK_KEY] ?: 0
-        }
-    }
 
     override suspend fun setPremiumStatus(isPremium: Boolean) {
         dataStore.edit { settings ->
@@ -113,12 +89,4 @@ class SettingsRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    // Implement the new suspend function
-    override suspend fun getCurrentStreak(): Int {
-        var streak = 0 // Default value
-        dataStore.data.map { prefs -> prefs[CURRENT_STREAK_KEY] ?: 0 }.collect { value ->
-            streak = value
-        }
-        return streak
-    }
 }
