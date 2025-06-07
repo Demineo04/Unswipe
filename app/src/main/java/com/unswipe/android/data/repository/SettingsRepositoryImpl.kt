@@ -8,6 +8,7 @@ import com.unswipe.android.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf // For placeholder flow
 import kotlinx.coroutines.flow.map // For reading data
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class SettingsRepositoryImpl @Inject constructor(
@@ -74,19 +75,24 @@ class SettingsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun isAppBlocked(packageName: String): Boolean {
-        // This could be implemented more efficiently if needed often,
-        // but reading from the flow is also possible.
-        // For a suspend fun, reading once might be okay:
-        var isBlocked = false
-        dataStore.data.map { prefs -> prefs[BLOCKED_APPS_KEY] ?: emptySet() }.collect { blockedSet ->
-            isBlocked = blockedSet.contains(packageName)
-        }
-        return isBlocked
-        // Or throw NotImplementedError("Implement if needed directly")
+        // Read the current blocked set once from DataStore. Using `first()`
+        // avoids collecting the flow indefinitely.
+        val blockedSet = dataStore.data
+            .map { prefs -> prefs[BLOCKED_APPS_KEY] ?: emptySet() }
+            .first()
+        return blockedSet.contains(packageName)
     }
 
     override suspend fun getTimeLimitMillis(): Long {
-        TODO("Not yet implemented")
+        // Provide the stored daily limit or a default value if absent.
+        val prefs = dataStore.data.first()
+        return prefs[DAILY_LIMIT_KEY] ?: 10800000L // Default 3 hours
     }
 
+    // Implement the new suspend function
+    override suspend fun getCurrentStreak(): Int {
+        // Obtain the streak value from DataStore once.
+        val prefs = dataStore.data.first()
+        return prefs[CURRENT_STREAK_KEY] ?: 0
+    }
 }
