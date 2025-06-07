@@ -127,6 +127,13 @@ Unswipe is a minimalist productivity and screen-time management Android app insp
     *   **Usage Access:** Needs to be granted manually via system settings (`ACTION_USAGE_ACCESS_SETTINGS`) for screen time tracking.
     *   **Accessibility Service:** Needs to be enabled manually via system settings (`ACTION_ACCESSIBILITY_SETTINGS`) for swipe counting and app launch confirmation. Provide clear explanations to the user why these are needed.
 
+## UI/UX Design
+
+Design assets are stored in the [`designs/`](designs) directory. The file
+`dashboard-wireframe.fig` is a placeholder intended for future Figma designs.
+You can replace it with the exported Figma file once a finalized dashboard
+layout is ready.
+
 ## Future Implementation / Roadmap
 
 *   **More Granular Controls:** Allow setting different limits for different apps or app categories.
