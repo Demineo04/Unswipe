@@ -28,6 +28,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.unswipe.android.ui.components.DashboardHeader
+import com.unswipe.android.ui.components.HourlyUsageChart
+import com.unswipe.android.ui.components.StatCard
 
 @Composable
 fun DashboardScreen(
@@ -36,50 +39,18 @@ fun DashboardScreen(
     onLogout: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Dashboard") },
-                actions = {
-                    IconButton(onClick = onNavigateToSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = "Settings")
-                    }
-                    IconButton(onClick = onLogout) {
-                        Icon(Icons.Default.Logout, contentDescription = "Logout")
-                    }
-                }
-            )
-        },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+        // The top bar can be removed if the header is handled within the content
     ) { padding ->
-        if (uiState.isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        } else {
-            DashboardContent(
-                state = uiState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                onBarSelected = { summary ->
-                    snackbarHostState.showSnackbar(
-                        message = "${summary.dayLabel}: ${(summary.usagePercentage * 100).toInt()}%"
-                    )
-                }
-            )
-
-    Surface(modifier = Modifier.fillMaxSize()) {
         when {
             uiState.isLoading -> {
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
             uiState.error != null -> {
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
                         text = "Error: ${uiState.error}",
                         color = MaterialTheme.colorScheme.error,
@@ -89,11 +60,61 @@ fun DashboardScreen(
             }
             else -> {
                 DashboardContent(
-                    uiState = uiState,
-                    onNavigateToSettings = onNavigateToSettings,
-                    onLogout = onLogout
+                    modifier = Modifier.padding(padding),
+                    state = uiState,
+                    onNavigateToSettings = onNavigateToSettings
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun DashboardContent(
+    modifier: Modifier = Modifier,
+    state: DashboardUiState,
+    onNavigateToSettings: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(vertical = 16.dp)
+    ) {
+        DashboardHeader(
+            // Replace with actual user name from ViewModel/Repo if available
+            userName = "Eddie",
+            totalScreenTime = state.timeUsedTodayFormatted,
+            onNavigateToSettings = onNavigateToSettings
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        HourlyUsageChart(data = state.weeklyProgress)
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            StatCard(
+                modifier = Modifier.weight(1f),
+                label = "Screen Unlocks",
+                value = state.unlocksToday.toString()
+            )
+            StatCard(
+                modifier = Modifier.weight(1f),
+                label = "App Launches",
+                value = state.swipesToday.toString() // Assuming swipes == app launches for now
+            )
+             StatCard(
+                modifier = Modifier.weight(1f),
+                label = "Goal",
+                value = "80%" // Placeholder
+            )
         }
     }
 }
@@ -123,89 +144,6 @@ private fun DashboardContent(
                 .height(160.dp),
             onBarClicked = onBarSelected
         )
-fun DashboardContent(
-    uiState: DashboardUiState,
-    onNavigateToSettings: () -> Unit,
-    onLogout: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text("Unswipe Dashboard", style = MaterialTheme.typography.headlineMedium)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Today's Stats
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("Today's Usage", style = MaterialTheme.typography.titleMedium)
-                Text("Time Used: ${uiState.timeUsedTodayFormatted}")
-                Text("Time Remaining: ${uiState.timeRemainingFormatted}")
-                LinearProgressIndicator(
-                    progress = uiState.usagePercentage,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Text("Swipes: ${uiState.swipesToday}")
-                Text("Unlocks: ${uiState.unlocksToday}")
-            }
-        }
-
-        // Current Streak
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text("Current Streak: ${uiState.currentStreak} days", style = MaterialTheme.typography.titleMedium)
-            }
-        }
-
-        // Weekly Progress
-        Text("Weekly Progress", style = MaterialTheme.typography.titleMedium)
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            items(uiState.weeklyProgress) { daySummary ->
-                DayProgressView(daySummary)
-            }
-        }
-
-        Spacer(modifier = Modifier.weight(1f)) // Pushes content below to the bottom
-
-        // Prompts
-        if (uiState.showUsagePermissionPrompt) {
-            Text(
-                "Usage permission needed for accurate tracking.",
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-            // TODO: Add a button to navigate to permission settings
-        }
-        if (uiState.showAccessibilityPrompt) {
-            Text(
-                "Accessibility service needed for swipe detection.",
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-            // TODO: Add a button to navigate to accessibility settings
-        }
-
-        // Premium Status
-        Text(if (uiState.isPremium) "Premium User" else "Free User")
-
-
-        // Navigation Buttons
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Button(onClick = onNavigateToSettings) {
-                Text("Settings")
-            }
-            Button(onClick = onLogout) {
-                Text("Logout")
-            }
-        }
     }
 }
 

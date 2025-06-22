@@ -16,6 +16,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.unswipe.android.R // Assuming you have strings defined
 import com.unswipe.android.ui.theme.UnswipeTheme // Assuming Theme exists
+import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
+import androidx.compose.ui.graphics.asImageBitmap
+import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import com.unswipe.android.ui.components.ConfirmationDialog
 
 class ConfirmationActivity : ComponentActivity() {
 
@@ -45,8 +50,10 @@ class ConfirmationActivity : ComponentActivity() {
 
         setContent {
             UnswipeTheme { // Use your app's theme
-                ConfirmationDialogContent(
+                val appIcon = getAppIcon(packageName)
+                ConfirmationDialog(
                     appName = appName,
+                    appIcon = if (appIcon != null) rememberDrawablePainter(drawable = appIcon) else painterResource(id = R.drawable.ic_default_app), // Fallback icon
                     onConfirm = {
                         // User confirmed, allow original app launch attempt to proceed
                         setResult(Activity.RESULT_OK) // Signal confirmation (optional)
@@ -55,13 +62,7 @@ class ConfirmationActivity : ComponentActivity() {
                     onCancel = {
                         // User cancelled, block original app launch
                         setResult(Activity.RESULT_CANCELED) // Signal cancellation (optional)
-                        finish() // Close this confirmation activity
-                        // The Accessibility Service *should not* perform actions here.
-                        // Its job was to show this confirmation. Finishing this activity
-                        // effectively stops the user flow towards the target app.
-                        // Optional: Redirect to home screen explicitly? Can feel abrupt.
-                        // val homeIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        // startActivity(homeIntent)
+                        finish()
                     }
                 )
             }
@@ -82,6 +83,15 @@ class ConfirmationActivity : ComponentActivity() {
             setResult(Activity.RESULT_CANCELED)
         }
         super.onDestroy()
+    }
+
+    private fun getAppIcon(packageName: String): Drawable? {
+        return try {
+            packageManager.getApplicationIcon(packageName)
+        } catch (e: PackageManager.NameNotFoundException) {
+            // Return a default icon or null if the app is not found
+            null
+        }
     }
 }
 

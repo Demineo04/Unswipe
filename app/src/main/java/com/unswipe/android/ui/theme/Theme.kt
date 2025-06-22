@@ -50,35 +50,35 @@ private val LightColorScheme = lightColorScheme(
 
 // Define the dark color scheme using the colors from Color.kt
 private val DarkColorScheme = darkColorScheme(
-    primary = DarkPrimary,
-    onPrimary = DarkOnPrimary,
-    primaryContainer = DarkPrimaryContainer,
-    onPrimaryContainer = DarkOnPrimaryContainer,
-    secondary = DarkSecondary,
-    onSecondary = DarkOnSecondary,
-    secondaryContainer = DarkSecondaryContainer,
-    onSecondaryContainer = DarkOnSecondaryContainer,
-    tertiary = DarkTertiary,
-    onTertiary = DarkOnTertiary,
-    tertiaryContainer = DarkTertiaryContainer,
-    onTertiaryContainer = DarkOnTertiaryContainer,
-    error = DarkError,
-    onError = DarkOnError,
-    errorContainer = DarkErrorContainer,
-    onErrorContainer = DarkOnErrorContainer,
-    background = DarkBackground,
-    onBackground = DarkOnBackground,
-    surface = DarkSurface,
-    onSurface = DarkOnSurface,
-    surfaceVariant = DarkSurfaceVariant,
-    onSurfaceVariant = DarkOnSurfaceVariant,
-    outline = DarkOutline,
-    inverseOnSurface = DarkInverseOnSurface,
-    inverseSurface = DarkInverseSurface,
-    inversePrimary = DarkInversePrimary,
-    surfaceTint = DarkSurfaceTint,
-    outlineVariant = DarkOutlineVariant,
-    scrim = DarkScrim,
+    primary = UnswipePrimary,
+    onPrimary = UnswipeBlack,
+    primaryContainer = UnswipeSurface,
+    onPrimaryContainer = UnswipeTextPrimary,
+    secondary = UnswipeSecondary,
+    onSecondary = UnswipeBlack,
+    secondaryContainer = UnswipeSurface,
+    onSecondaryContainer = UnswipeTextPrimary,
+    tertiary = UnswipeSecondary,
+    onTertiary = UnswipeBlack,
+    tertiaryContainer = UnswipeSurface,
+    onTertiaryContainer = UnswipeTextPrimary,
+    error = UnswipeRed,
+    onError = UnswipeBlack,
+    errorContainer = UnswipeSurface,
+    onErrorContainer = UnswipeRed,
+    background = UnswipeBlack,
+    onBackground = UnswipeTextPrimary,
+    surface = UnswipeSurface,
+    onSurface = UnswipeTextPrimary,
+    surfaceVariant = UnswipeSurface,
+    onSurfaceVariant = UnswipeTextSecondary,
+    outline = UnswipeTextSecondary,
+    inverseOnSurface = UnswipeTextPrimary,
+    inverseSurface = UnswipeBlack,
+    inversePrimary = UnswipePrimary,
+    surfaceTint = UnswipePrimary,
+    outlineVariant = UnswipeTextSecondary,
+    scrim = UnswipeBlack.copy(alpha = 0.5f),
 )
 
 // Your main theme composable
@@ -101,8 +101,8 @@ fun UnswipeTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb() // Or Color.Transparent
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme // Use !darkTheme for light bars on light theme
+            window.statusBarColor = colorScheme.background.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
 

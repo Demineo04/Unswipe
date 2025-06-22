@@ -33,8 +33,18 @@ val LightSurfaceTint = Color(0xFF6750A4)
 val LightOutlineVariant = Color(0xFFCAC4D0)
 val LightScrim = Color(0xFF000000)
 
+// Unswipe Dark Theme Colors
+val UnswipeBlack = Color(0xFF121212)
+val UnswipeSurface = Color(0xFF1E1E1E)
+val UnswipeTextPrimary = Color(0xFFE0E0E0)
+val UnswipeTextSecondary = Color(0xFFB0B0B0)
+val UnswipePrimary = Color(0xFFC4B5FD) // Lavender
+val UnswipeSecondary = Color(0xFF66D9E8) // Teal
+val UnswipeGreen = Color(0xFF69F0AE)
+val UnswipeRed = Color(0xFFE57373)
+
 // Define your dark theme colors (examples) - CHOOSE CALMING COLORS
-val DarkPrimary = Color(0xFFD0BCFF) // Example Purple
+val DarkPrimary = UnswipePrimary
 val DarkOnPrimary = Color(0xFF381E72)
 val DarkPrimaryContainer = Color(0xFF4F378B)
 val DarkOnPrimaryContainer = Color(0xFFEADDFF)
@@ -50,12 +60,12 @@ val DarkError = Color(0xFFF2B8B5)
 val DarkOnError = Color(0xFF601410)
 val DarkErrorContainer = Color(0xFF8C1D18)
 val DarkOnErrorContainer = Color(0xFFF9DEDC)
-val DarkBackground = Color(0xFF1C1B1F)
-val DarkOnBackground = Color(0xFFE6E1E5)
-val DarkSurface = Color(0xFF1C1B1F)
-val DarkOnSurface = Color(0xFFE6E1E5)
+val DarkBackground = UnswipeBlack
+val DarkOnBackground = UnswipeTextPrimary
+val DarkSurface = UnswipeSurface
+val DarkOnSurface = UnswipeTextPrimary
 val DarkSurfaceVariant = Color(0xFF49454F)
-val DarkOnSurfaceVariant = Color(0xFFCAC4D0)
+val DarkOnSurfaceVariant = UnswipeTextSecondary
 val DarkOutline = Color(0xFF938F99)
 val DarkInverseOnSurface = Color(0xFF1C1B1F)
 val DarkInverseSurface = Color(0xFFE6E1E5)

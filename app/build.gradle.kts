@@ -106,6 +106,18 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.9.0") // Downgraded from 2.10.0
     implementation("androidx.hilt:hilt-work:1.2.0")
 
+    // Hilt Navigation Compose
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    // Number Picker for Time selection
+    implementation("com.chargemap.compose:numberpicker:1.0.3")
+
+    // Accompanist for Drawable Painting
+    implementation("com.google.accompanist:accompanist-drawablepainter:0.34.0")
+
+    // Material Design
+    implementation("androidx.compose.material:material-icons-extended")
+
     // Testing
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1") // Note: Very new

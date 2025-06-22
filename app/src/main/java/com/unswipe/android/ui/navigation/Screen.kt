@@ -2,16 +2,22 @@ package com.unswipe.android.ui.navigation
 
 // Defines the different screens/destinations in the app
 sealed class Screen(val route: String) {
-    object Auth : Screen("auth_graph") // Nested graph for auth flow
+    // Auth Flow
     object Login : Screen("login")
     object Register : Screen("register")
+    object ForgotPassword : Screen("forgot_password")
+    object OtpVerification : Screen("otp_verification")
 
-    object Main : Screen("main_graph") // Nested graph for main app content
+    // Onboarding Flow
+    object WakeupTime : Screen("wakeup_time")
+    object WorkTime : Screen("work_time")
+    object SleepTime : Screen("sleep_time")
+
+    // Main App
     object Dashboard : Screen("dashboard")
     object Settings : Screen("settings")
-    // Add other screens like AppSelection, Premium, etc.
     object AppSelection : Screen("app_selection")
-    object Premium : Screen("premium")
+    object Premium : Screen("premium") // For future use
 
     // Function to create routes with arguments (example)
     // fun withArgs(vararg args: String): String {

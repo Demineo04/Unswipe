@@ -11,20 +11,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.unswipe.android.ui.components.PrimaryButton
+import com.unswipe.android.ui.components.UnswipeTextField
+import androidx.compose.ui.text.input.KeyboardType
 
 @Composable
 fun LoginScreen(
-    viewModel: AuthViewModel, // Now this type is resolved
+    viewModel: AuthViewModel,
     onNavigateToRegister: () -> Unit,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    // This line should now work because AuthViewModel is imported
-    // AND getValue is imported via androidx.compose.runtime.*
     val authState by viewModel.authState.collectAsState()
 
-    // Navigate away automatically if login becomes successful
     LaunchedEffect(authState) {
         if (authState is AuthViewModel.AuthState.Authenticated) {
             onLoginSuccess()
@@ -34,58 +35,83 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
+            .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Welcome to Unswipe", style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(32.dp))
+        // Main content area
+        Column(
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                "Welcome Back!",
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                "Sign in to access your account",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 48.dp)
+            )
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+            UnswipeTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = "Email",
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            )
+            Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation(),
-            singleLine = true
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+            UnswipeTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = "Password",
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
 
-        // Handle loading and error states
-        when (val state = authState) {
-            is AuthViewModel.AuthState.Loading -> {
-                CircularProgressIndicator()
+            TextButton(
+                onClick = onNavigateToForgotPassword,
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Text("Forgot Password?")
             }
-            is AuthViewModel.AuthState.Error -> {
-                Text(state.message, color = MaterialTheme.colorScheme.error)
-                Spacer(modifier = Modifier.height(8.dp))
-                // Optionally add a dismiss button:
-                // Button(onClick = { viewModel.onEvent(AuthViewModel.AuthEvent.ClearError) }) { Text("OK") }
-            }
-            else -> { // Authenticated (handled by LaunchedEffect) or Unauthenticated
-                Button(
-                    onClick = { viewModel.onEvent(AuthViewModel.AuthEvent.Login(email, password)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = email.isNotBlank() && password.isNotBlank() // Basic validation
-                ) {
-                    Text("Login")
+            Spacer(modifier = Modifier.height(24.dp))
+
+            when (val state = authState) {
+                is AuthViewModel.AuthState.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
+                else -> {
+                    PrimaryButton(
+                        text = "Login",
+                        onClick = { viewModel.onEvent(AuthViewModel.AuthEvent.Login(email, password)) },
+                        enabled = email.isNotBlank() && password.isNotBlank()
+                    )
+                }
+            }
+             if (authState is AuthViewModel.AuthState.Error) {
+                Text(
+                    (authState as AuthViewModel.AuthState.Error).message,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TextButton(onClick = onNavigateToRegister) {
-            Text("Don't have an account? Register")
+        // Bottom navigation text
+        TextButton(
+            onClick = onNavigateToRegister,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(bottom = 32.dp)
+        ) {
+            Text("New to Unswipe? Sign up")
         }
     }
 }

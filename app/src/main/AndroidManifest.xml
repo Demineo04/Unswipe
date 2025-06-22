@@ -59,12 +59,10 @@
     <!-- Confirmation Dialog Activity -->
     <activity
         android:name=".ui.confirmation.ConfirmationActivity"
-        android:exported="false"
-        android:theme="@style/Theme.Unswipe.DialogActivity"
-    android:launchMode="singleTask"
-    android:excludeFromRecents="true"
-    />
-        <!-- Use a Dialog theme -->
+        android:theme="@style/Theme.AppCompat.Translucent"
+        android:exported="true"
+        android:launchMode="singleInstance"
+        android:excludeFromRecents="true" />
 
     <!-- Accessibility Service Declaration -->
     <service

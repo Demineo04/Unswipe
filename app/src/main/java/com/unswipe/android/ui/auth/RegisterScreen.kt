@@ -9,19 +9,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.unswipe.android.ui.components.PrimaryButton
+import com.unswipe.android.ui.components.UnswipeTextField
+import androidx.compose.ui.text.input.KeyboardType
 
 @Composable
 fun RegisterScreen(
-    viewModel: AuthViewModel, // Get from NavGraph
+    viewModel: AuthViewModel,
     onNavigateToLogin: () -> Unit,
-    onRegisterSuccess: () -> Unit // Callback to trigger navigation
+    onRegisterSuccess: () -> Unit
 ) {
+    var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") } // Added confirm password
+    var confirmPassword by remember { mutableStateOf("") }
     val authState by viewModel.authState.collectAsState()
 
-    // Navigate away automatically if registration leads to authenticated state
+    val passwordsMatch = password == confirmPassword
+
     LaunchedEffect(authState) {
         if (authState is AuthViewModel.AuthState.Authenticated) {
             onRegisterSuccess()
@@ -31,69 +36,93 @@ fun RegisterScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
+            .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Register for Unswipe", style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(32.dp))
+        Column(
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                "New to Unswipe",
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                "Say bye to mindless scrolling",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 48.dp)
+            )
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+            UnswipeTextField(
+                value = fullName,
+                onValueChange = { fullName = it },
+                label = "Full Name",
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            )
+            Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation(),
-            singleLine = true
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+            UnswipeTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = "Email",
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            )
+            Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField( // Confirm password field
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
-            label = { Text("Confirm Password") },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation(),
-            singleLine = true,
-            isError = password != confirmPassword && confirmPassword.isNotEmpty() // Basic validation
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+            UnswipeTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = "Password",
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
 
-        // Handle loading and error states
-        when (val state = authState) {
-            is AuthViewModel.AuthState.Loading -> {
-                CircularProgressIndicator()
-            }
-            is AuthViewModel.AuthState.Error -> {
-                Text(state.message, color = MaterialTheme.colorScheme.error)
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-            else -> { // Authenticated (handled by LaunchedEffect) or Unauthenticated
-                Button(
-                    onClick = { viewModel.onEvent(AuthViewModel.AuthEvent.Register(email, password)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    // Basic validation including password match
-                    enabled = email.isNotBlank() && password.isNotBlank() && password == confirmPassword
-                ) {
-                    Text("Register")
+            UnswipeTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                label = "Confirm Password",
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                isError = !passwordsMatch && confirmPassword.isNotEmpty(),
+                supportingText = if (!passwordsMatch && confirmPassword.isNotEmpty()) "Passwords do not match" else null
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+
+            when (val state = authState) {
+                is AuthViewModel.AuthState.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
+                else -> {
+                    PrimaryButton(
+                        text = "Sign Up",
+                        onClick = { viewModel.onEvent(AuthViewModel.AuthEvent.Register(email, password)) },
+                        enabled = fullName.isNotBlank() && email.isNotBlank() && password.isNotBlank() && passwordsMatch
+                    )
+                }
+            }
+
+            if (authState is AuthViewModel.AuthState.Error) {
+                Text(
+                    (authState as AuthViewModel.AuthState.Error).message,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
         }
 
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TextButton(onClick = onNavigateToLogin) {
-            Text("Already have an account? Login")
+        TextButton(
+            onClick = onNavigateToLogin,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(bottom = 32.dp)
+        ) {
+            Text("Already have an account? Log in")
         }
     }
 }
