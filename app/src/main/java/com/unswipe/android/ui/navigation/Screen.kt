@@ -6,7 +6,6 @@ sealed class Screen(val route: String) {
     object Login : Screen("login")
     object Register : Screen("register")
     object ForgotPassword : Screen("forgot_password")
-    object OtpVerification : Screen("otp_verification")
 
     // Onboarding Flow
     object WakeupTime : Screen("wakeup_time")

@@ -10,7 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import com.unswipe.android.ui.auth.AuthViewModel // Import ViewModel
 import com.unswipe.android.ui.auth.LoginScreen // Import Screen Composable
 import com.unswipe.android.ui.auth.RegisterScreen // Import Screen Composable
-import com.unswipe.android.ui.auth.OtpVerificationScreen
+
 import com.unswipe.android.ui.dashboard.DashboardScreen // Import Screen Composable
 import com.unswipe.android.ui.dashboard.DashboardViewModel // Import ViewModel
 import com.unswipe.android.domain.repository.OnboardingRepository
@@ -88,7 +88,8 @@ fun UnswipeNavGraph(
                 viewModel = authViewModel,
                 onNavigateToLogin = { navController.popBackStack() },
                 onRegisterSuccess = {
-                    navController.navigate(Screen.OtpVerification.route) {
+                    // Go directly to onboarding after successful registration
+                    navController.navigate(Screen.WakeupTime.route) {
                         popUpTo(Screen.Login.route) { inclusive = true }
                         launchSingleTop = true
                     }
@@ -102,18 +103,7 @@ fun UnswipeNavGraph(
             Text("Forgot Password Screen - Coming Soon!")
         }
 
-        // Define the OTP Verification screen
-        composable(Screen.OtpVerification.route) {
-            OtpVerificationScreen(
-                onNavigateToNext = {
-                    navController.navigate(Screen.WakeupTime.route) {
-                        popUpTo(Screen.OtpVerification.route) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                },
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
+
 
         // --- ONBOARDING ---
         composable(Screen.WakeupTime.route) {

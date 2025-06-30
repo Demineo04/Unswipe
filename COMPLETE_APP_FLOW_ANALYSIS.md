@@ -25,7 +25,6 @@
 #### **2. 🔐 Authentication Flow**
 - **Login Screen** - Email/password, social login, forgot password
 - **Register Screen** - Full registration form with validation
-- **OTP Verification** - Custom OTP input, auto-verification
 - **Forgot Password** - Placeholder (not fully implemented)
 
 #### **3. 🎯 Onboarding Flow** (Shows only once, saves data)
@@ -55,7 +54,6 @@
 #### **🔐 Authentication Package** (`ui/auth/`)
 1. **LoginScreen.kt** - Email/password login with social options
 2. **RegisterScreen.kt** - User registration with validation
-3. **OtpVerificationScreen.kt** - Custom OTP input component
 
 #### **🎯 Onboarding Package** (`ui/onboarding/`)
 1. **WakeupTimeScreen.kt** - Time picker for wake-up time
@@ -93,8 +91,7 @@
 4. **ConfirmationDialog.kt** - Enhanced confirmation UI
 5. **TextFields.kt** - Custom input fields
 6. **Buttons.kt** - Styled button variants
-7. **OtpTextField.kt** - OTP input component
-8. **TimePicker.kt** - Time selection component
+7. **TimePicker.kt** - Time selection component
 
 ### **❌ MISSING/PLACEHOLDER SCREENS**
 1. **Premium Screen** - Subscription setup (placeholder route exists)
@@ -213,7 +210,7 @@
 
 ```
 Splash → Auth Check
-         ├─ Login → Register → OTP → Onboarding
+         ├─ Login → Register → Onboarding
          └─ Dashboard ←─┐
                         │
 Dashboard ──────────────┼─ Settings ──── Daily Limit
@@ -227,7 +224,7 @@ Dashboard ──────────────┼─ Settings ────
 ### **🎯 Screen Routes Defined**
 ```kotlin
 // Auth Flow
-Screen.Login, Screen.Register, Screen.ForgotPassword, Screen.OtpVerification
+Screen.Login, Screen.Register, Screen.ForgotPassword
 
 // Onboarding Flow  
 Screen.WakeupTime, Screen.WorkTime, Screen.SleepTime
@@ -262,7 +259,7 @@ Screen.PermissionRequest, Screen.UsageStatsPermission, Screen.AccessibilityPermi
 - [ ] **Advanced Analytics** (premium feature)
 
 ### **🎯 TESTING PRIORITIES**
-1. **Authentication Flow** - Login, register, OTP
+1. **Authentication Flow** - Login, register (streamlined)
 2. **Onboarding Persistence** - Verify data saving, one-time display
 3. **Dashboard Functionality** - Usage tracking, charts, permission prompts
 4. **Confirmation System** - App launch interception, context-aware dialogs
