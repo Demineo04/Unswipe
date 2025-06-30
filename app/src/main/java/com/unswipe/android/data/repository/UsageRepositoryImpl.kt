@@ -225,28 +225,27 @@ import com.unswipe.android.data.services.SwipeAccessibilityService
         if (!hasUsageStatsPermission(context)) {
             return 0L // Return 0 if permission is not granted
         }
+        
         val endTime = System.currentTimeMillis()
+        val targetApps = setOf(
+            "com.zhiliaoapp.musically", // TikTok
+            "com.instagram.android",    // Instagram
+            "com.google.android.youtube" // YouTube
+        )
+        
         var totalUsageTime = 0L
         try {
             val stats = usageStatsManager.queryUsageStats(
-                UsageStatsManager.INTERVAL_DAILY, // Interval doesn't matter as much as start/end for specific app
+                UsageStatsManager.INTERVAL_DAILY,
                 startTime,
                 endTime
             )
             if (stats != null) {
                 for (usageStats in stats) {
-                    // Accumulate time for the app's own package
-                    if (usageStats.packageName == context.packageName) {
+                    // Sum usage time for target social media apps
+                    if (usageStats.packageName in targetApps) {
                         totalUsageTime += usageStats.totalTimeInForeground
                     }
-                    // Note: If you need to sum usage for OTHER apps, you'd iterate and sum here.
-                    // For Unswipe, we are primarily interested in its own usage or specific target apps.
-                    // The current subtask implies getting *the app's* usage time,
-                    // which might be for features like "how much time you spent in Unswipe itself".
-                    // If the goal was "total phone usage", this query would need to be broader
-                    // or sum all packages. Given the name "getUsageTimeFromManager" and its usage
-                    // within `getTodaysUsageStats` (which seems to be about Unswipe's own stats),
-                    // this implementation focuses on the app's own foreground time.
                 }
             }
         } catch (e: Exception) {

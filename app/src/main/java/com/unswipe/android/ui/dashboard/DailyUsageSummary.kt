@@ -1,10 +1,8 @@
 package com.unswipe.android.ui.dashboard
 
-// UI representation of daily summary data
+// UI representation of daily usage summary for the dashboard
 data class DailyUsageSummary(
-    // Define fields needed specifically for the UI
-    // Example: These might differ from the Domain model
-    val dayLabel: String, // e.g., "M", "T"
-    val usagePercentage: Float, // 0.0f to 1.0f
-    val isToday: Boolean = false
+    val dayLabel: String, // e.g., "Mon", "Tue", etc.
+    val usagePercentage: Float, // 0.0 to 1.0 representing percentage of daily limit used
+    val isToday: Boolean = false // Whether this represents today's usage
 )

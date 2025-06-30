@@ -1,8 +1,5 @@
 package com.unswipe.android.ui.dashboard
 
-// Import the UI version of DailyUsageSummary after you create it below
-// import com.unswipe.android.ui.dashboard.DailyUsageSummary
-
 import java.util.concurrent.TimeUnit
 
 // Represents the overall state for the Dashboard UI
@@ -14,6 +11,7 @@ data class DashboardUiState(
     val swipesToday: Int = 0,
     val unlocksToday: Int = 0,
     val weeklyProgress: List<DailyUsageSummary> = emptyList(), // Use UI model
+    val currentStreak: Int = 0,
     val isPremium: Boolean = false,
     val showUsagePermissionPrompt: Boolean = false,
     val showAccessibilityPrompt: Boolean = false,

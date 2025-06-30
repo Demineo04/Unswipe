@@ -1,7 +1,0 @@
-#Tue May 27 17:15:00 MSK 2025
-base.0=C\:\\Users\\kp_ss\\Code\\Unswipe\\Unswipe\\app\\build\\intermediates\\dex\\debugAndroidTest\\mergeExtDexDebugAndroidTest\\classes.dex
-base.1=C\:\\Users\\kp_ss\\Code\\Unswipe\\Unswipe\\app\\build\\intermediates\\dex\\debugAndroidTest\\mergeProjectDexDebugAndroidTest\\0\\classes.dex
-path.0=classes.dex
-path.1=0/classes.dex
-renamed.0=classes.dex
-renamed.1=classes2.dex

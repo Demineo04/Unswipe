@@ -18,6 +18,11 @@ sealed class Screen(val route: String) {
     object Settings : Screen("settings")
     object AppSelection : Screen("app_selection")
     object Premium : Screen("premium") // For future use
+    
+    // Permission Management
+    object PermissionRequest : Screen("permission_request")
+    object UsageStatsPermission : Screen("usage_stats_permission")
+    object AccessibilityPermission : Screen("accessibility_permission")
 
     // Function to create routes with arguments (example)
     // fun withArgs(vararg args: String): String {

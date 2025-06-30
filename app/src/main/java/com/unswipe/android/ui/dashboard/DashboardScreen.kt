@@ -2,17 +2,21 @@
 
 package com.unswipe.android.ui.dashboard
 
+import android.content.Intent
+import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.*
@@ -87,6 +91,16 @@ fun DashboardContent(
             totalScreenTime = state.timeUsedTodayFormatted,
             onNavigateToSettings = onNavigateToSettings
         )
+
+        // Permission Prompts
+        if (state.showUsagePermissionPrompt || state.showAccessibilityPrompt) {
+            PermissionPrompts(
+                showUsagePermissionPrompt = state.showUsagePermissionPrompt,
+                showAccessibilityPrompt = state.showAccessibilityPrompt,
+                modifier = Modifier.padding(horizontal = 24.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -179,6 +193,99 @@ private fun WeeklyUsageChart(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(text = summary.dayLabel)
+            }
+        }
+    }
+}
+
+@Composable
+private fun PermissionPrompts(
+    showUsagePermissionPrompt: Boolean,
+    showAccessibilityPrompt: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    
+    Column(modifier = modifier) {
+        if (showUsagePermissionPrompt) {
+            PermissionPromptCard(
+                title = "Usage Statistics Permission Required",
+                description = "Grant usage access to track your social media time",
+                onGrantPermission = {
+                    val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                    context.startActivity(intent)
+                }
+            )
+            
+            if (showAccessibilityPrompt) {
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+        }
+        
+        if (showAccessibilityPrompt) {
+            PermissionPromptCard(
+                title = "Accessibility Service Required",
+                description = "Enable accessibility service for app launch confirmations",
+                onGrantPermission = {
+                    val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                    context.startActivity(intent)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun PermissionPromptCard(
+    title: String,
+    description: String,
+    onGrantPermission: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Warning,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onErrorContainer,
+                modifier = Modifier.size(24.dp)
+            )
+            
+            Spacer(modifier = Modifier.width(12.dp))
+            
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onErrorContainer
+                )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onErrorContainer
+                )
+            }
+            
+            Spacer(modifier = Modifier.width(8.dp))
+            
+            OutlinedButton(
+                onClick = onGrantPermission,
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer
+                ),
+                border = androidx.compose.foundation.BorderStroke(
+                    1.dp,
+                    MaterialTheme.colorScheme.onErrorContainer
+                )
+            ) {
+                Text("Grant")
             }
         }
     }

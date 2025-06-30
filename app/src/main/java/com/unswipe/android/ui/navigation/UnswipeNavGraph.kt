@@ -23,6 +23,7 @@ import com.unswipe.android.ui.onboarding.WorkTimeScreen
 import com.unswipe.android.ui.onboarding.SleepTimeScreen
 import com.unswipe.android.ui.settings.AppSelectionScreen
 import com.unswipe.android.ui.settings.SettingsScreen
+import com.unswipe.android.ui.permissions.PermissionRequestScreen
 
 // Import other ViewModels and Screens as you create them (e.g., Settings)
 // import com.unswipe.android.ui.settings.SettingsScreen
@@ -123,11 +124,21 @@ fun UnswipeNavGraph(
         composable(Screen.SleepTime.route) {
             SleepTimeScreen(
                 onNavigateToNext = {
+                    navController.navigate(Screen.PermissionRequest.route)
+                }
+            )
+        }
+
+        // --- PERMISSIONS ---
+        composable(Screen.PermissionRequest.route) {
+            PermissionRequestScreen(
+                onNavigateNext = {
                     navController.navigate(Screen.Dashboard.route) {
                         popUpTo(Screen.Login.route) { inclusive = true } // Clear the entire auth/onboarding back stack
                         launchSingleTop = true
                     }
-                }
+                },
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 
