@@ -8,20 +8,23 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.unswipe.android.R // Assuming you have strings defined
 import com.unswipe.android.ui.theme.UnswipeTheme // Assuming Theme exists
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import androidx.compose.ui.graphics.asImageBitmap
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
-import com.unswipe.android.ui.components.ConfirmationDialog
+import com.unswipe.android.ui.components.EnhancedConfirmationDialog
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ConfirmationActivity : ComponentActivity() {
 
     companion object {
@@ -43,25 +46,43 @@ class ConfirmationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val appName = intent.getStringExtra(EXTRA_APP_NAME) ?: "this app"
-        // val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME) // Use if needed
-
-        // Apply dialog theme via AndroidManifest.xml or programmatically before setContent
-        // See themes.xml example later
+        val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME) ?: ""
 
         setContent {
-            UnswipeTheme { // Use your app's theme
+            UnswipeTheme {
+                val viewModel: ConfirmationViewModel = hiltViewModel()
+                val uiState by viewModel.uiState.collectAsState()
+                
+                // Load app data when the activity starts
+                LaunchedEffect(appName, packageName) {
+                    if (packageName.isNotEmpty()) {
+                        viewModel.loadAppData(appName, packageName)
+                    }
+                }
+                
                 val appIcon = getAppIcon(packageName)
-                ConfirmationDialog(
-                    appName = appName,
-                    appIcon = if (appIcon != null) rememberDrawablePainter(drawable = appIcon) else painterResource(id = R.drawable.ic_default_app), // Fallback icon
+                
+                EnhancedConfirmationDialog(
+                    uiState = uiState,
+                    appIcon = if (appIcon != null) {
+                        rememberDrawablePainter(drawable = appIcon)
+                    } else {
+                        painterResource(id = R.drawable.ic_launcher_foreground) // Fallback icon
+                    },
                     onConfirm = {
-                        // User confirmed, allow original app launch attempt to proceed
-                        setResult(Activity.RESULT_OK) // Signal confirmation (optional)
-                        finish() // Close this confirmation activity
+                        viewModel.recordUserDecision(didProceed = true)
+                        setResult(Activity.RESULT_OK)
+                        finish()
                     },
                     onCancel = {
-                        // User cancelled, block original app launch
-                        setResult(Activity.RESULT_CANCELED) // Signal cancellation (optional)
+                        viewModel.recordUserDecision(didProceed = false)
+                        setResult(Activity.RESULT_CANCELED)
+                        finish()
+                    },
+                    onTakeBreak = {
+                        viewModel.recordUserDecision(didProceed = false)
+                        // TODO: Launch break activity or suggestions
+                        setResult(Activity.RESULT_CANCELED)
                         finish()
                     }
                 )
