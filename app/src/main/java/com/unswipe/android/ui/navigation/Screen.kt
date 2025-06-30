@@ -23,6 +23,9 @@ sealed class Screen(val route: String) {
     object PermissionRequest : Screen("permission_request")
     object UsageStatsPermission : Screen("usage_stats_permission")
     object AccessibilityPermission : Screen("accessibility_permission")
+    
+    // Settings Screens
+    object DailyLimit : Screen("daily_limit")
 
     // Function to create routes with arguments (example)
     // fun withArgs(vararg args: String): String {

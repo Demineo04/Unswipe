@@ -23,6 +23,7 @@ import com.unswipe.android.ui.onboarding.WorkTimeScreen
 import com.unswipe.android.ui.onboarding.SleepTimeScreen
 import com.unswipe.android.ui.settings.AppSelectionScreen
 import com.unswipe.android.ui.settings.SettingsScreen
+import com.unswipe.android.ui.settings.DailyLimitScreen
 import com.unswipe.android.ui.permissions.PermissionRequestScreen
 
 // Import other ViewModels and Screens as you create them (e.g., Settings)
@@ -163,6 +164,12 @@ fun UnswipeNavGraph(
             SettingsScreen(
                 onNavigateTo = { route -> navController.navigate(route) },
                 onLogout = { authViewModel.logout() }
+            )
+        }
+        
+        composable(Screen.DailyLimit.route) {
+            DailyLimitScreen(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }

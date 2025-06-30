@@ -104,7 +104,7 @@ fun DashboardContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        HourlyUsageChart(data = state.weeklyProgress)
+        WeeklyUsageChart(weeklyProgress = state.weeklyProgress)
 
         Spacer(modifier = Modifier.height(24.dp))
 
