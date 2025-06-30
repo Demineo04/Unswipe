@@ -1,9 +1,7 @@
 package com.unswipe.android.ui.navigation // Ensure package is correct
 
 // --- NECESSARY IMPORTS ---
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue // Needed for 'by collectAsState()' delegate
+import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -15,6 +13,7 @@ import com.unswipe.android.ui.auth.RegisterScreen // Import Screen Composable
 import com.unswipe.android.ui.auth.OtpVerificationScreen
 import com.unswipe.android.ui.dashboard.DashboardScreen // Import Screen Composable
 import com.unswipe.android.ui.dashboard.DashboardViewModel // Import ViewModel
+import com.unswipe.android.domain.repository.OnboardingRepository
 // Import your actual Screen definition:
 import com.unswipe.android.ui.navigation.Screen // <-- Ensure this points to your central Screen definition
 import androidx.compose.material3.Text
@@ -40,17 +39,28 @@ fun UnswipeNavGraph(
     // Use rememberNavController to keep track of backstack and state
     navController: NavHostController = rememberNavController(),
     // Get the AuthViewModel using Hilt - shared across auth screens and potentially needed here
-    authViewModel: AuthViewModel = hiltViewModel()
+    authViewModel: AuthViewModel = hiltViewModel(),
+    onboardingRepository: OnboardingRepository = hiltViewModel()
 ) {
     // Observe the authentication state from the AuthViewModel
     // 'getValue' import is needed for the 'by' keyword
     val authState by authViewModel.authState.collectAsState()
+    
+    // Check onboarding completion status
+    var isOnboardingComplete by remember { mutableStateOf<Boolean?>(null) }
+    
+    LaunchedEffect(authState) {
+        if (authState is AuthViewModel.AuthState.Authenticated) {
+            isOnboardingComplete = onboardingRepository.isOnboardingComplete()
+        }
+    }
 
-    // Determine the starting screen based on whether the user is authenticated
-    // Use the routes defined in the central Screen sealed class
-    val startDestination = when (authState) {
-        is AuthViewModel.AuthState.Authenticated -> Screen.Dashboard.route // Use route from central Screen.kt
-        else -> Screen.Login.route // Use route from central Screen.kt
+    // Determine the starting screen based on auth and onboarding status
+    val startDestination = when {
+        authState !is AuthViewModel.AuthState.Authenticated -> Screen.Login.route
+        isOnboardingComplete == false -> Screen.WakeupTime.route // Start onboarding
+        isOnboardingComplete == true -> Screen.Dashboard.route // Go to dashboard
+        else -> Screen.Login.route // Loading state, default to login
     }
 
     // NavHost defines the container for navigation
