@@ -4,6 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unswipe.android.domain.repository.UsageRepository
 import com.unswipe.android.domain.repository.SettingsRepository
+import com.unswipe.android.data.interventions.ContextualInterventionEngine
+import com.unswipe.android.data.notifications.ContextAwareNotificationEngine
+import com.unswipe.android.domain.model.InterventionDecision
+import com.unswipe.android.domain.model.InterventionUrgency
+import com.unswipe.android.domain.model.InterventionAction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +28,11 @@ data class ConfirmationUiState(
     val canBypass: Boolean = false,
     val usageMessage: String = "",
     val motivationalMessage: String = "",
+    val contextualTip: String = "",
+    val alternativeActivity: String = "",
+    val interventionUrgency: InterventionUrgency = InterventionUrgency.LOW,
+    val interventionAction: InterventionAction = InterventionAction.GENTLE_REMINDER,
+    val bypassReason: String = "",
     val error: String? = null
 ) {
     val todayUsageFormatted: String
@@ -40,7 +50,9 @@ data class ConfirmationUiState(
 @HiltViewModel
 class ConfirmationViewModel @Inject constructor(
     private val usageRepository: UsageRepository,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val interventionEngine: ContextualInterventionEngine,
+    private val notificationEngine: ContextAwareNotificationEngine
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ConfirmationUiState())
@@ -57,11 +69,24 @@ class ConfirmationViewModel @Inject constructor(
 
                 // Get today's usage for this specific app
                 val todayUsage = usageRepository.getAppUsageToday(packageName)
-                val dailyLimit = settingsRepository.getDailyLimitMillis().first()
-                val isPremium = settingsRepository.isPremium().first()
+                val dailyLimit = settingsRepository.getDailyLimitFlow().first()
+                val userSettings = settingsRepository.getUserSettings().first()
+                
+                // Get session count (simplified for now)
+                val sessionCount = getSessionCount(packageName)
+                
+                // Get contextual intervention decision
+                val interventionDecision = interventionEngine.shouldTriggerIntervention(
+                    packageName = packageName,
+                    currentUsage = todayUsage,
+                    sessionCount = sessionCount
+                )
+                
+                // Trigger notification if needed
+                notificationEngine.analyzeAndNotify(packageName, todayUsage, sessionCount)
 
                 val isOverLimit = todayUsage >= dailyLimit
-                val canBypass = isPremium || todayUsage < (dailyLimit * 0.5) // Premium users or under 50% limit can bypass
+                val isPremium = userSettings.isPremium
 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -69,9 +94,16 @@ class ConfirmationViewModel @Inject constructor(
                     dailyLimitMillis = dailyLimit,
                     isOverLimit = isOverLimit,
                     isPremium = isPremium,
-                    canBypass = canBypass,
-                    usageMessage = generateUsageMessage(appName, todayUsage, dailyLimit, isOverLimit),
+                    canBypass = interventionDecision.canBypass,
+                    usageMessage = interventionDecision.message.ifEmpty { 
+                        generateUsageMessage(appName, todayUsage, dailyLimit, isOverLimit) 
+                    },
                     motivationalMessage = generateMotivationalMessage(appName, todayUsage, dailyLimit),
+                    contextualTip = interventionDecision.contextualTip ?: "",
+                    alternativeActivity = interventionDecision.alternativeActivity ?: "",
+                    interventionUrgency = interventionDecision.urgency,
+                    interventionAction = interventionDecision.suggestedAction,
+                    bypassReason = interventionDecision.bypassReason ?: "",
                     error = null
                 )
             } catch (e: Exception) {
@@ -119,6 +151,12 @@ class ConfirmationViewModel @Inject constructor(
                 // Don't block the user flow if recording fails
             }
         }
+    }
+
+    private suspend fun getSessionCount(packageName: String): Int {
+        // This would ideally get the actual session count for today
+        // For now, return a placeholder value
+        return 1
     }
 
     private fun formatTime(millis: Long): String {
