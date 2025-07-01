@@ -15,6 +15,7 @@ import com.unswipe.android.domain.model.*
 import com.unswipe.android.domain.repository.UsageRepository
 import com.unswipe.android.domain.repository.SettingsRepository
 import com.unswipe.android.ui.MainActivity
+import com.unswipe.android.util.NotificationPermissionHelper
 import kotlinx.coroutines.flow.first
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -276,6 +277,11 @@ class ContextAwareNotificationEngine @Inject constructor(
     }
     
     private fun sendContextualNotification(insight: ContextualInsight) {
+        // Check if we have notification permission
+        if (!NotificationPermissionHelper.hasNotificationPermission(context)) {
+            return
+        }
+        
         val channelId = when (insight.severity) {
             InsightSeverity.HIGH -> CHANNEL_ID_WARNINGS
             InsightSeverity.MEDIUM -> CHANNEL_ID_INSIGHTS
@@ -379,8 +385,7 @@ class ContextAwareNotificationEngine @Inject constructor(
     
     private suspend fun getWorkTimeLimit(): Long {
         return try {
-            // This would be implemented in SettingsRepository
-            TimeUnit.MINUTES.toMillis(30) // Default 30 minutes during work
+            settingsRepository.getInterventionPreferences().workTimeLimit
         } catch (e: Exception) {
             TimeUnit.MINUTES.toMillis(30)
         }
@@ -391,7 +396,11 @@ class ContextAwareNotificationEngine @Inject constructor(
     }
     
     private suspend fun getSleepTime(): LocalTime {
-        return LocalTime.of(23, 0) // Default 11 PM
+        return try {
+            settingsRepository.getUserSchedule().sleepTime
+        } catch (e: Exception) {
+            LocalTime.of(23, 0) // Default 11 PM
+        }
     }
     
     private fun getTimeUntilBed(sleepTime: LocalTime): Long {

@@ -45,4 +45,21 @@ interface UsageDao {
 
     @Query("SELECT COUNT(*) FROM usage_events WHERE timestamp >= :startTimeMillis AND eventType = :eventType")
     suspend fun getEventCountSince(startTimeMillis: Long, eventType: String): Int
+
+    // Context-aware methods
+    
+    @Query("SELECT * FROM usage_events WHERE timestamp >= :startTime AND timestamp <= :endTime ORDER BY timestamp ASC")
+    suspend fun getEventsInRange(startTime: Long, endTime: Long): List<UsageEvent>
+    
+    @Query("SELECT COUNT(*) FROM usage_events WHERE timestamp >= :startTimeMillis AND eventType = :eventType AND packageName = :packageName")
+    suspend fun getEventCountSince(startTimeMillis: Long, eventType: String, packageName: String): Int
+    
+    @Query("SELECT COUNT(*) FROM usage_events WHERE timestamp >= :startTime AND timestamp <= :endTime AND eventType = :eventType AND packageName = :packageName")
+    suspend fun getEventCountInRange(startTime: Long, endTime: Long, eventType: String, packageName: String): Int
+    
+    @Query("SELECT * FROM usage_events WHERE packageName = :packageName AND timestamp >= :startTime ORDER BY timestamp DESC")
+    suspend fun getEventsForApp(packageName: String, startTime: Long): List<UsageEvent>
+    
+    @Query("SELECT * FROM usage_events WHERE eventType = :eventType AND timestamp >= :startTime ORDER BY timestamp DESC")
+    suspend fun getEventsByType(eventType: String, startTime: Long): List<UsageEvent>
 } 

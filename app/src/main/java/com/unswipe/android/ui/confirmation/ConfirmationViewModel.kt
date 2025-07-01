@@ -72,8 +72,8 @@ class ConfirmationViewModel @Inject constructor(
                 val dailyLimit = settingsRepository.getDailyLimitFlow().first()
                 val userSettings = settingsRepository.getUserSettings().first()
                 
-                // Get session count (simplified for now)
-                val sessionCount = getSessionCount(packageName)
+                // Get session count from repository
+                val sessionCount = usageRepository.getSessionCountToday(packageName)
                 
                 // Get contextual intervention decision
                 val interventionDecision = interventionEngine.shouldTriggerIntervention(
@@ -153,11 +153,7 @@ class ConfirmationViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getSessionCount(packageName: String): Int {
-        // This would ideally get the actual session count for today
-        // For now, return a placeholder value
-        return 1
-    }
+
 
     private fun formatTime(millis: Long): String {
         val hours = TimeUnit.MILLISECONDS.toHours(millis)

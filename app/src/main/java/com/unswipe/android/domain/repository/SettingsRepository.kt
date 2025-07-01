@@ -1,6 +1,8 @@
 package com.unswipe.android.domain.repository
 
-import com.unswipe.android.domain.model.UserSettings // Assuming you created this in domain/model
+import com.unswipe.android.domain.model.UserSettings
+import com.unswipe.android.domain.model.UserSchedule
+import com.unswipe.android.domain.model.InterventionPreferences
 import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {
@@ -61,5 +63,42 @@ interface SettingsRepository {
      * Gets the current streak of days meeting usage goals.
      */
     suspend fun getCurrentStreak(): Int
+
+    // Context-aware methods
+    
+    /**
+     * Gets the user's daily schedule for context detection.
+     */
+    suspend fun getUserSchedule(): UserSchedule
+    
+    /**
+     * Updates the user's daily schedule.
+     */
+    suspend fun updateUserSchedule(schedule: UserSchedule)
+    
+    /**
+     * Gets the user's intervention preferences.
+     */
+    suspend fun getInterventionPreferences(): InterventionPreferences
+    
+    /**
+     * Updates the user's intervention preferences.
+     */
+    suspend fun updateInterventionPreferences(preferences: InterventionPreferences)
+    
+    /**
+     * Gets work WiFi SSIDs for location context detection.
+     */
+    suspend fun getWorkWifiSSIDs(): Set<String>
+    
+    /**
+     * Adds a work WiFi SSID for location detection.
+     */
+    suspend fun addWorkWifiSSID(ssid: String)
+    
+    /**
+     * Removes a work WiFi SSID.
+     */
+    suspend fun removeWorkWifiSSID(ssid: String)
 
 }

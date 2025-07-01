@@ -88,9 +88,7 @@ class ContextDetectionEngine @Inject constructor(
     
     private suspend fun getUserSchedule(): UserSchedule {
         return try {
-            // This would need to be implemented in SettingsRepository
-            // For now, return default schedule
-            UserSchedule.Default
+            settingsRepository.getUserSchedule()
         } catch (e: Exception) {
             UserSchedule.Default
         }
@@ -197,8 +195,10 @@ class ContextDetectionEngine @Inject constructor(
     }
     
     private suspend fun getWorkWifiSSIDs(): Set<String> {
-        // This would be stored in user preferences
-        // For now, return empty set
-        return emptySet()
+        return try {
+            settingsRepository.getWorkWifiSSIDs()
+        } catch (e: Exception) {
+            emptySet()
+        }
     }
 }

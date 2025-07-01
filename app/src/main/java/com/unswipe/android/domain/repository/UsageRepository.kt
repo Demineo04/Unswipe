@@ -1,9 +1,10 @@
 package com.unswipe.android.domain.repository
 
 import com.unswipe.android.domain.model.DailyUsageSummary
-import com.unswipe.android.domain.model.TodayStats       // Adjust import if needed
-import com.unswipe.android.data.model.UsageEvent // Or a domain model equivalent
-import com.unswipe.android.domain.model.DashboardData // Assuming you created this in domain/model
+import com.unswipe.android.domain.model.TodayStats
+import com.unswipe.android.data.model.UsageEvent
+import com.unswipe.android.domain.model.DashboardData
+import com.unswipe.android.domain.model.ContextualUsageEvent
 import kotlinx.coroutines.flow.Flow
 
 interface UsageRepository {
@@ -53,5 +54,42 @@ interface UsageRepository {
         wasBlocked: Boolean,
         usageAtTime: Long
     )
+
+    // Context-aware methods
+    
+    /**
+     * Gets usage events within a time range for pattern analysis.
+     */
+    suspend fun getUsageEventsInRange(startTime: Long, endTime: Long): List<UsageEvent>
+    
+    /**
+     * Logs a contextual usage event with context information.
+     */
+    suspend fun logContextualUsageEvent(event: ContextualUsageEvent)
+    
+    /**
+     * Gets the number of app launch sessions today for a specific app.
+     */
+    suspend fun getSessionCountToday(packageName: String): Int
+    
+    /**
+     * Gets work-time usage for a specific app.
+     */
+    suspend fun getWorkDayUsage(packageName: String): Long
+    
+    /**
+     * Gets average work-time usage for a specific app over the last 30 days.
+     */
+    suspend fun getAverageWorkUsage(packageName: String): Long
+    
+    /**
+     * Gets the number of times an app was opened during work hours today.
+     */
+    suspend fun getWorkOpenCount(packageName: String): Int
+    
+    /**
+     * Checks if there are frequent work interruptions for an app.
+     */
+    suspend fun isFrequentWorkInterruption(packageName: String): Boolean
 
 }
