@@ -40,13 +40,22 @@
     <!-- Theme for the Confirmation Activity to appear as a Dialog -->
     <style name="Theme.Unswipe.DialogActivity" parent="Theme.Material3.DayNight.Dialog.Alert">
          <!-- Inherits dialog styling from Material 3 -->
-         <!-- Optional customizations: -->
-         <!-- <item name="android:windowIsTranslucent">true</item> -->
-         <!-- <item name="android:windowBackground">@android:color/transparent</item> -->
-         <!-- <item name="android:windowContentOverlay">@null</item> -->
-         <!-- <item name="android:windowNoTitle">true</item> -->
-         <!-- <item name="android:windowIsFloating">true</item> -->
-         <!-- <item name="android:backgroundDimEnabled">true</item> -->
+         <!-- Make it translucent and dialog-like -->
+         <item name="android:windowIsTranslucent">true</item>
+         <item name="android:windowBackground">@android:color/transparent</item>
+         <item name="android:windowContentOverlay">@null</item>
+         <item name="android:windowNoTitle">true</item>
+         <item name="android:windowIsFloating">true</item>
+         <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <!-- Alternative translucent theme if needed -->
+    <style name="Theme.AppCompat.Translucent" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
     </style>
 
 </resources> 
