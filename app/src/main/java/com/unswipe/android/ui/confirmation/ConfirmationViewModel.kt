@@ -4,6 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unswipe.android.domain.repository.UsageRepository
 import com.unswipe.android.domain.repository.SettingsRepository
+import com.unswipe.android.domain.repository.PremiumRepository
+import com.unswipe.android.data.interventions.ContextualInterventionEngine
+import com.unswipe.android.data.notifications.ContextAwareNotificationEngine
+import com.unswipe.android.data.premium.SmartFocusModeManager
+import com.unswipe.android.domain.model.InterventionDecision
+import com.unswipe.android.domain.model.InterventionUrgency
+import com.unswipe.android.domain.model.InterventionAction
+import com.unswipe.android.domain.model.PremiumFeature
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +31,19 @@ data class ConfirmationUiState(
     val canBypass: Boolean = false,
     val usageMessage: String = "",
     val motivationalMessage: String = "",
-    val error: String? = null
+    val contextualTip: String = "",
+    val alternativeActivity: String = "",
+    val interventionUrgency: InterventionUrgency = InterventionUrgency.LOW,
+    val interventionAction: InterventionAction = InterventionAction.GENTLE_REMINDER,
+    val bypassReason: String = "",
+    val error: String? = null,
+    // Premium features
+    val bypassCreditsAvailable: Int = 0,
+    val canUseBypassCredit: Boolean = false,
+    val focusModeActive: String? = null,
+    val canUseEmergencyBypass: Boolean = false,
+    val customMessage: String? = null,
+    val showUpgradePrompt: Boolean = false
 ) {
     val todayUsageFormatted: String
         get() = formatTime(todayUsageMillis)
@@ -40,7 +60,11 @@ data class ConfirmationUiState(
 @HiltViewModel
 class ConfirmationViewModel @Inject constructor(
     private val usageRepository: UsageRepository,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val premiumRepository: PremiumRepository,
+    private val interventionEngine: ContextualInterventionEngine,
+    private val notificationEngine: ContextAwareNotificationEngine,
+    private val focusModeManager: SmartFocusModeManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ConfirmationUiState())
@@ -57,21 +81,72 @@ class ConfirmationViewModel @Inject constructor(
 
                 // Get today's usage for this specific app
                 val todayUsage = usageRepository.getAppUsageToday(packageName)
-                val dailyLimit = settingsRepository.getDailyLimitMillis().first()
-                val isPremium = settingsRepository.isPremium().first()
+                val dailyLimit = settingsRepository.getDailyLimitFlow().first()
+                val userSettings = settingsRepository.getUserSettings().first()
+                
+                // Get session count from repository
+                val sessionCount = usageRepository.getSessionCountToday(packageName)
+                
+                // Get premium subscription info
+                val premiumSubscription = premiumRepository.getPremiumSubscription()
+                val isPremium = premiumSubscription.isActive && !premiumSubscription.isExpired()
+                
+                // Get bypass credits if premium
+                val bypassCredits = if (isPremium) premiumRepository.getBypassCredits() else null
+                
+                // Check focus mode status
+                val activeFocusMode = focusModeManager.getActiveFocusMode()
+                val isBlockedByFocusMode = focusModeManager.isAppBlockedByFocusMode(packageName)
+                val focusModeMessage = if (isBlockedByFocusMode) {
+                    focusModeManager.getFocusModeInterventionMessage(packageName)
+                } else null
+                
+                // Get custom intervention message if premium
+                val customMessages = if (isPremium) {
+                    premiumRepository.getCustomInterventionMessages()
+                } else emptyMap()
+                
+                // Get contextual intervention decision
+                val interventionDecision = interventionEngine.shouldTriggerIntervention(
+                    packageName = packageName,
+                    currentUsage = todayUsage,
+                    sessionCount = sessionCount
+                )
+                
+                // Trigger notification if needed
+                notificationEngine.analyzeAndNotify(packageName, todayUsage, sessionCount)
 
                 val isOverLimit = todayUsage >= dailyLimit
-                val canBypass = isPremium || todayUsage < (dailyLimit * 0.5) // Premium users or under 50% limit can bypass
 
+                // Determine final intervention message
+                val finalMessage = when {
+                    focusModeMessage != null -> focusModeMessage
+                    customMessages.containsKey(packageName) -> customMessages[packageName]!!
+                    interventionDecision.message.isNotEmpty() -> interventionDecision.message
+                    else -> generateUsageMessage(appName, todayUsage, dailyLimit, isOverLimit)
+                }
+                
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     todayUsageMillis = todayUsage,
                     dailyLimitMillis = dailyLimit,
                     isOverLimit = isOverLimit,
                     isPremium = isPremium,
-                    canBypass = canBypass,
-                    usageMessage = generateUsageMessage(appName, todayUsage, dailyLimit, isOverLimit),
+                    canBypass = interventionDecision.canBypass && !isBlockedByFocusMode,
+                    usageMessage = finalMessage,
                     motivationalMessage = generateMotivationalMessage(appName, todayUsage, dailyLimit),
+                    contextualTip = interventionDecision.contextualTip ?: "",
+                    alternativeActivity = interventionDecision.alternativeActivity ?: "",
+                    interventionUrgency = interventionDecision.urgency,
+                    interventionAction = interventionDecision.suggestedAction,
+                    bypassReason = interventionDecision.bypassReason ?: "",
+                    // Premium features
+                    bypassCreditsAvailable = bypassCredits?.available ?: 0,
+                    canUseBypassCredit = bypassCredits?.canUseBypass == true && isPremium,
+                    focusModeActive = activeFocusMode?.name,
+                    canUseEmergencyBypass = focusModeManager.canUseEmergencyBypass() && isPremium,
+                    customMessage = customMessages[packageName],
+                    showUpgradePrompt = !isPremium && (isOverLimit || sessionCount > 10),
                     error = null
                 )
             } catch (e: Exception) {
@@ -120,6 +195,65 @@ class ConfirmationViewModel @Inject constructor(
             }
         }
     }
+    
+    fun useBypassCredit() {
+        viewModelScope.launch {
+            try {
+                val success = premiumRepository.useBypassCredit()
+                if (success) {
+                    val updatedCredits = premiumRepository.getBypassCredits()
+                    _uiState.value = _uiState.value.copy(
+                        bypassCreditsAvailable = updatedCredits.available,
+                        canUseBypassCredit = updatedCredits.canUseBypass,
+                        canBypass = true
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = "Failed to use bypass credit: ${e.localizedMessage}"
+                )
+            }
+        }
+    }
+    
+    fun useEmergencyBypass() {
+        viewModelScope.launch {
+            try {
+                if (focusModeManager.canUseEmergencyBypass()) {
+                    _uiState.value = _uiState.value.copy(
+                        canBypass = true,
+                        bypassReason = "Emergency bypass used"
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = "Failed to use emergency bypass: ${e.localizedMessage}"
+                )
+            }
+        }
+    }
+    
+    fun deactivateFocusMode() {
+        viewModelScope.launch {
+            try {
+                focusModeManager.deactivateFocusMode()
+                _uiState.value = _uiState.value.copy(
+                    focusModeActive = null,
+                    canBypass = true
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = "Failed to deactivate focus mode: ${e.localizedMessage}"
+                )
+            }
+        }
+    }
+    
+    fun dismissUpgradePrompt() {
+        _uiState.value = _uiState.value.copy(showUpgradePrompt = false)
+    }
+
+
 
     private fun formatTime(millis: Long): String {
         val hours = TimeUnit.MILLISECONDS.toHours(millis)

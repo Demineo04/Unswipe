@@ -300,4 +300,114 @@ import com.unswipe.android.data.services.SwipeAccessibilityService
             // Don't throw - this shouldn't block the user flow
         }
     }
+
+    // Context-aware methods implementation
+    
+    override suspend fun getUsageEventsInRange(startTime: Long, endTime: Long): List<UsageEvent> {
+        return try {
+            usageDao.getEventsInRange(startTime, endTime)
+        } catch (e: Exception) {
+            println("Error getting usage events in range: ${e.message}")
+            emptyList()
+        }
+    }
+    
+    override suspend fun logContextualUsageEvent(event: ContextualUsageEvent) {
+        try {
+            // Convert contextual event to regular usage event for storage
+            val usageEvent = UsageEvent(
+                id = event.id,
+                packageName = event.packageName,
+                eventType = event.eventType,
+                timestamp = event.timestamp,
+                additionalData = buildString {
+                    append("context:${event.contextType}")
+                    append(",location:${event.locationContext}")
+                    append(",duration:${event.sessionDuration}")
+                    append(",battery:${event.deviceState.batteryLevel}")
+                    append(",charging:${event.deviceState.isCharging}")
+                    append(",wifi:${event.deviceState.isConnectedToWifi}")
+                    event.additionalData?.let { append(",extra:$it") }
+                }
+            )
+            
+            usageDao.insertUsageEvent(usageEvent)
+        } catch (e: Exception) {
+            println("Error logging contextual usage event: ${e.message}")
+        }
+    }
+    
+    override suspend fun getSessionCountToday(packageName: String): Int {
+        return try {
+            val todayStart = getStartOfDayInMillis()
+            usageDao.getEventCountSince(todayStart, "APP_LAUNCH", packageName)
+        } catch (e: Exception) {
+            println("Error getting session count: ${e.message}")
+            0
+        }
+    }
+    
+    override suspend fun getWorkDayUsage(packageName: String): Long {
+        return try {
+            val todayStart = getStartOfDayInMillis()
+            val todayEnd = todayStart + TimeUnit.DAYS.toMillis(1)
+            
+            // Get usage stats for work hours (9 AM to 5 PM)
+            val workStartTime = todayStart + TimeUnit.HOURS.toMillis(9)
+            val workEndTime = todayStart + TimeUnit.HOURS.toMillis(17)
+            
+            if (hasUsageStatsPermission(context)) {
+                val stats = usageStatsManager.queryUsageStats(
+                    UsageStatsManager.INTERVAL_DAILY,
+                    workStartTime,
+                    workEndTime
+                )
+                
+                stats?.find { it.packageName == packageName }?.totalTimeInForeground ?: 0L
+            } else {
+                0L
+            }
+        } catch (e: Exception) {
+            println("Error getting work day usage: ${e.message}")
+            0L
+        }
+    }
+    
+    override suspend fun getAverageWorkUsage(packageName: String): Long {
+        return try {
+            val thirtyDaysAgo = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30)
+            val now = System.currentTimeMillis()
+            
+            // This is a simplified calculation
+            // In a real implementation, you'd calculate work hours for each day
+            val totalWorkUsage = getWorkDayUsage(packageName) * 30 // Simplified
+            totalWorkUsage / 30
+        } catch (e: Exception) {
+            println("Error getting average work usage: ${e.message}")
+            0L
+        }
+    }
+    
+    override suspend fun getWorkOpenCount(packageName: String): Int {
+        return try {
+            val todayStart = getStartOfDayInMillis()
+            val workStartTime = todayStart + TimeUnit.HOURS.toMillis(9)
+            val workEndTime = todayStart + TimeUnit.HOURS.toMillis(17)
+            
+            usageDao.getEventCountInRange(workStartTime, workEndTime, "APP_LAUNCH", packageName)
+        } catch (e: Exception) {
+            println("Error getting work open count: ${e.message}")
+            0
+        }
+    }
+    
+    override suspend fun isFrequentWorkInterruption(packageName: String): Boolean {
+        return try {
+            val workOpenCount = getWorkOpenCount(packageName)
+            workOpenCount > 5 // More than 5 opens during work hours
+        } catch (e: Exception) {
+            println("Error checking frequent work interruption: ${e.message}")
+            false
+        }
+    }
 }
