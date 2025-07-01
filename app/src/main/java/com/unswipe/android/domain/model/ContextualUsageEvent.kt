@@ -32,7 +32,7 @@ data class UsagePattern(
  * Types of usage patterns that can be detected
  */
 enum class PatternType {
-    BINGE_USAGE,        // Long sessions (>2 hours)
+    BINGE_USAGE,        // Long sessions (>30 minutes)
     STRESS_USAGE,       // Increased usage during stress periods
     PROCRASTINATION,    // Usage during work hours
     IMPULSE_USAGE,      // Frequent short sessions

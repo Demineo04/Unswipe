@@ -37,11 +37,11 @@ class UsagePatternAnalyzer @Inject constructor(
     }
     
     /**
-     * Detects binge usage patterns (long sessions > 2 hours)
+     * Detects binge usage patterns (long sessions > 30 minutes)
      */
     private fun detectBingeUsagePattern(events: List<UsageEvent>): UsagePattern? {
         val sessions = groupEventsIntoSessions(events)
-        val longSessions = sessions.filter { it.duration > TimeUnit.HOURS.toMillis(2) }
+        val longSessions = sessions.filter { it.duration > TimeUnit.MINUTES.toMillis(30) }
         
         if (longSessions.size >= 3) { // 3 or more long sessions in 30 days
             val affectedApps = longSessions.map { it.packageName }.distinct()
@@ -121,7 +121,7 @@ class UsagePatternAnalyzer @Inject constructor(
             .groupBy { getDateFromTimestamp(it.timestamp) }
             .mapValues { it.value.size }
         
-        val highLaunchDays = dailyLaunchCounts.values.count { it > 50 } // More than 50 launches per day
+        val highLaunchDays = dailyLaunchCounts.values.count { it > 20 } // More than 20 launches per day
         
         if (highLaunchDays > 7) { // More than a week of high launch activity
             val avgLaunches = dailyLaunchCounts.values.average()
@@ -266,7 +266,7 @@ class UsagePatternAnalyzer @Inject constructor(
     
     private fun calculateBingeConfidence(sessionCount: Int, avgDuration: Double): Double {
         val sessionScore = (sessionCount / 10.0).coerceAtMost(1.0)
-        val durationScore = (avgDuration / TimeUnit.HOURS.toMillis(4)).coerceAtMost(1.0)
+        val durationScore = (avgDuration / TimeUnit.HOURS.toMillis(2)).coerceAtMost(1.0) // Changed from 4 hours to 2 hours baseline
         return (sessionScore + durationScore) / 2.0
     }
     
