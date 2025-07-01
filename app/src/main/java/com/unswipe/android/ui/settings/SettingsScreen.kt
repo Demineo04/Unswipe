@@ -35,7 +35,7 @@ fun SettingsScreen(
             item { SettingsItem(title = "Edit Profile") { /* onNavigateTo("edit_profile") */ } }
             item { SettingsItem(title = "Reset Password") { /* onNavigateTo("reset_password") */ } }
             item { SettingsItem(title = "Daily Limit") { onNavigateTo(Screen.DailyLimit.route) } }
-            item { SettingsItem(title = "App Blocker") { onNavigateTo("app_selection") } }
+            item { SettingsItem(title = "App Selection") { onNavigateTo(Screen.AppSelection.route) } }
             item { SettingsItem(title = "Upgrade to Premium") { /* onNavigateTo("premium") */ } }
             item { SettingsItem(title = "Manage Subscription") { /* onNavigateTo("subscription") */ } }
             item { Divider(modifier = Modifier.padding(vertical = 8.dp)) }

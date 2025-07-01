@@ -157,7 +157,9 @@ fun UnswipeNavGraph(
 
         // --- SETTINGS ---
         composable(Screen.AppSelection.route) {
-            AppSelectionScreen()
+            AppSelectionScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
 
         composable(Screen.Settings.route) {
