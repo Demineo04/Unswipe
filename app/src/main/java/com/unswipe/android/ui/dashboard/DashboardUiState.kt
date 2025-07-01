@@ -15,7 +15,11 @@ data class DashboardUiState(
     val isPremium: Boolean = false,
     val showUsagePermissionPrompt: Boolean = false,
     val showAccessibilityPrompt: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val monthlyTotal: String = "0h",
+    val previousMonthTotal: String? = null,
+    val monthlyChange: Float? = null,
+    val monthlyGoalProgress: Float = 0f
 ) {
     companion object {
         // Provides a default loading state

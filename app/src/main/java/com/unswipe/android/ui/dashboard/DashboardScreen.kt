@@ -35,6 +35,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.unswipe.android.ui.components.DashboardHeader
 import com.unswipe.android.ui.components.HourlyUsageChart
 import com.unswipe.android.ui.components.StatCard
+import com.unswipe.android.ui.components.MonthlyStatsCard
+import com.unswipe.android.ui.components.MonthlyUsageChart
 
 @Composable
 fun DashboardScreen(
@@ -128,6 +130,42 @@ fun DashboardContent(
                 modifier = Modifier.weight(1f),
                 label = "Goal",
                 value = "80%" // Placeholder
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Monthly Stats Section
+        Text(
+            text = "Monthly Overview",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(horizontal = 24.dp)
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            MonthlyStatsCard(
+                modifier = Modifier.weight(1f),
+                label = "This Month",
+                currentValue = state.monthlyTotal,
+                previousValue = state.previousMonthTotal,
+                percentageChange = state.monthlyChange,
+                isImprovement = false // Less usage is better
+            )
+            MonthlyStatsCard(
+                modifier = Modifier.weight(1f),
+                label = "Monthly Goal",
+                currentValue = "${state.monthlyGoalProgress}%",
+                previousValue = null,
+                percentageChange = null,
+                isImprovement = state.monthlyGoalProgress <= 100f
             )
         }
     }
