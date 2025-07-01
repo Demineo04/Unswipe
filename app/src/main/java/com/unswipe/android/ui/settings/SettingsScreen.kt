@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.unswipe.android.ui.navigation.Screen
 
 @Composable
 fun SettingsScreen(
@@ -33,6 +34,7 @@ fun SettingsScreen(
             }
             item { SettingsItem(title = "Edit Profile") { /* onNavigateTo("edit_profile") */ } }
             item { SettingsItem(title = "Reset Password") { /* onNavigateTo("reset_password") */ } }
+            item { SettingsItem(title = "Daily Limit") { onNavigateTo(Screen.DailyLimit.route) } }
             item { SettingsItem(title = "App Blocker") { onNavigateTo("app_selection") } }
             item { SettingsItem(title = "Upgrade to Premium") { /* onNavigateTo("premium") */ } }
             item { SettingsItem(title = "Manage Subscription") { /* onNavigateTo("subscription") */ } }

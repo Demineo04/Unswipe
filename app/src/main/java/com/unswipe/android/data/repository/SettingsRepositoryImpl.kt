@@ -20,7 +20,14 @@ class SettingsRepositoryImpl @Inject constructor(
         val DAILY_LIMIT_KEY = longPreferencesKey("daily_limit_millis")
         val IS_PREMIUM_KEY = booleanPreferencesKey("is_premium")
         val BLOCKED_APPS_KEY = stringSetPreferencesKey("blocked_apps")
-        // Define others as needed
+        val CURRENT_STREAK_KEY = intPreferencesKey("current_streak")
+        
+        // Default blocked apps for social media tracking
+        val DEFAULT_BLOCKED_APPS = setOf(
+            "com.zhiliaoapp.musically", // TikTok
+            "com.instagram.android",    // Instagram
+            "com.google.android.youtube" // YouTube
+        )
     }
 
     // --- ADD Stubs or Basic Implementations for ALL interface methods ---
@@ -56,7 +63,7 @@ class SettingsRepositoryImpl @Inject constructor(
 
     override fun getBlockedApps(): Flow<Set<String>> {
         return dataStore.data.map { prefs ->
-            prefs[BLOCKED_APPS_KEY] ?: emptySet()
+            prefs[BLOCKED_APPS_KEY] ?: DEFAULT_BLOCKED_APPS
         }
     }
 
@@ -78,7 +85,7 @@ class SettingsRepositoryImpl @Inject constructor(
         // Read the current blocked set once from DataStore. Using `first()`
         // avoids collecting the flow indefinitely.
         val blockedSet = dataStore.data
-            .map { prefs -> prefs[BLOCKED_APPS_KEY] ?: emptySet() }
+            .map { prefs -> prefs[BLOCKED_APPS_KEY] ?: DEFAULT_BLOCKED_APPS }
             .first()
         return blockedSet.contains(packageName)
     }

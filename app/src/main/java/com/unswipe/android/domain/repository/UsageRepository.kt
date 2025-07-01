@@ -40,4 +40,18 @@ interface UsageRepository {
 
     suspend fun getWeeklyUsageSummary(): List<DailyUsageSummary>
 
+    /**
+     * Gets today's usage time for a specific app package.
+     */
+    suspend fun getAppUsageToday(packageName: String): Long
+
+    /**
+     * Records an app launch attempt for analytics and learning.
+     */
+    suspend fun recordAppLaunchAttempt(
+        packageName: String,
+        wasBlocked: Boolean,
+        usageAtTime: Long
+    )
+
 }

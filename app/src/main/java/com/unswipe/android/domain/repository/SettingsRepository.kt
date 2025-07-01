@@ -57,5 +57,9 @@ interface SettingsRepository {
 
     suspend fun getTimeLimitMillis(): Long
 
+    /**
+     * Gets the current streak of days meeting usage goals.
+     */
+    suspend fun getCurrentStreak(): Int
 
 }

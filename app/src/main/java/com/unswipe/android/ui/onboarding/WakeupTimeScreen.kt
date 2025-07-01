@@ -1,28 +1,27 @@
 package com.unswipe.android.ui.onboarding
 
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.unswipe.android.ui.components.CustomTimePicker
 
 @Composable
 fun WakeupTimeScreen(
-    onNavigateToNext: () -> Unit
+    onNavigateToNext: () -> Unit,
+    viewModel: OnboardingViewModel = hiltViewModel()
 ) {
     var hour by remember { mutableStateOf(7) } // Default wakeup time
     var minute by remember { mutableStateOf(0) }
+    
+    val uiState by viewModel.uiState.collectAsState()
 
     OnboardingScreenLayout(
         title = "Wakeup Time",
-        subtitle = "Tell us about your Waking Time",
-        buttonText = "Set",
+        subtitle = "Tell us when you typically wake up. This helps us understand your daily routine.",
+        buttonText = "Set Wakeup Time",
+        isLoading = uiState.isLoading,
         onButtonClick = {
-            // Here you would typically save the time:
-            // viewModel.setWakeupTime(hour, minute)
-            onNavigateToNext()
+            viewModel.saveWakeupTime(hour, minute)
         }
     ) {
         CustomTimePicker(
@@ -31,5 +30,20 @@ fun WakeupTimeScreen(
             onHourChange = { hour = it },
             onMinuteChange = { minute = it }
         )
+    }
+    
+    // Navigate when save is successful
+    LaunchedEffect(uiState.wakeupTime) {
+        if (uiState.wakeupTime != null && !uiState.isLoading) {
+            onNavigateToNext()
+        }
+    }
+    
+    // Show error if any
+    uiState.error?.let { error ->
+        LaunchedEffect(error) {
+            // TODO: Show error snackbar or dialog
+            viewModel.clearError()
+        }
     }
 } 

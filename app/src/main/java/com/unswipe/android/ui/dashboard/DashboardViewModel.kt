@@ -55,18 +55,23 @@ class DashboardViewModel @Inject constructor(
             unlocksToday = domainData.unlocksToday,
 
             // --- IMPLEMENTED MAPPING for weeklyProgress ---
-            weeklyProgress = domainData.weeklyProgress.map { domainSummary ->
-                // Map domain.model.DailyUsageSummary to ui.dashboard.DailyUsageSummary
-                UiDailyUsageSummary(
-                    // Use correct DomainDailyUsageSummary properties
-                    dayLabel = domainSummary.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
-                    usagePercentage = if (domainData.timeLimitMillis > 0) {
-                        (domainSummary.totalUsageMillis.toFloat() / domainData.timeLimitMillis.toFloat()).coerceIn(0f, 1f)
-                    } else {
-                        0f
-                    },
-                    isToday = domainSummary.date.isEqual(LocalDate.now())
-                )
+            weeklyProgress = if (domainData.weeklyProgress.isNotEmpty()) {
+                domainData.weeklyProgress.map { domainSummary ->
+                    // Map domain.model.DailyUsageSummary to ui.dashboard.DailyUsageSummary
+                    UiDailyUsageSummary(
+                        // Use correct DomainDailyUsageSummary properties
+                        dayLabel = domainSummary.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                        usagePercentage = if (domainData.timeLimitMillis > 0) {
+                            (domainSummary.totalUsageMillis.toFloat() / domainData.timeLimitMillis.toFloat()).coerceIn(0f, 2f) // Allow up to 200% for visualization
+                        } else {
+                            0f
+                        },
+                        isToday = domainSummary.date.isEqual(LocalDate.now())
+                    )
+                }
+            } else {
+                // Generate sample data for demonstration when no real data is available
+                generateSampleWeeklyData(domainData.timeLimitMillis)
             },
             // ---------------------------------------------
 
@@ -91,6 +96,35 @@ class DashboardViewModel @Inject constructor(
     private fun checkPermissions(): Pair<Boolean, Boolean> {
         // Placeholder
         return Pair(first = false, second = false) // (hasUsageStatsPermission, isAccessibilityEnabled)
+    }
+
+    // Generate sample weekly data for demonstration
+    private fun generateSampleWeeklyData(timeLimitMillis: Long): List<UiDailyUsageSummary> {
+        val today = LocalDate.now()
+        val daysOfWeek = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+        
+        return (0..6).map { dayOffset ->
+            val date = today.minusDays(6 - dayOffset.toLong())
+            val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+            
+            // Generate realistic usage percentages (some days over limit, some under)
+            val usagePercentage = when (dayOffset) {
+                0 -> 0.3f  // Monday - light usage
+                1 -> 0.7f  // Tuesday - moderate usage
+                2 -> 1.2f  // Wednesday - over limit
+                3 -> 0.9f  // Thursday - approaching limit
+                4 -> 0.5f  // Friday - moderate usage
+                5 -> 1.4f  // Saturday - way over limit
+                6 -> 0.8f  // Sunday (today) - current usage
+                else -> 0.5f
+            }
+            
+            UiDailyUsageSummary(
+                dayLabel = dayOfWeek,
+                usagePercentage = usagePercentage,
+                isToday = date.isEqual(today)
+            )
+        }
     }
 
     // --- Event Handling (Placeholder) ---
