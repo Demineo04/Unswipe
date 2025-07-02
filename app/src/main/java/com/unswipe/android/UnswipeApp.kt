@@ -15,20 +15,26 @@ import javax.inject.Inject // <-- UNCOMMENTED
 // Only ONE class declaration, implementing the interface
 class UnswipeApp : Application(), Configuration.Provider { // <-- CORRECTED Class line
 
-    @Inject // Inject annotation
-    lateinit var workerFactory: HiltWorkerFactory // Field for the factory
+    // @Inject // Inject annotation // TEMPORARILY DISABLED
+    // lateinit var workerFactory: HiltWorkerFactory // Field for the factory // TEMPORARILY DISABLED
 
     override fun onCreate() {
         super.onCreate()
+        android.util.Log.d("UnswipeApp", "Application onCreate() called")
         // Initialize anything needed globally on app start
         // e.g., Logging library, analytics
-        setupRecurringWork() // Call the setup function
+        try {
+            setupRecurringWork() // Call the setup function
+            android.util.Log.d("UnswipeApp", "setupRecurringWork() completed successfully")
+        } catch (e: Exception) {
+            android.util.Log.e("UnswipeApp", "Error in onCreate: ${e.message}", e)
+        }
     }
 
     // Provide HiltWorkerFactory for WorkManager DI
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
-            .setWorkerFactory(workerFactory)
+            // .setWorkerFactory(workerFactory) // TEMPORARILY DISABLED
             .setMinimumLoggingLevel(android.util.Log.INFO) // Adjust logging level
             .build()
 

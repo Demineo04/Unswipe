@@ -20,7 +20,7 @@ data class OnboardingUiState(
     val sleepTime: LocalTime? = null
 )
 
-@HiltViewModel
+// @HiltViewModel
 class OnboardingViewModel @Inject constructor(
     private val onboardingRepository: OnboardingRepository
 ) : ViewModel() {

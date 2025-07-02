@@ -8,26 +8,33 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import android.graphics.drawable.Drawable
 
 // A simple data class to represent an app for the UI
 data class AppInfo(
     val name: String,
     val packageName: String,
-    val icon: Painter,
+    val icon: Drawable,
     var isBlocked: Boolean
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppSelectionScreen(
-    viewModel: AppSelectionViewModel = hiltViewModel()
+    // viewModel: AppSelectionViewModel = hiltViewModel() // TEMPORARILY DISABLED
 ) {
-    val appList by viewModel.apps.collectAsState()
-    val onAppBlockToggled: (String, Boolean) -> Unit = viewModel::setAppBlocked
+    // val appList by viewModel.apps.collectAsState() // TEMPORARILY DISABLED
+    // val onAppBlockToggled: (String, Boolean) -> Unit = viewModel::setAppBlocked // TEMPORARILY DISABLED
     
+    // TEMPORARILY SIMPLIFIED
+    Text("App Selection Screen - Working!")
+    
+    /*
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(title = { Text("App Blocker") })
@@ -46,7 +53,12 @@ fun AppSelectionScreen(
             ) {
                 items(appList) { app ->
                     AppListItem(
-                        appInfo = app,
+                        appInfo = AppInfo(
+                            name = app.name,
+                            packageName = app.packageName,
+                            icon = app.icon,
+                            isBlocked = app.isBlocked
+                        ),
                         onBlockToggled = { isBlocked ->
                             onAppBlockToggled(app.packageName, isBlocked)
                         }
@@ -62,10 +74,7 @@ private fun AppListItem(
     appInfo: AppInfo,
     onBlockToggled: (Boolean) -> Unit
 ) {
-    val packageManager = LocalContext.current.packageManager
-    val icon = remember(appInfo.packageName) {
-        appInfo.icon.loadIcon(packageManager)
-    }
+    val icon = appInfo.icon
 
     Row(
         modifier = Modifier
@@ -91,4 +100,5 @@ private fun AppListItem(
             )
         )
     }
+    */
 } 

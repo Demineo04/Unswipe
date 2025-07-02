@@ -8,12 +8,15 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.work.*
-import com.unswipe.android.MainActivity
+import com.unswipe.android.ui.MainActivity
 import com.unswipe.android.R
 import com.unswipe.android.domain.repository.OnboardingRepository
 import com.unswipe.android.domain.repository.UsageRepository
 import com.unswipe.android.domain.repository.CriticalPeriodType
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.hilt.work.HiltWorker
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -282,10 +285,10 @@ data class UserContext(
     val isWorkTime: Boolean
 )
 
-@AndroidEntryPoint
-class SmartNudgeWorker @Inject constructor(
-    context: Context,
-    params: WorkerParameters,
+@HiltWorker
+class SmartNudgeWorker @AssistedInject constructor(
+    @Assisted context: Context,
+    @Assisted params: WorkerParameters,
     private val notificationService: NotificationService
 ) : CoroutineWorker(context, params) {
 

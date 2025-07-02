@@ -1,0 +1,78 @@
+[
+    {
+        "merged": "com.unswipe.android.app-debug-91:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.unswipe.android.app-main-93:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.unswipe.android.app-main-93:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.unswipe.android.app-main-93:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.unswipe.android.app-main-93:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.unswipe.android.app-main-93:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/xml_data_extraction_rules.xml.flat",
+        "source": "com.unswipe.android.app-main-93:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/font_robotoregular.ttf.flat",
+        "source": "com.unswipe.android.app-main-93:/font/robotoregular.ttf"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/mipmap-anydpi-v26_ic_default_app.xml.flat",
+        "source": "com.unswipe.android.app-main-93:/mipmap-anydpi-v26/ic_default_app.xml"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.unswipe.android.app-main-93:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.unswipe.android.app-main-93:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.unswipe.android.app-main-93:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/xml_accessibility_service_config.xml.flat",
+        "source": "com.unswipe.android.app-main-93:/xml/accessibility_service_config.xml"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.unswipe.android.app-main-93:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/xml_backup_rules.xml.flat",
+        "source": "com.unswipe.android.app-main-93:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.unswipe.android.app-main-93:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.unswipe.android.app-main-93:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.unswipe.android.app-main-93:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.unswipe.android.app-main-93:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.unswipe.android.app-debug-91:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.unswipe.android.app-main-93:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    }
+]

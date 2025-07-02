@@ -1,10 +1,10 @@
 package com.unswipe.android.ui.settings
 
-import android.content.pm.ApplicationInfo
+import android.graphics.drawable.Drawable
 
 data class AppInfoForUi(
     val name: String,
     val packageName: String,
-    val icon: ApplicationInfo,
+    val icon: Drawable,
     val isBlocked: Boolean
 ) 

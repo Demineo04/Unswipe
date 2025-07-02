@@ -35,7 +35,12 @@ class ContextualInterventionEngine @Inject constructor(
         
         // Check if app is blocked
         if (!userSettings.blockedApps.contains(packageName)) {
-            return InterventionDecision(shouldIntervene = false)
+            return InterventionDecision(
+                shouldIntervene = false,
+                urgency = InterventionUrgency.LOW,
+                suggestedAction = InterventionAction.SHOW_DIALOG,
+                message = "App is not blocked"
+            )
         }
         
         return when (context) {
@@ -68,7 +73,12 @@ class ContextualInterventionEngine @Inject constructor(
     ): InterventionDecision {
         
         if (!preferences.enableWorkInterventions) {
-            return InterventionDecision(shouldIntervene = false)
+            return InterventionDecision(
+                shouldIntervene = false,
+                urgency = InterventionUrgency.LOW,
+                suggestedAction = InterventionAction.SHOW_DIALOG,
+                message = "Work interventions disabled"
+            )
         }
         
         val workTimeLimit = preferences.workTimeLimit
@@ -107,7 +117,12 @@ class ContextualInterventionEngine @Inject constructor(
                 bypassReason = "I'll limit my usage"
             )
             
-            else -> InterventionDecision(shouldIntervene = false)
+            else -> InterventionDecision(
+                shouldIntervene = false,
+                urgency = InterventionUrgency.LOW,
+                suggestedAction = InterventionAction.SHOW_DIALOG,
+                message = "No work intervention needed"
+            )
         }
     }
     
@@ -121,7 +136,12 @@ class ContextualInterventionEngine @Inject constructor(
     ): InterventionDecision {
         
         if (!preferences.enableSleepInterventions) {
-            return InterventionDecision(shouldIntervene = false)
+            return InterventionDecision(
+                shouldIntervene = false,
+                urgency = InterventionUrgency.LOW,
+                suggestedAction = InterventionAction.SHOW_DIALOG,
+                message = "Sleep interventions disabled"
+            )
         }
         
         val appName = getAppName(packageName)
@@ -169,7 +189,12 @@ class ContextualInterventionEngine @Inject constructor(
     ): InterventionDecision {
         
         if (!preferences.enableSleepInterventions) {
-            return InterventionDecision(shouldIntervene = false)
+            return InterventionDecision(
+                shouldIntervene = false,
+                urgency = InterventionUrgency.LOW,
+                suggestedAction = InterventionAction.SHOW_DIALOG,
+                message = "Sleep interventions disabled"
+            )
         }
         
         val appName = getAppName(packageName)
@@ -227,7 +252,12 @@ class ContextualInterventionEngine @Inject constructor(
                 bypassReason = "Checking important updates"
             )
             
-            else -> InterventionDecision(shouldIntervene = false)
+            else -> InterventionDecision(
+                shouldIntervene = false,
+                urgency = InterventionUrgency.LOW,
+                suggestedAction = InterventionAction.SHOW_DIALOG,
+                message = "No morning intervention needed"
+            )
         }
     }
     
@@ -306,7 +336,12 @@ class ContextualInterventionEngine @Inject constructor(
                 bypassReason = "I'll be mindful of my usage"
             )
             
-            else -> InterventionDecision(shouldIntervene = false)
+            else -> InterventionDecision(
+                shouldIntervene = false,
+                urgency = InterventionUrgency.LOW,
+                suggestedAction = InterventionAction.SHOW_DIALOG,
+                message = "No general intervention needed"
+            )
         }
     }
     

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gcm_defaultSenderId" translatable="false">493600718531</string>
+    <string name="google_api_key" translatable="false">AIzaSyBVoDfIC3zgBqn2ol5EVs7QLbhsux17ahU</string>
+    <string name="google_app_id" translatable="false">1:493600718531:android:9b02f813831cd76d562c76</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBVoDfIC3zgBqn2ol5EVs7QLbhsux17ahU</string>
+    <string name="google_storage_bucket" translatable="false">unswipe-3efc9.firebasestorage.app</string>
+    <string name="project_id" translatable="false">unswipe-3efc9</string>
+</resources>

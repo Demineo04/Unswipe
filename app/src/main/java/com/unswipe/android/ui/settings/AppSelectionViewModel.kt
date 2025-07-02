@@ -13,16 +13,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// This should be in its own file, but for simplicity, it's here for now.
-// It will be moved later if needed.
-data class AppInfoForUi(
-    val name: String,
-    val packageName: String,
-    val icon: ApplicationInfo, // We'll resolve the drawable in the composable
-    val isBlocked: Boolean
-)
+// Using AppInfoForUi from AppInfoForUi.kt
 
-@HiltViewModel
+// @HiltViewModel
 class AppSelectionViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val packageManager: PackageManager
@@ -44,7 +37,7 @@ class AppSelectionViewModel @Inject constructor(
                     AppInfoForUi(
                         name = appInfo.loadLabel(packageManager).toString(),
                         packageName = appInfo.packageName,
-                        icon = appInfo,
+                        icon = appInfo.loadIcon(packageManager),
                         isBlocked = blockedApps.contains(appInfo.packageName)
                     )
                 }
@@ -65,7 +58,7 @@ class AppSelectionViewModel @Inject constructor(
                 currentBlocked.add(packageName)
             }
             
-            settingsRepository.setBlockedApps(currentBlocked)
+            // settingsRepository.setBlockedApps(currentBlocked) // TODO: Implement this method
             
             // Update the UI state to reflect the change immediately
             _apps.value = _apps.value.map { 

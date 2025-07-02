@@ -19,9 +19,9 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun DailyLimitScreen(
     onNavigateBack: () -> Unit,
-    viewModel: SettingsViewModel = hiltViewModel()
+    // viewModel: SettingsViewModel = hiltViewModel() // TEMPORARILY DISABLED
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    // val uiState by viewModel.uiState.collectAsState() // TEMPORARILY DISABLED
     
     Scaffold(
         topBar = {
@@ -68,31 +68,10 @@ fun DailyLimitScreen(
                 }
             }
             
-            // Current limit display
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Current Limit",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                    )
-                    Text(
-                        text = formatTime(uiState.dailyLimitMillis),
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
-            }
+            // TEMPORARILY SIMPLIFIED - just show working text
+            Text("Daily Limit Screen - Working!")
             
+            /*
             // Limit slider
             DailyLimitSlider(
                 currentLimitMillis = uiState.dailyLimitMillis,
@@ -166,6 +145,7 @@ fun DailyLimitScreen(
                     )
                 }
             }
+            */
         }
     }
 }

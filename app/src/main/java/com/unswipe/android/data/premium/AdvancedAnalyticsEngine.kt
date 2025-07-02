@@ -2,6 +2,7 @@ package com.unswipe.android.data.premium
 
 import com.unswipe.android.domain.model.*
 import com.unswipe.android.domain.repository.PremiumRepository
+import com.unswipe.android.domain.repository.ExportFormat
 import com.unswipe.android.domain.repository.UsageRepository
 import com.unswipe.android.domain.repository.SettingsRepository
 import java.time.LocalDateTime
@@ -42,10 +43,11 @@ class AdvancedAnalyticsEngine @Inject constructor(
         val consistencyScore = calculateConsistencyScore(usageEvents)
         
         // Weighted average
-        return (focusScore * 0.3f + 
+        val result = (focusScore * 0.3f + 
                 distractionScore * 0.3f + 
                 timingScore * 0.2f + 
-                consistencyScore * 0.2f).coerceIn(0f, 1f)
+                consistencyScore * 0.2f)
+        return if (result < 0f) 0f else if (result > 1f) 1f else result
     }
     
     /**
@@ -149,10 +151,11 @@ class AdvancedAnalyticsEngine @Inject constructor(
         val socialScore = calculateSocialBalanceScore(weeklyTrends)
         
         // Weighted average
-        return (balanceScore * 0.3f + 
+        val result = (balanceScore * 0.3f + 
                 sleepScore * 0.25f + 
                 stressScore * 0.25f + 
-                socialScore * 0.2f).coerceIn(0f, 1f)
+                socialScore * 0.2f)
+        return if (result < 0f) 0f else if (result > 1f) 1f else result
     }
     
     /**
@@ -317,7 +320,8 @@ class AdvancedAnalyticsEngine @Inject constructor(
         val dailyLimit = TimeUnit.HOURS.toMillis(2) // 2 hours as baseline
         val ratio = totalSocialMediaTime.toFloat() / dailyLimit
         
-        return (1f - ratio).coerceIn(0f, 1f)
+        val result = 1f - ratio
+        return if (result < 0f) 0f else if (result > 1f) 1f else result
     }
     
     private fun calculateTimingScore(
@@ -344,7 +348,9 @@ class AdvancedAnalyticsEngine @Inject constructor(
     private fun calculateConsistencyScore(
         usageEvents: List<com.unswipe.android.data.model.UsageEvent>
     ): Float {
-        // Measure consistency in usage patterns
+        // Simplified consistency calculation to avoid type issues
+        if (usageEvents.isEmpty()) return 1f
+        
         val hourlyUsage = usageEvents.groupBy { event ->
             LocalDateTime.ofEpochSecond(
                 event.timestamp / 1000, 
@@ -353,36 +359,46 @@ class AdvancedAnalyticsEngine @Inject constructor(
             ).hour
         }
         
-        val variance = hourlyUsage.values.map { it.size.toFloat() }.let { values ->
-            val mean = values.average().toFloat()
-            values.map { (it - mean).pow(2) }.average().toFloat()
-        }
+        val hourCounts = hourlyUsage.values.map { it.size }
+        if (hourCounts.isEmpty()) return 1f
         
-        // Lower variance = higher consistency = higher score
-        return (1f / (1f + variance * 0.1f)).coerceIn(0f, 1f)
+        val maxCount = hourCounts.maxOrNull() ?: 0
+        val minCount = hourCounts.minOrNull() ?: 0
+        val range = maxCount - minCount
+        
+        // Lower range = higher consistency = higher score
+        return when {
+            range <= 2 -> 1.0f
+            range <= 5 -> 0.8f
+            range <= 10 -> 0.6f
+            range <= 15 -> 0.4f
+            else -> 0.2f
+        }
     }
     
     private fun calculateUsageBalanceScore(trends: List<TrendData>): Float {
         if (trends.isEmpty()) return 0f
         
         val avgUsage = trends.map { it.usageMinutes }.average()
-        val idealUsage = 120 // 2 hours per day
+        val idealUsage = 120f // 2 hours per day
         
-        val balanceRatio = idealUsage / avgUsage.coerceAtLeast(1.0)
-        return balanceRatio.toFloat().coerceIn(0f, 1f)
+        val ratio = idealUsage / avgUsage.toFloat().coerceAtLeast(1f)
+        return if (ratio > 1f) 1f else ratio
     }
     
     private fun calculateSleepImpactScore(trends: List<TrendData>): Float {
         // Simplified: assume less evening usage = better sleep
         val eveningUsage = trends.map { it.usageMinutes * 0.3f }.average() // Assume 30% is evening
-        return (1f - (eveningUsage / 60f)).coerceIn(0f, 1f)
+        val result = 1f - (eveningUsage.toFloat() / 60f)
+        return if (result < 0f) 0f else if (result > 1f) 1f else result
     }
     
     private fun calculateStressIndicatorScore(trends: List<TrendData>): Float {
         val avgSessions = trends.map { it.sessionCount }.average()
         val stressThreshold = 20 // More than 20 sessions per day indicates stress
         
-        return (1f - (avgSessions / stressThreshold).toFloat()).coerceIn(0f, 1f)
+        val result = 1f - (avgSessions.toFloat() / stressThreshold)
+        return if (result < 0f) 0f else if (result > 1f) 1f else result
     }
     
     private fun calculateSocialBalanceScore(trends: List<TrendData>): Float {
@@ -390,7 +406,8 @@ class AdvancedAnalyticsEngine @Inject constructor(
         val avgUsage = trends.map { it.usageMinutes }.average()
         val socialThreshold = 180 // 3 hours
         
-        return (1f - (avgUsage / socialThreshold).toFloat()).coerceIn(0f, 1f)
+        val result = 1f - (avgUsage.toFloat() / socialThreshold)
+        return if (result < 0f) 0f else if (result > 1f) 1f else result
     }
     
     private suspend fun shouldRecommendMorningRoutineOptimization(): Boolean {
@@ -439,7 +456,7 @@ class AdvancedAnalyticsEngine @Inject constructor(
             ((globalAverage - userUsage) / globalAverage * 50 + 50).toInt()
         } else {
             (50 - (userUsage - globalAverage) / globalAverage * 50).toInt()
-        }.coerceIn(1, 99)
+        }.let { if (it < 1) 1 else if (it > 99) 99 else it }
     }
     
     private fun generateCSVExport(

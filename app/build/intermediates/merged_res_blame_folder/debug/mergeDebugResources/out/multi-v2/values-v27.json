@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.unswipe.android.app-mergeDebugResources-89:/values-v27/values-v27.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\kp_ss\\.gradle\\caches\\8.11.1\\transforms\\65def9d3a94a7b02f170edfe98fd8aec\\transformed\\jetified-core-splashscreen-1.0.1\\res\\values-v27\\values-v27.xml",
+                    "from": {
+                        "startLines": "2,3,4,7",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "55,136,229,405",
+                        "endLines": "2,3,6,9",
+                        "endColumns": "80,92,12,12",
+                        "endOffsets": "131,224,400,588"
+                    }
+                }
+            ]
+        }
+    ]
+}

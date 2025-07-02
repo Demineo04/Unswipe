@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.unswipe.android.ui.components.PrimaryButton
 import com.unswipe.android.ui.components.UnswipeTextField
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.text.KeyboardOptions
 
 @Composable
 fun RegisterScreen(

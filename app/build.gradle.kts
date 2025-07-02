@@ -2,12 +2,12 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp") // Keep KSP (for Room)
-    id("kotlin-kapt")             // Keep KAPT (for Hilt)
+    id("com.google.devtools.ksp") // KSP for Room and Hilt
     id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
     id("org.jetbrains.kotlin.plugin.serialization")
-    id("org.jetbrains.kotlin.plugin.compose")
+    id("org.jetbrains.kotlin.plugin.compose") // Re-add compose plugin for Kotlin 2.0.0
+    // Remove KAPT - using KSP for everything
 }
 
 android {
@@ -51,6 +51,9 @@ android {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
     }
+    buildFeatures {
+        compose = true
+    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -63,6 +66,12 @@ dependencies {
     implementation("androidx.core:core-ktx:1.13.1") // Downgraded from 1.16.0
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7") // Note: Very new
     implementation("androidx.activity:activity-compose:1.9.0") // Downgraded from 1.10.1
+    
+    // Kotlinx Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    
+    // HTTP Client
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     // Compose
     implementation(platform("androidx.compose:compose-bom:2025.04.00")) // Note: Very new BOM
@@ -83,8 +92,10 @@ dependencies {
 
     // Hilt (Dependency Injection)
     implementation("com.google.dagger:hilt-android:2.51.1")
-    kapt("com.google.dagger:hilt-compiler:2.51.1") // <-- Using KAPT for Hilt
+    ksp("com.google.dagger:hilt-compiler:2.51.1") // <-- Using KSP for Hilt
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation("androidx.hilt:hilt-work:1.2.0") // For @HiltWorker
+    ksp("androidx.hilt:hilt-compiler:1.2.0") // For Hilt Work annotation processing
 
     // Room (Local Database)
     implementation("androidx.room:room-runtime:2.7.1") // Note: Very new, consider 2.6.1
@@ -128,7 +139,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     // Hilt Testing
     androidTestImplementation("com.google.dagger:hilt-android-testing:2.51.1")
-    kaptAndroidTest("com.google.dagger:hilt-compiler:2.51.1") // <-- Using KAPT for Hilt Test
+    kspAndroidTest("com.google.dagger:hilt-compiler:2.51.1") // <-- Using KSP for Hilt Test
     // Turbine for Flow testing
     testImplementation("app.cash.turbine:turbine:1.0.0") // Consider updating if needed
     // Mockito for mocking

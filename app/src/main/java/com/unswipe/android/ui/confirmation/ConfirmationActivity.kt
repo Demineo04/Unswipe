@@ -6,13 +6,24 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.unswipe.android.R // Assuming you have strings defined
@@ -22,6 +33,7 @@ import android.graphics.drawable.Drawable
 import androidx.compose.ui.graphics.asImageBitmap
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.unswipe.android.ui.components.EnhancedConfirmationDialog
+import com.unswipe.android.ui.theme.*
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -50,38 +62,21 @@ class ConfirmationActivity : ComponentActivity() {
 
         setContent {
             UnswipeTheme {
-                val viewModel: ConfirmationViewModel = hiltViewModel()
-                val uiState by viewModel.uiState.collectAsState()
+                // val viewModel: ConfirmationViewModel = hiltViewModel() // TEMPORARILY DISABLED
+                // val uiState by viewModel.uiState.collectAsState() // TEMPORARILY DISABLED
                 
-                // Load app data when the activity starts
-                LaunchedEffect(appName, packageName) {
-                    if (packageName.isNotEmpty()) {
-                        viewModel.loadAppData(appName, packageName)
-                    }
-                }
-                
-                val appIcon = getAppIcon(packageName)
-                
-                EnhancedConfirmationDialog(
-                    uiState = uiState,
-                    appIcon = if (appIcon != null) {
-                        rememberDrawablePainter(drawable = appIcon)
-                    } else {
-                        painterResource(id = R.drawable.ic_launcher_foreground) // Fallback icon
-                    },
+                // Beautiful confirmation overlay
+                ModernConfirmationOverlay(
+                    appName = appName,
+                    appIcon = getAppIcon(packageName),
                     onConfirm = {
-                        viewModel.recordUserDecision(didProceed = true)
+                        // User confirmed - allow app to open
                         setResult(Activity.RESULT_OK)
                         finish()
+                        // Launch the target app
+                        launchTargetApp(packageName)
                     },
                     onCancel = {
-                        viewModel.recordUserDecision(didProceed = false)
-                        setResult(Activity.RESULT_CANCELED)
-                        finish()
-                    },
-                    onTakeBreak = {
-                        viewModel.recordUserDecision(didProceed = false)
-                        // TODO: Launch break activity or suggestions
                         setResult(Activity.RESULT_CANCELED)
                         finish()
                     }
@@ -112,6 +107,189 @@ class ConfirmationActivity : ComponentActivity() {
         } catch (e: PackageManager.NameNotFoundException) {
             // Return a default icon or null if the app is not found
             null
+        }
+    }
+
+    private fun launchTargetApp(packageName: String) {
+        try {
+            val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+            if (launchIntent != null) {
+                launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(launchIntent)
+            }
+        } catch (e: Exception) {
+            // App might not be launchable or installed
+            android.util.Log.e("ConfirmationActivity", "Failed to launch app: $packageName", e)
+        }
+    }
+}
+
+@Composable
+fun ModernConfirmationOverlay(
+    appName: String,
+    appIcon: Drawable?,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit
+) {
+    // Semi-transparent background overlay
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.7f)),
+        contentAlignment = Alignment.Center
+    ) {
+        // Main confirmation card
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(0.85f)
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = UnswipeCard
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Concentric circles background effect
+                Box(
+                    modifier = Modifier.size(120.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Outer circle
+                    Box(
+                        modifier = Modifier
+                            .size(120.dp)
+                            .background(
+                                color = UnswipeGray.copy(alpha = 0.1f),
+                                shape = CircleShape
+                            )
+                    )
+                    
+                    // Middle circle
+                    Box(
+                        modifier = Modifier
+                            .size(90.dp)
+                            .background(
+                                color = UnswipeGray.copy(alpha = 0.15f),
+                                shape = CircleShape
+                            )
+                    )
+                    
+                    // Inner circle with app icon
+                    Box(
+                        modifier = Modifier
+                            .size(60.dp)
+                            .background(
+                                color = UnswipeCard,
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (appIcon != null) {
+                            Image(
+                                painter = rememberDrawablePainter(drawable = appIcon),
+                                contentDescription = "$appName icon",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                            )
+                        } else {
+                            // Fallback icon
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .background(
+                                        brush = Brush.radialGradient(
+                                            colors = listOf(
+                                                UnswipePrimary,
+                                                UnswipeSecondary
+                                            )
+                                        ),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = appName.take(1).uppercase(),
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        color = UnswipeBlack,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                // Question text
+                Text(
+                    text = "Do you really want to open ${appName}?",
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = UnswipeTextPrimary,
+                        lineHeight = 28.sp
+                    ),
+                    textAlign = TextAlign.Center
+                )
+                
+                Spacer(modifier = Modifier.height(32.dp))
+                
+                // Action buttons
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    // Yes button
+                    Button(
+                        onClick = onConfirm,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = UnswipePrimary.copy(alpha = 0.9f),
+                            contentColor = UnswipeBlack
+                        ),
+                        shape = RoundedCornerShape(24.dp)
+                    ) {
+                        Text(
+                            text = "Yes",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 16.sp
+                            )
+                        )
+                    }
+                    
+                    // No button
+                    Button(
+                        onClick = onCancel,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = UnswipeRed,
+                            contentColor = UnswipeTextPrimary
+                        ),
+                        shape = RoundedCornerShape(24.dp)
+                    ) {
+                        Text(
+                            text = "No",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 16.sp
+                            )
+                        )
+                    }
+                }
+            }
         }
     }
 }

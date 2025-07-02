@@ -5,20 +5,20 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -28,13 +28,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.unswipe.android.ui.MainActivity
-import com.unswipe.android.ui.theme.UnswipeTheme
+import com.unswipe.android.ui.theme.*
 import kotlinx.coroutines.delay
 import androidx.core.view.WindowCompat // Import for WindowCompat
 
-// Colors from Figma specs
-val filledCircleColor = Color(red = 0.827f, green = 0.827f, blue = 1f, alpha = 0.08f)
-val outlinedCircleColor = Color(red = 1f, green = 1f, blue = 1f, alpha = 0.08f) // Combined 0.8 alpha stroke * 0.1 opacity
+// Colors for modern design
+// Colors are now defined in theme files
 
 @SuppressLint("CustomSplashScreen") // Suppress the warning about providing our own launch screen
 class SplashActivity : ComponentActivity() {
@@ -67,49 +66,106 @@ fun SplashScreenWithNavigation() {
         // Finish SplashActivity so user can\'t navigate back to it
         (context as? ComponentActivity)?.finish()
     }
-    SplashScreen()
+    SplashScreen(
+        onNavigateToOnboarding = {
+            context.startActivity(Intent(context, MainActivity::class.java))
+            (context as? ComponentActivity)?.finish()
+        },
+        onNavigateToLogin = { /* Implementation needed */ },
+        onNavigateToDashboard = { /* Implementation needed */ }
+    )
 }
 
 @Composable
-fun SplashScreen() {
+fun SplashScreen(
+    onNavigateToOnboarding: () -> Unit,
+    onNavigateToLogin: () -> Unit,
+    onNavigateToDashboard: () -> Unit
+) {
+    // Simulate checking user state
+    var isLoading by remember { mutableStateOf(true) }
+    
+    LaunchedEffect(Unit) {
+        delay(2000) // Show splash for 2 seconds
+        isLoading = false
+        
+        // For now, always go to onboarding to simulate first launch
+        // In a real app, you'd check SharedPreferences or user authentication state
+        onNavigateToOnboarding()
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        UnswipeBlack,
+                        UnswipeSurface,
+                        UnswipeCard
+                    )
+                )
+            ),
         contentAlignment = Alignment.Center
     ) {
-        // Outlined Decorative Circles (largest to smallest)
-        val outlinedCircleSizes = listOf(1263.dp, 1021.dp, 799.dp, 555.dp)
-        outlinedCircleSizes.forEach { size ->
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            // App Logo
             Box(
                 modifier = Modifier
-                    .size(size)
-                    .clip(CircleShape) // Clip to ensure border is circular
-                    .border(BorderStroke(1.5.dp, outlinedCircleColor), CircleShape)
+                    .size(120.dp)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                UnswipePrimary,
+                                UnswipeSecondary
+                            )
+                        ),
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "U",
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontSize = 48.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = UnswipeBlack
+                    )
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Text(
+                text = "Unswipe",
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = UnswipeTextPrimary
+                )
             )
-        }
-
-        // Filled Branding Circles (largest to smallest for correct layering)
-        val filledCircleSizes = listOf(455.dp, 343.dp, 269.dp)
-        filledCircleSizes.forEach { size ->
-            Box(
-                modifier = Modifier
-                    .size(size)
-                    .background(color = filledCircleColor, shape = CircleShape)
+            
+            Text(
+                text = "Take control of your digital life",
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = UnswipeTextSecondary,
+                    fontSize = 16.sp
+                )
             )
+            
+            Spacer(modifier = Modifier.height(40.dp))
+            
+            if (isLoading) {
+                CircularProgressIndicator(
+                    color = UnswipePrimary,
+                    strokeWidth = 3.dp,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
         }
-
-        Text(
-            text = "UNSWIPE", // Typo warning can be suppressed here or via dictionary
-            style = TextStyle(
-                fontFamily = FontFamily.SansSerif, // Defaults to Roboto
-                fontWeight = FontWeight.Normal,   // For Roboto Regular
-                fontSize = 46.sp,
-                color = Color.White,
-                textAlign = TextAlign.Center
-            ),
-            modifier = Modifier.align(Alignment.Center) // Ensure text is perfectly centered
-        )
     }
 }
 
@@ -117,7 +173,11 @@ fun SplashScreen() {
 @Composable
 fun SplashScreenPreview() {
     UnswipeTheme {  // Restore the theme
-        SplashScreen() // Restore the actual splash screen
+        SplashScreen(
+            onNavigateToOnboarding = { /* Preview - no navigation */ },
+            onNavigateToLogin = { /* Preview - no navigation */ },
+            onNavigateToDashboard = { /* Preview - no navigation */ }
+        ) // Restore the actual splash screen
     }
     /* Box(
         modifier = Modifier

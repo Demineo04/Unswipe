@@ -17,19 +17,25 @@ import dagger.hilt.android.AndroidEntryPoint // Import AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { // setContent provides the initial Composable context
-            // Apply your app's theme
-            UnswipeTheme { // <-- Needs 'import com.unswipe.android.ui.theme.UnswipeTheme'
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(), // <-- Needs 'import androidx.compose.ui.Modifier'
-                    color = MaterialTheme.colorScheme.background // <-- Needs 'import androidx.compose.material3.MaterialTheme'
-                ) {
-                    // Set up the navigation graph for the app
-                    // UnswipeNavGraph is responsible for getting ViewModels and state now
-                    UnswipeNavGraph() // <-- Needs 'import com.unswipe.android.ui.navigation.UnswipeNavGraph'
+        android.util.Log.d("MainActivity", "MainActivity onCreate() called")
+        try {
+            setContent { // setContent provides the initial Composable context
+                // Apply your app's theme
+                UnswipeTheme { // <-- Needs 'import com.unswipe.android.ui.theme.UnswipeTheme'
+                    // A surface container using the 'background' color from the theme
+                    Surface(
+                        modifier = Modifier.fillMaxSize(), // <-- Needs 'import androidx.compose.ui.Modifier'
+                        color = MaterialTheme.colorScheme.background // <-- Needs 'import androidx.compose.material3.MaterialTheme'
+                    ) {
+                        // Set up the navigation graph for the app
+                        // UnswipeNavGraph is responsible for getting ViewModels and state now
+                        UnswipeNavGraph() // <-- Needs 'import com.unswipe.android.ui.navigation.UnswipeNavGraph'
+                    }
                 }
             }
+            android.util.Log.d("MainActivity", "setContent completed successfully")
+        } catch (e: Exception) {
+            android.util.Log.e("MainActivity", "Error in onCreate: ${e.message}", e)
         }
     }
 }

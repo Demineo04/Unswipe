@@ -1,13 +1,13 @@
 package com.unswipe.android.domain.model
 
 /**
- * Decision model for contextual interventions
+ * Decision made by the intervention engine about whether and how to intervene
  */
 data class InterventionDecision(
     val shouldIntervene: Boolean,
-    val urgency: InterventionUrgency = InterventionUrgency.LOW,
-    val message: String = "",
-    val suggestedAction: InterventionAction = InterventionAction.GENTLE_REMINDER,
+    val urgency: InterventionUrgency,
+    val suggestedAction: InterventionAction,
+    val message: String,
     val contextualTip: String? = null,
     val alternativeActivity: String? = null,
     val canBypass: Boolean = false,
@@ -19,7 +19,7 @@ data class InterventionDecision(
  */
 enum class InterventionUrgency {
     LOW,    // Gentle nudge
-    MEDIUM, // Clear warning
+    MEDIUM, // Warning
     HIGH    // Strong intervention
 }
 
@@ -27,31 +27,13 @@ enum class InterventionUrgency {
  * Types of intervention actions
  */
 enum class InterventionAction {
-    GENTLE_REMINDER,    // Show subtle notification
-    FIRM_BLOCK,        // Show blocking dialog
-    STRONG_BLOCK,      // Show strong blocking with alternatives
-    DELAY_ACCESS,      // Add delay before allowing access
-    SUGGEST_BREAK,     // Suggest taking a break
-    ENABLE_FOCUS_MODE  // Suggest enabling focus mode
-}
-
-/**
- * User preferences for interventions
- */
-data class InterventionPreferences(
-    val workTimeLimit: Long = 1800000L, // 30 minutes during work hours
-    val sleepTimeStrict: Boolean = true,
-    val enableWorkInterventions: Boolean = true,
-    val enableSleepInterventions: Boolean = true,
-    val enableStressDetection: Boolean = true,
-    val interventionStyle: InterventionStyle = InterventionStyle.BALANCED
-)
-
-/**
- * Intervention style preferences
- */
-enum class InterventionStyle {
-    GENTLE,    // Minimal interruptions
-    BALANCED,  // Moderate interventions
-    STRICT     // Strong interventions
-}
+    SHOW_DIALOG,        // Show confirmation dialog
+    SHOW_NOTIFICATION,  // Show notification
+    BLOCK_COMPLETELY,   // Block access entirely
+    DELAY_ACCESS,       // Add delay before access
+    SUGGEST_ALTERNATIVE, // Suggest alternative activity
+    STRONG_BLOCK,       // Strong blocking intervention
+    FIRM_BLOCK,         // Firm blocking intervention
+    GENTLE_REMINDER,    // Gentle reminder intervention
+    SUGGEST_BREAK       // Suggest taking a break
+} 

@@ -2,6 +2,9 @@ package com.unswipe.android.ui.navigation
 
 // Defines the different screens/destinations in the app
 sealed class Screen(val route: String) {
+    // Splash
+    object Splash : Screen("splash")
+    
     // Auth Flow
     object Login : Screen("login")
     object Register : Screen("register")
@@ -25,6 +28,10 @@ sealed class Screen(val route: String) {
     
     // Settings Screens
     object DailyLimit : Screen("daily_limit")
+    
+    // Detail Screens
+    object UnlocksDetail : Screen("unlocks_detail")
+    object AppLaunchesDetail : Screen("app_launches_detail")
 
     // Function to create routes with arguments (example)
     // fun withArgs(vararg args: String): String {

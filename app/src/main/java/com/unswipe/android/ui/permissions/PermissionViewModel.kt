@@ -23,7 +23,7 @@ data class PermissionUiState(
     val isLoading: Boolean = false
 )
 
-@HiltViewModel
+// @HiltViewModel
 class PermissionViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {

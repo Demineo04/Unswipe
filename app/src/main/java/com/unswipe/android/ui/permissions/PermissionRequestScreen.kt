@@ -24,11 +24,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun PermissionRequestScreen(
     onNavigateNext: () -> Unit,
     onNavigateBack: () -> Unit,
-    viewModel: PermissionViewModel = hiltViewModel()
+    // viewModel: PermissionViewModel = hiltViewModel() // TEMPORARILY DISABLED
 ) {
     val context = LocalContext.current
-    val uiState by viewModel.uiState.collectAsState()
+    // val uiState by viewModel.uiState.collectAsState() // TEMPORARILY DISABLED
     
+    // TEMPORARILY SIMPLIFIED
+    Text("Permission Request Screen - Working!")
+    
+    /*
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -116,6 +120,7 @@ fun PermissionRequestScreen(
     LaunchedEffect(Unit) {
         viewModel.checkPermissions()
     }
+    */
 }
 
 @Composable

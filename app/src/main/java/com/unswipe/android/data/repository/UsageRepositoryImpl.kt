@@ -1,9 +1,15 @@
 package com.unswipe.android.data.repository
 
+import android.app.AppOpsManager
 import android.app.usage.UsageStatsManager
+import android.content.ComponentName
 import android.content.Context // Keep if needed for UsageStatsManager or Permissions
+import android.os.Process
+import android.provider.Settings
+import android.text.TextUtils
 import com.google.firebase.firestore.FirebaseFirestore
 import com.unswipe.android.data.local.dao.UsageDao // Corrected: Assuming this is the correct path
+import com.unswipe.android.data.services.SwipeAccessibilityService
 import com.unswipe.android.domain.repository.UsageRepository
 import com.unswipe.android.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
@@ -12,10 +18,12 @@ import kotlinx.coroutines.flow.flow // Example for simple flow creation
 import kotlinx.coroutines.flow.transformLatest // Needed for refactored getDashboardDataFlow
 import java.time.LocalDate // Example for date handling
 import java.util.Calendar // Example for date calculations
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 // --- Import Aliases for Clarity ---
 // Import your DOMAIN models
+import com.unswipe.android.domain.model.ContextualUsageEvent
 import com.unswipe.android.domain.model.DailyUsageSummary as DomainDailyUsageSummary
 import com.unswipe.android.domain.model.TodayStats as DomainTodayStats // Renamed TodayStats in domain
 import com.unswipe.android.domain.model.DashboardData
@@ -187,13 +195,6 @@ class UsageRepositoryImpl @Inject constructor(
             set(Calendar.MILLISECOND, 0)
         }.timeInMillis
     }
-
-import android.app.AppOpsManager
-import android.content.ComponentName
-import android.os.Process
-import android.provider.Settings
-import android.text.TextUtils
-import com.unswipe.android.data.services.SwipeAccessibilityService
 
     private fun hasUsageStatsPermission(context: Context): Boolean {
         val appOps = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager

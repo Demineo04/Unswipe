@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 8.4.1" type="incidents">
+
+    <incident
+        id="MonochromeLauncherIcon"
+        severity="warning"
+        message="The application adaptive icon is missing a monochrome tag">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/mipmap-anydpi-v26/ic_launcher.xml"
+            line="2"
+            column="1"
+            startOffset="40"
+            endLine="5"
+            endColumn="17"
+            endOffset="274"/>
+    </incident>
+
+    <incident
+        id="MonochromeLauncherIcon"
+        severity="warning"
+        message="The application adaptive roundIcon is missing a monochrome tag">
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*resDir*0}/mipmap-anydpi-v26/ic_launcher_round.xml"
+            line="2"
+            column="1"
+            startOffset="40"
+            endLine="5"
+            endColumn="17"
+            endOffset="274"/>
+    </incident>
+
+    <incident
+        id="DefaultLocale"
+        severity="warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `capitalize(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`.">
+        <fix-alternatives>
+            <fix-replace
+                description="Replace with `capitalize(Locale.ROOT)`"
+                family="Use explicit locale"
+                replacement="capitalize(java.util.Locale.ROOT)"
+                shortenNames="true"
+                priority="0">
+                <range
+                    file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/unswipe/android/data/interventions/ContextualInterventionEngine.kt"
+                    startOffset="17000"
+                    endOffset="17012"/>
+            </fix-replace>
+            <fix-replace
+                description="Replace with `capitalize(Locale.getDefault())`"
+                family="Use explicit locale"
+                replacement="capitalize(java.util.Locale.getDefault())"
+                shortenNames="true"
+                priority="0">
+                <range
+                    file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/unswipe/android/data/interventions/ContextualInterventionEngine.kt"
+                    startOffset="17000"
+                    endOffset="17012"/>
+            </fix-replace>
+        </fix-alternatives>
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/unswipe/android/data/interventions/ContextualInterventionEngine.kt"
+            line="365"
+            column="58"
+            startOffset="17000"
+            endLine="365"
+            endColumn="68"
+            endOffset="17010"/>
+    </incident>
+
+    <incident
+        id="DefaultLocale"
+        severity="warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `capitalize(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`.">
+        <fix-alternatives>
+            <fix-replace
+                description="Replace with `capitalize(Locale.ROOT)`"
+                family="Use explicit locale"
+                replacement="capitalize(java.util.Locale.ROOT)"
+                shortenNames="true"
+                priority="0">
+                <range
+                    file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/unswipe/android/data/notifications/ContextAwareNotificationEngine.kt"
+                    startOffset="15194"
+                    endOffset="15206"/>
+            </fix-replace>
+            <fix-replace
+                description="Replace with `capitalize(Locale.getDefault())`"
+                family="Use explicit locale"
+                replacement="capitalize(java.util.Locale.getDefault())"
+                shortenNames="true"
+                priority="0">
+                <range
+                    file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/unswipe/android/data/notifications/ContextAwareNotificationEngine.kt"
+                    startOffset="15194"
+                    endOffset="15206"/>
+            </fix-replace>
+        </fix-alternatives>
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/unswipe/android/data/notifications/ContextAwareNotificationEngine.kt"
+            line="362"
+            column="50"
+            startOffset="15194"
+            endLine="362"
+            endColumn="60"
+            endOffset="15204"/>
+    </incident>
+
+    <incident
+        id="SwitchIntDef"
+        severity="warning"
+        message="Switch statement on an `int` with known associated constant missing case `AccessibilityEvent.TYPE_ANNOUNCEMENT`, `AccessibilityEvent.TYPE_ASSIST_READING_CONTEXT`, `AccessibilityEvent.TYPE_GESTURE_DETECTION_END`, `AccessibilityEvent.TYPE_GESTURE_DETECTION_START`, `AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED`, `AccessibilityEvent.TYPE_SPEECH_STATE_CHANGE`, `AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END`, `AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_START`, `AccessibilityEvent.TYPE_TOUCH_INTERACTION_END`, `AccessibilityEvent.TYPE_TOUCH_INTERACTION_START`, `AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED`, `AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED`, `AccessibilityEvent.TYPE_VIEW_CLICKED`, `AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED`, `AccessibilityEvent.TYPE_VIEW_FOCUSED`, `AccessibilityEvent.TYPE_VIEW_HOVER_ENTER`, `AccessibilityEvent.TYPE_VIEW_HOVER_EXIT`, `AccessibilityEvent.TYPE_VIEW_LONG_CLICKED`, `AccessibilityEvent.TYPE_VIEW_SELECTED`, `AccessibilityEvent.TYPE_VIEW_TARGETED_BY_SCROLL`, `AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED`, `AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED`, `AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY`, `AccessibilityEvent.TYPE_WINDOWS_CHANGED`, `AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED`">
+        <fix-data cases="android.view.accessibility.AccessibilityEvent.TYPE_ANNOUNCEMENT, android.view.accessibility.AccessibilityEvent.TYPE_ASSIST_READING_CONTEXT, android.view.accessibility.AccessibilityEvent.TYPE_GESTURE_DETECTION_END, android.view.accessibility.AccessibilityEvent.TYPE_GESTURE_DETECTION_START, android.view.accessibility.AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED, android.view.accessibility.AccessibilityEvent.TYPE_SPEECH_STATE_CHANGE, android.view.accessibility.AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END, android.view.accessibility.AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_START, android.view.accessibility.AccessibilityEvent.TYPE_TOUCH_INTERACTION_END, android.view.accessibility.AccessibilityEvent.TYPE_TOUCH_INTERACTION_START, android.view.accessibility.AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED, android.view.accessibility.AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED, android.view.accessibility.AccessibilityEvent.TYPE_VIEW_CLICKED, android.view.accessibility.AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED, android.view.accessibility.AccessibilityEvent.TYPE_VIEW_FOCUSED, android.view.accessibility.AccessibilityEvent.TYPE_VIEW_HOVER_ENTER, android.view.accessibility.AccessibilityEvent.TYPE_VIEW_HOVER_EXIT, android.view.accessibility.AccessibilityEvent.TYPE_VIEW_LONG_CLICKED, android.view.accessibility.AccessibilityEvent.TYPE_VIEW_SELECTED, android.view.accessibility.AccessibilityEvent.TYPE_VIEW_TARGETED_BY_SCROLL, android.view.accessibility.AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, android.view.accessibility.AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED, android.view.accessibility.AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY, android.view.accessibility.AccessibilityEvent.TYPE_WINDOWS_CHANGED, android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED"/>
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/unswipe/android/data/services/SwipeAccessibilityService.kt"
+            line="62"
+            column="9"
+            startOffset="2506"
+            endLine="62"
+            endColumn="13"
+            endOffset="2510"/>
+    </incident>
+
+    <incident
+        id="AutoboxingStateCreation"
+        severity="informational"
+        message="Prefer `mutableIntStateOf` instead of `mutableStateOf`">
+        <fix-replace
+            description="Replace with mutableIntStateOf"
+            replacement="androidx.compose.runtime.mutableIntStateOf"
+            shortenNames="true"
+            priority="0">
+            <range
+                file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/unswipe/android/ui/onboarding/SleepTimeScreen.kt"
+                startOffset="412"
+                endOffset="426"/>
+        </fix-replace>
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/unswipe/android/ui/onboarding/SleepTimeScreen.kt"
+            line="14"
+            column="28"
+            startOffset="412"
+            endLine="14"
+            endColumn="42"
+            endOffset="426"/>
+    </incident>
+
+    <incident
+        id="AutoboxingStateCreation"
+        severity="informational"
+        message="Prefer `mutableIntStateOf` instead of `mutableStateOf`">
+        <fix-replace
+            description="Replace with mutableIntStateOf"
+            replacement="androidx.compose.runtime.mutableIntStateOf"
+            shortenNames="true"
+            priority="0">
+            <range
+                file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/unswipe/android/ui/onboarding/SleepTimeScreen.kt"
+                startOffset="484"
+                endOffset="498"/>
+        </fix-replace>
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/unswipe/android/ui/onboarding/SleepTimeScreen.kt"
+            line="15"
+            column="30"
+            startOffset="484"
+            endLine="15"
+            endColumn="44"
+            endOffset="498"/>
+    </incident>
+
+    <incident
+        id="AutoboxingStateCreation"
+        severity="informational"
+        message="Prefer `mutableIntStateOf` instead of `mutableStateOf`">
+        <fix-replace
+            description="Replace with mutableIntStateOf"
+            replacement="androidx.compose.runtime.mutableIntStateOf"
+            shortenNames="true"
+            priority="0">
+            <range
+                file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/unswipe/android/ui/onboarding/WorkTimeScreen.kt"
+                startOffset="411"
+                endOffset="425"/>
+        </fix-replace>
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/unswipe/android/ui/onboarding/WorkTimeScreen.kt"
+            line="14"
+            column="28"
+            startOffset="411"
+            endLine="14"
+            endColumn="42"
+            endOffset="425"/>
+    </incident>
+
+    <incident
+        id="AutoboxingStateCreation"
+        severity="informational"
+        message="Prefer `mutableIntStateOf` instead of `mutableStateOf`">
+        <fix-replace
+            description="Replace with mutableIntStateOf"
+            replacement="androidx.compose.runtime.mutableIntStateOf"
+            shortenNames="true"
+            priority="0">
+            <range
+                file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/unswipe/android/ui/onboarding/WorkTimeScreen.kt"
+                startOffset="487"
+                endOffset="501"/>
+        </fix-replace>
+        <location
+            file="${:app*debug*MAIN*sourceProvider*0*javaDir*0}/com/unswipe/android/ui/onboarding/WorkTimeScreen.kt"
+            line="15"
+            column="30"
+            startOffset="487"
+            endLine="15"
+            endColumn="44"
+            endOffset="501"/>
+    </incident>
+
+    <incident
+        id="OldTargetApi"
+        severity="warning"
+        message="Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the `android.os.Build.VERSION_CODES` javadoc for details.">
+        <fix-replace
+            description="Update targetSdkVersion to 35"
+            oldString="34"
+            replacement="35"
+            priority="0"/>
+        <location
+            file="${:app*projectDir}/build.gradle.kts"
+            line="22"
+            column="9"
+            startOffset="697"
+            endLine="22"
+            endColumn="23"
+            endOffset="711"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.core:core-ktx than 1.13.1 is available: 1.16.0">
+        <fix-replace
+            description="Change to 1.16.0"
+            family="Update versions"
+            oldString="1.13.1"
+            replacement="1.16.0"
+            priority="0"/>
+        <location
+            file="${:app*projectDir}/build.gradle.kts"
+            line="66"
+            column="21"
+            startOffset="1816"
+            endLine="66"
+            endColumn="50"
+            endOffset="1845"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.8.7 is available: 2.9.1">
+        <fix-replace
+            description="Change to 2.9.1"
+            family="Update versions"
+            oldString="2.8.7"
+            replacement="2.9.1"
+            priority="0"/>
+        <location
+            file="${:app*projectDir}/build.gradle.kts"
+            line="67"
+            column="21"
+            startOffset="1894"
+            endLine="67"
+            endColumn="67"
+            endOffset="1940"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.activity:activity-compose than 1.9.0 is available: 1.10.1">
+        <fix-replace
+            description="Change to 1.10.1"
+            family="Update versions"
+            oldString="1.9.0"
+            replacement="1.10.1"
+            priority="0"/>
+        <location
+            file="${:app*projectDir}/build.gradle.kts"
+            line="68"
+            column="21"
+            startOffset="1981"
+            endLine="68"
+            endColumn="61"
+            endOffset="2021"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.compose:compose-bom than 2025.04.00 is available: 2025.06.01">
+        <fix-replace
+            description="Change to 2025.06.01"
+            family="Update versions"
+            oldString="2025.04.00"
+            replacement="2025.06.01"
+            priority="0"/>
+        <location
+            file="${:app*projectDir}/build.gradle.kts"
+            line="77"
+            column="20"
+            startOffset="2277"
+            endLine="77"
+            endColumn="71"
+            endOffset="2328"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.lifecycle:lifecycle-viewmodel-compose than 2.8.7 is available: 2.9.1">
+        <fix-replace
+            description="Change to 2.9.1"
+            family="Update versions"
+            oldString="2.8.7"
+            replacement="2.9.1"
+            priority="0"/>
+        <location
+            file="${:app*projectDir}/build.gradle.kts"
+            line="82"
+            column="21"
+            startOffset="2591"
+            endLine="82"
+            endColumn="73"
+            endOffset="2643"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.navigation:navigation-compose than 2.8.9 is available: 2.9.0">
+        <fix-replace
+            description="Change to 2.9.0"
+            family="Update versions"
+            oldString="2.8.9"
+            replacement="2.9.0"
+            priority="0"/>
+        <location
+            file="${:app*projectDir}/build.gradle.kts"
+            line="91"
+            column="21"
+            startOffset="2888"
+            endLine="91"
+            endColumn="65"
+            endOffset="2932"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.room:room-runtime than 2.7.1 is available: 2.7.2">
+        <fix-replace
+            description="Change to 2.7.2"
+            family="Update versions"
+            oldString="2.7.1"
+            replacement="2.7.2"
+            priority="0"/>
+        <location
+            file="${:app*projectDir}/build.gradle.kts"
+            line="101"
+            column="21"
+            startOffset="3396"
+            endLine="101"
+            endColumn="53"
+            endOffset="3428"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.room:room-ktx than 2.7.1 is available: 2.7.2">
+        <fix-replace
+            description="Change to 2.7.2"
+            family="Update versions"
+            oldString="2.7.1"
+            replacement="2.7.2"
+            priority="0"/>
+        <location
+            file="${:app*projectDir}/build.gradle.kts"
+            line="102"
+            column="21"
+            startOffset="3485"
+            endLine="102"
+            endColumn="49"
+            endOffset="3513"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.room:room-compiler than 2.7.1 is available: 2.7.2">
+        <fix-replace
+            description="Change to 2.7.2"
+            family="Update versions"
+            oldString="2.7.1"
+            replacement="2.7.2"
+            priority="0"/>
+        <location
+            file="${:app*projectDir}/build.gradle.kts"
+            line="103"
+            column="10"
+            startOffset="3563"
+            endLine="103"
+            endColumn="43"
+            endOffset="3596"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.datastore:datastore-preferences than 1.1.4 is available: 1.1.7">
+        <fix-replace
+            description="Change to 1.1.7"
+            family="Update versions"
+            oldString="1.1.4"
+            replacement="1.1.7"
+            priority="0"/>
+        <location
+            file="${:app*projectDir}/build.gradle.kts"
+            line="106"
+            column="21"
+            startOffset="3687"
+            endLine="106"
+            endColumn="67"
+            endOffset="3733"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of com.google.firebase:firebase-bom than 33.12.0 is available: 33.16.0">
+        <fix-replace
+            description="Change to 33.16.0"
+            family="Update versions"
+            oldString="33.12.0"
+            replacement="33.16.0"
+            priority="0"/>
+        <location
+            file="${:app*projectDir}/build.gradle.kts"
+            line="109"
+            column="20"
+            startOffset="3815"
+            endLine="109"
+            endColumn="72"
+            endOffset="3867"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of com.android.billingclient:billing-ktx than 6.1.0 is available: 8.0.0">
+        <fix-replace
+            description="Change to 8.0.0"
+            family="Update versions"
+            oldString="6.1.0"
+            replacement="8.0.0"
+            priority="0"/>
+        <location
+            file="${:app*projectDir}/build.gradle.kts"
+            line="114"
+            column="21"
+            startOffset="4064"
+            endLine="114"
+            endColumn="64"
+            endOffset="4107"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.work:work-runtime-ktx than 2.9.0 is available: 2.10.2">
+        <fix-replace
+            description="Change to 2.10.2"
+            family="Update versions"
+            oldString="2.9.0"
+            replacement="2.10.2"
+            priority="0"/>
+        <location
+            file="${:app*projectDir}/build.gradle.kts"
+            line="117"
+            column="21"
+            startOffset="4169"
+            endLine="117"
+            endColumn="57"
+            endOffset="4205"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.compose:compose-bom than 2025.04.00 is available: 2025.06.01">
+        <fix-replace
+            description="Change to 2025.06.01"
+            family="Update versions"
+            oldString="2025.04.00"
+            replacement="2025.06.01"
+            priority="0"/>
+        <location
+            file="${:app*projectDir}/build.gradle.kts"
+            line="136"
+            column="31"
+            startOffset="4972"
+            endLine="136"
+            endColumn="82"
+            endOffset="5023"/>
+    </incident>
+
+</incidents>

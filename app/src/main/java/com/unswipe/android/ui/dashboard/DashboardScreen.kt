@@ -5,68 +5,661 @@ package com.unswipe.android.ui.dashboard
 import android.content.Intent
 import android.provider.Settings
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.unswipe.android.ui.components.DashboardHeader
 import com.unswipe.android.ui.components.HourlyUsageChart
 import com.unswipe.android.ui.components.StatCard
+import com.unswipe.android.ui.theme.*
 
 @Composable
 fun DashboardScreen(
-    viewModel: DashboardViewModel = hiltViewModel(),
+    viewModel: DashboardViewModel,
     onNavigateToSettings: () -> Unit,
+    onNavigateToUnlocksDetail: () -> Unit = {},
+    onNavigateToAppLaunchesDetail: () -> Unit = {},
     onLogout: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Scaffold(
-        // The top bar can be removed if the header is handled within the content
-    ) { padding ->
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        UnswipeBlack,
+                        UnswipeSurface
+                    )
+                )
+            )
+    ) {
         when {
             uiState.isLoading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(
+                        color = UnswipePrimary,
+                        strokeWidth = 3.dp,
+                        modifier = Modifier.size(48.dp)
+                    )
                 }
             }
             uiState.error != null -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = "Error: ${uiState.error}",
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(16.dp)
-                    )
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = UnswipeCard
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "⚠️",
+                                style = MaterialTheme.typography.headlineLarge,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+                            Text(
+                                text = "Something went wrong",
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    color = UnswipeTextPrimary,
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                textAlign = TextAlign.Center
+                            )
+                            Text(
+                                text = uiState.error ?: "Unknown error",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = UnswipeTextSecondary
+                                ),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+                        }
+                    }
                 }
             }
             else -> {
-                DashboardContent(
-                    modifier = Modifier.padding(padding),
+                ModernDashboardContent(
                     state = uiState,
-                    onNavigateToSettings = onNavigateToSettings
+                    onNavigateToSettings = onNavigateToSettings,
+                    onNavigateToUnlocksDetail = onNavigateToUnlocksDetail,
+                    onNavigateToAppLaunchesDetail = onNavigateToAppLaunchesDetail,
+                    onLogout = onLogout
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ModernDashboardContent(
+    state: DashboardUiState,
+    onNavigateToSettings: () -> Unit,
+    onNavigateToUnlocksDetail: () -> Unit = {},
+    onNavigateToAppLaunchesDetail: () -> Unit = {},
+    onLogout: () -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        item {
+            Spacer(modifier = Modifier.height(40.dp))
+            
+            // Header with greeting and settings
+            ModernDashboardHeader(
+                userName = "Eddie", // TODO: Get from user preferences
+                onNavigateToSettings = onNavigateToSettings
+            )
+        }
+        
+        item {
+            // Main usage card
+            UsageOverviewCard(
+                timeUsed = state.timeUsedTodayFormatted,
+                timeRemaining = state.timeRemainingFormatted,
+                usagePercentage = state.usagePercentage
+            )
+        }
+        
+        // Permission prompts if needed
+        if (state.showUsagePermissionPrompt || state.showAccessibilityPrompt) {
+            item {
+                ModernPermissionPrompts(
+                    showUsagePermissionPrompt = state.showUsagePermissionPrompt,
+                    showAccessibilityPrompt = state.showAccessibilityPrompt
+                )
+            }
+        }
+        
+        item {
+            // Stats cards row
+            StatsCardsRow(
+                unlocks = state.unlocksToday,
+                launches = state.swipesToday,
+                streak = state.currentStreak,
+                onUnlocksClick = onNavigateToUnlocksDetail,
+                onAppLaunchesClick = onNavigateToAppLaunchesDetail
+            )
+        }
+        
+        item {
+            // Weekly progress chart
+            WeeklyProgressCard(
+                summaries = state.weeklyProgress
+            )
+        }
+        
+        item {
+            Spacer(modifier = Modifier.height(100.dp)) // Bottom padding
+        }
+    }
+}
+
+@Composable
+private fun ModernDashboardHeader(
+    userName: String,
+    onNavigateToSettings: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column {
+            Text(
+                text = "Hi, $userName",
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = UnswipeTextPrimary
+                )
+            )
+            Text(
+                text = "Let's check your progress",
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = UnswipeTextSecondary,
+                    fontSize = 16.sp
+                )
+            )
+        }
+        
+        IconButton(
+            onClick = onNavigateToSettings,
+            modifier = Modifier
+                .size(48.dp)
+                .background(
+                    color = UnswipeCard,
+                    shape = CircleShape
+                )
+        ) {
+            Icon(
+                imageVector = Icons.Default.Settings,
+                contentDescription = "Settings",
+                tint = UnswipeTextPrimary,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun UsageOverviewCard(
+    timeUsed: String,
+    timeRemaining: String,
+    usagePercentage: Float
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = UnswipeCard
+        ),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Box {
+            // Background gradient
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp)
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                UnswipePrimary.copy(alpha = 0.1f),
+                                UnswipeSecondary.copy(alpha = 0.1f)
+                            )
+                        )
+                    )
+            )
+            
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Column {
+                        Text(
+                            text = timeUsed,
+                            style = MaterialTheme.typography.headlineLarge.copy(
+                                fontSize = 36.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = UnswipePrimary
+                            )
+                        )
+                        Text(
+                            text = "Total screen time today",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = UnswipeTextSecondary,
+                                fontSize = 14.sp
+                            )
+                        )
+                    }
+                    
+                    // Circular progress indicator
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.size(64.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            progress = { usagePercentage },
+                            modifier = Modifier.size(64.dp),
+                            color = UnswipePrimary,
+                            strokeWidth = 6.dp,
+                            trackColor = UnswipeGray.copy(alpha = 0.3f)
+                        )
+                        Text(
+                            text = "${(usagePercentage * 100).toInt()}%",
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = UnswipeTextPrimary,
+                                fontSize = 12.sp
+                            )
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(20.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Remaining",
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                color = UnswipeTextSecondary,
+                                fontSize = 12.sp
+                            )
+                        )
+                        Text(
+                            text = timeRemaining,
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                color = UnswipeTextPrimary,
+                                fontSize = 18.sp
+                            )
+                        )
+                    }
+                    
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Status",
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                color = UnswipeTextSecondary,
+                                fontSize = 12.sp
+                            )
+                        )
+                        Text(
+                            text = if (usagePercentage < 0.8f) "On Track 🎯" else "Over Limit ⚠️",
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (usagePercentage < 0.8f) UnswipeGreen else UnswipeWarning,
+                                fontSize = 18.sp
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun StatsCardsRow(
+    unlocks: Int,
+    launches: Int,
+    streak: Int,
+    onUnlocksClick: () -> Unit = {},
+    onAppLaunchesClick: () -> Unit = {}
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        StatCard(
+            modifier = Modifier.weight(1f),
+            icon = "🔓",
+            value = unlocks.toString(),
+            label = "Unlocks",
+            color = UnswipeSecondary,
+            onClick = onUnlocksClick
+        )
+        
+        StatCard(
+            modifier = Modifier.weight(1f),
+            icon = "📱",
+            value = launches.toString(),
+            label = "App Launches",
+            color = UnswipeWarning,
+            onClick = onAppLaunchesClick
+        )
+        
+        StatCard(
+            modifier = Modifier.weight(1f),
+            icon = "🔥",
+            value = "${streak}d",
+            label = "Goal Streak",
+            color = UnswipeGreen
+        )
+    }
+}
+
+@Composable
+private fun StatCard(
+    modifier: Modifier = Modifier,
+    icon: String,
+    value: String,
+    label: String,
+    color: androidx.compose.ui.graphics.Color,
+    onClick: (() -> Unit)? = null
+) {
+    Card(
+        modifier = modifier
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable { onClick() }
+                } else {
+                    Modifier
+                }
+            ),
+        colors = CardDefaults.cardColors(
+            containerColor = UnswipeCard
+        ),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = icon,
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    fontSize = 24.sp
+                ),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = color,
+                    fontSize = 20.sp
+                )
+            )
+            
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    color = UnswipeTextSecondary,
+                    fontSize = 12.sp
+                ),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+private fun WeeklyProgressCard(
+    summaries: List<DailyUsageSummary>
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = UnswipeCard
+        ),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+        ) {
+            Text(
+                text = "Weekly Progress",
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = UnswipeTextPrimary,
+                    fontSize = 20.sp
+                )
+            )
+            
+            Text(
+                text = "Your daily usage pattern",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = UnswipeTextSecondary,
+                    fontSize = 14.sp
+                ),
+                modifier = Modifier.padding(bottom = 20.dp)
+            )
+            
+            ModernWeeklyChart(summaries = summaries)
+        }
+    }
+}
+
+@Composable
+private fun ModernWeeklyChart(
+    summaries: List<DailyUsageSummary>
+) {
+    val maxBarHeight = 80.dp
+    
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Bottom
+    ) {
+        summaries.forEach { summary ->
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.weight(1f)
+            ) {
+                val barHeight = maxBarHeight * summary.usagePercentage
+                val barColor = when {
+                    summary.isToday -> UnswipePrimary
+                    summary.usagePercentage < 0.5f -> UnswipeGreen
+                    summary.usagePercentage < 0.8f -> UnswipeWarning
+                    else -> UnswipeRed
+                }
+                
+                Box(
+                    modifier = Modifier
+                        .width(24.dp)
+                        .height(barHeight)
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    barColor,
+                                    barColor.copy(alpha = 0.6f)
+                                )
+                            ),
+                            shape = RoundedCornerShape(
+                                topStart = 12.dp,
+                                topEnd = 12.dp
+                            )
+                        )
+                )
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Text(
+                    text = summary.dayLabel,
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        color = if (summary.isToday) UnswipePrimary else UnswipeTextSecondary,
+                        fontWeight = if (summary.isToday) FontWeight.Bold else FontWeight.Normal,
+                        fontSize = 11.sp
+                    )
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ModernPermissionPrompts(
+    showUsagePermissionPrompt: Boolean,
+    showAccessibilityPrompt: Boolean
+) {
+    val context = LocalContext.current
+    
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        if (showUsagePermissionPrompt) {
+            ModernPermissionCard(
+                icon = "📊",
+                title = "Usage Access Required",
+                description = "Grant permission to track your app usage",
+                buttonText = "Grant Access",
+                onGrantClick = {
+                    val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                    context.startActivity(intent)
+                }
+            )
+        }
+        
+        if (showAccessibilityPrompt) {
+            ModernPermissionCard(
+                icon = "🛡️",
+                title = "Accessibility Service Required",
+                description = "Enable service for app launch confirmations",
+                buttonText = "Enable Service",
+                onGrantClick = {
+                    val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                    context.startActivity(intent)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ModernPermissionCard(
+    icon: String,
+    title: String,
+    description: String,
+    buttonText: String,
+    onGrantClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = UnswipeWarning.copy(alpha = 0.1f)
+        ),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(width = 1.dp, color = UnswipeWarning.copy(alpha = 0.3f))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = icon,
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    fontSize = 24.sp
+                ),
+                modifier = Modifier.padding(end = 16.dp)
+            )
+            
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = UnswipeTextPrimary
+                    )
+                )
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        color = UnswipeTextSecondary
+                    )
+                )
+            }
+            
+            Button(
+                onClick = onGrantClick,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = UnswipeWarning,
+                    contentColor = UnswipeBlack
+                ),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.padding(start = 8.dp)
+            ) {
+                Text(
+                    text = buttonText,
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontWeight = FontWeight.SemiBold
+                    )
                 )
             }
         }
@@ -77,7 +670,9 @@ fun DashboardScreen(
 fun DashboardContent(
     modifier: Modifier = Modifier,
     state: DashboardUiState,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    onNavigateToUnlocksDetail: () -> Unit = {},
+    onNavigateToAppLaunchesDetail: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -104,7 +699,13 @@ fun DashboardContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        WeeklyUsageChart(weeklyProgress = state.weeklyProgress)
+        WeeklyUsageChart(
+            summaries = state.weeklyProgress,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(160.dp),
+            onBarClicked = { /* Handle bar click */ }
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -117,12 +718,14 @@ fun DashboardContent(
             StatCard(
                 modifier = Modifier.weight(1f),
                 label = "Screen Unlocks",
-                value = state.unlocksToday.toString()
+                value = state.unlocksToday.toString(),
+                onClick = onNavigateToUnlocksDetail
             )
             StatCard(
                 modifier = Modifier.weight(1f),
                 label = "App Launches",
-                value = state.swipesToday.toString() // Assuming swipes == app launches for now
+                value = state.swipesToday.toString(), // Assuming swipes == app launches for now
+                onClick = onNavigateToAppLaunchesDetail
             )
              StatCard(
                 modifier = Modifier.weight(1f),
@@ -280,7 +883,7 @@ private fun PermissionPromptCard(
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colorScheme.onErrorContainer
                 ),
-                border = androidx.compose.foundation.BorderStroke(
+                border = BorderStroke(
                     1.dp,
                     MaterialTheme.colorScheme.onErrorContainer
                 )
@@ -291,6 +894,7 @@ private fun PermissionPromptCard(
     }
 }
 
+@Composable
 fun DayProgressView(summary: DailyUsageSummary) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

@@ -2,10 +2,12 @@ package com.unswipe.android.di
 
 import com.unswipe.android.data.repository.AuthRepositoryImpl
 import com.unswipe.android.data.repository.BillingRepositoryImpl
+import com.unswipe.android.data.repository.OnboardingRepositoryImpl
 import com.unswipe.android.data.repository.SettingsRepositoryImpl
 import com.unswipe.android.data.repository.UsageRepositoryImpl
 import com.unswipe.android.domain.repository.AuthRepository
 import com.unswipe.android.domain.repository.BillingRepository
+import com.unswipe.android.domain.repository.OnboardingRepository
 import com.unswipe.android.domain.repository.SettingsRepository
 import com.unswipe.android.domain.repository.UsageRepository
 import dagger.Binds
@@ -34,5 +36,9 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindBillingRepository(impl: BillingRepositoryImpl): BillingRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindOnboardingRepository(impl: OnboardingRepositoryImpl): OnboardingRepository
 
 } 

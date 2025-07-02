@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.unswipe.android.app-mergeReleaseResources-86:/values-v16/values-v16.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\kp_ss\\.gradle\\caches\\8.11.1\\transforms\\86b68c1caeda026da2eceae84890a437\\transformed\\appcompat-1.6.1\\res\\values-v16\\values-v16.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "5",
+                        "endColumns": "12",
+                        "endOffsets": "223"
+                    }
+                }
+            ]
+        }
+    ]
+}

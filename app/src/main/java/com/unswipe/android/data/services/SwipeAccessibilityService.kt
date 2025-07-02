@@ -33,6 +33,9 @@ class SwipeAccessibilityService : AccessibilityService() {
 
     private var trackedAppPackages: Set<String> = emptySet()
     private var isConfirmationEnabled = true // Default, should be fetched
+    private var lastConfirmationTime = 0L
+    private var lastConfirmationPackage = ""
+    private val CONFIRMATION_DEBOUNCE_MS = 3000L // 3 seconds between confirmations for same app
 
     // --- FIX: Move constants to companion object ---
     companion object {
@@ -72,7 +75,7 @@ class SwipeAccessibilityService : AccessibilityService() {
                         serviceScope.launch {
                             // Fetch dynamic settings inside coroutine
                             val isBlocked = settingsRepository.isAppBlocked(packageName)
-                            if (isBlocked) {
+                            if (isBlocked && shouldShowConfirmation(packageName)) {
                                 showConfirmation(packageName)
                             }
                         }
@@ -88,6 +91,20 @@ class SwipeAccessibilityService : AccessibilityService() {
         return className != null &&
                 (className.contains("Activity", ignoreCase = true) || className.contains("Shell", ignoreCase=true) )&& // Common patterns
                 className != ConfirmationActivity::class.java.name // Exclude our own
+    }
+
+    // Debounce mechanism to prevent spam
+    private fun shouldShowConfirmation(packageName: String): Boolean {
+        val currentTime = System.currentTimeMillis()
+        val shouldShow = packageName != lastConfirmationPackage || 
+                        (currentTime - lastConfirmationTime) > CONFIRMATION_DEBOUNCE_MS
+        
+        if (shouldShow) {
+            lastConfirmationTime = currentTime
+            lastConfirmationPackage = packageName
+        }
+        
+        return shouldShow
     }
 
     private fun logSwipeEvent(packageName: String) {
@@ -117,11 +134,11 @@ class SwipeAccessibilityService : AccessibilityService() {
         Log.i(TAG, "Showing confirmation prompt for $appName ($packageName)")
 
         val intent = ConfirmationActivity.newIntent(this, appName, packageName)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         try {
             startActivity(intent)
-            // Optional: Attempt to prevent target app from fully opening (tricky)
-            // performGlobalAction(GLOBAL_ACTION_BACK) // Requires specific permission/config
+            // Block the target app from opening by going back
+            performGlobalAction(GLOBAL_ACTION_BACK)
         } catch (e: Exception) {
             Log.e(TAG,"Error starting ConfirmationActivity", e)
         }

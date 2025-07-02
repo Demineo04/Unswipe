@@ -16,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -46,10 +47,10 @@ data class ConfirmationUiState(
     val showUpgradePrompt: Boolean = false
 ) {
     val todayUsageFormatted: String
-        get() = formatTime(todayUsageMillis)
+        get() = TimeUtils.formatTime(todayUsageMillis)
     
     val dailyLimitFormatted: String
-        get() = formatTime(dailyLimitMillis)
+        get() = TimeUtils.formatTime(dailyLimitMillis)
     
     val usagePercentage: Float
         get() = if (dailyLimitMillis > 0) {
@@ -57,7 +58,7 @@ data class ConfirmationUiState(
         } else 0f
 }
 
-@HiltViewModel
+// @HiltViewModel
 class ConfirmationViewModel @Inject constructor(
     private val usageRepository: UsageRepository,
     private val settingsRepository: SettingsRepository,
@@ -95,7 +96,7 @@ class ConfirmationViewModel @Inject constructor(
                 val bypassCredits = if (isPremium) premiumRepository.getBypassCredits() else null
                 
                 // Check focus mode status
-                val activeFocusMode = focusModeManager.getActiveFocusMode()
+                val activeFocusMode = null // focusModeManager.getActiveFocusMode() // TODO: Implement this method
                 val isBlockedByFocusMode = focusModeManager.isAppBlockedByFocusMode(packageName)
                 val focusModeMessage = if (isBlockedByFocusMode) {
                     focusModeManager.getFocusModeInterventionMessage(packageName)
@@ -143,7 +144,7 @@ class ConfirmationViewModel @Inject constructor(
                     // Premium features
                     bypassCreditsAvailable = bypassCredits?.available ?: 0,
                     canUseBypassCredit = bypassCredits?.canUseBypass == true && isPremium,
-                    focusModeActive = activeFocusMode?.name,
+                    focusModeActive = null, // activeFocusMode?.name // TODO: Implement focus mode
                     canUseEmergencyBypass = focusModeManager.canUseEmergencyBypass() && isPremium,
                     customMessage = customMessages[packageName],
                     showUpgradePrompt = !isPremium && (isOverLimit || sessionCount > 10),
@@ -159,8 +160,8 @@ class ConfirmationViewModel @Inject constructor(
     }
 
     private fun generateUsageMessage(appName: String, todayUsage: Long, dailyLimit: Long, isOverLimit: Boolean): String {
-        val usageFormatted = formatTime(todayUsage)
-        val limitFormatted = formatTime(dailyLimit)
+        val usageFormatted = TimeUtils.formatTime(todayUsage)
+        val limitFormatted = TimeUtils.formatTime(dailyLimit)
         
         return when {
             isOverLimit -> "You've already used $appName for $usageFormatted today (limit: $limitFormatted)"
@@ -175,7 +176,7 @@ class ConfirmationViewModel @Inject constructor(
         
         return when {
             todayUsage >= dailyLimit -> "Consider taking a break and doing something offline instead 🌱"
-            remainingTime < TimeUnit.MINUTES.toMillis(30) -> "You have ${formatTime(remainingTime)} left today. Make it count! ⏰"
+            remainingTime < TimeUnit.MINUTES.toMillis(30) -> "You have ${TimeUtils.formatTime(remainingTime)} left today. Make it count! ⏰"
             todayUsage > dailyLimit * 0.8 -> "You're doing great managing your screen time! 💪"
             else -> "Remember your digital wellness goals 🎯"
         }
@@ -255,7 +256,10 @@ class ConfirmationViewModel @Inject constructor(
 
 
 
-    private fun formatTime(millis: Long): String {
+}
+
+object TimeUtils {
+    fun formatTime(millis: Long): String {
         val hours = TimeUnit.MILLISECONDS.toHours(millis)
         val minutes = TimeUnit.MILLISECONDS.toMinutes(millis) % 60
 
@@ -268,7 +272,3 @@ class ConfirmationViewModel @Inject constructor(
     }
 }
 
-// Extension function to get first value from Flow
-private suspend fun <T> kotlinx.coroutines.flow.Flow<T>.first(): T {
-    return kotlinx.coroutines.flow.first()
-}
