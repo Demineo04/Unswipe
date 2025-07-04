@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.unswipe.android.ui.components.EnhancedConfirmationDialog
 import com.unswipe.android.ui.theme.*
+import com.unswipe.android.util.AppNameMapper
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -60,6 +61,13 @@ class ConfirmationActivity : ComponentActivity() {
         val appName = intent.getStringExtra(EXTRA_APP_NAME) ?: "this app"
         val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME) ?: ""
 
+        // Ensure we have the best possible app name using AppNameMapper
+        val finalAppName = if (packageName.isNotEmpty()) {
+            AppNameMapper.getAppName(this, packageName)
+        } else {
+            appName
+        }
+
         setContent {
             UnswipeTheme {
                 // val viewModel: ConfirmationViewModel = hiltViewModel() // TEMPORARILY DISABLED
@@ -67,7 +75,8 @@ class ConfirmationActivity : ComponentActivity() {
                 
                 // Beautiful confirmation overlay
                 ModernConfirmationOverlay(
-                    appName = appName,
+                    appName = finalAppName,
+                    packageName = packageName,
                     appIcon = getAppIcon(packageName),
                     onConfirm = {
                         // User confirmed - allow app to open
@@ -127,6 +136,7 @@ class ConfirmationActivity : ComponentActivity() {
 @Composable
 fun ModernConfirmationOverlay(
     appName: String,
+    packageName: String,
     appIcon: Drawable?,
     onConfirm: () -> Unit,
     onCancel: () -> Unit
@@ -228,17 +238,44 @@ fun ModernConfirmationOverlay(
                 
                 Spacer(modifier = Modifier.height(24.dp))
                 
-                // Question text
-                Text(
-                    text = "Do you really want to open ${appName}?",
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = UnswipeTextPrimary,
-                        lineHeight = 28.sp
-                    ),
-                    textAlign = TextAlign.Center
-                )
+                // Question text with context-aware messaging
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Do you really want to open $appName?",
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = UnswipeTextPrimary,
+                            lineHeight = 28.sp
+                        ),
+                        textAlign = TextAlign.Center
+                    )
+                    
+                    // Add contextual message for social media apps
+                    if (AppNameMapper.isSocialMediaApp(packageName)) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Consider your digital wellness goals 📱",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = UnswipeTextSecondary,
+                                fontSize = 14.sp
+                            ),
+                            textAlign = TextAlign.Center
+                        )
+                    } else if (AppNameMapper.isEntertainmentApp(packageName)) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Remember your time goals ⏰",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = UnswipeTextSecondary,
+                                fontSize = 14.sp
+                            ),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
                 
                 Spacer(modifier = Modifier.height(32.dp))
                 

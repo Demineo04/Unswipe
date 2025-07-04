@@ -41,6 +41,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unswipe.android.domain.repository.UsageRepository
 import com.unswipe.android.ui.theme.*
+import com.unswipe.android.util.AppNameMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -130,33 +131,41 @@ class AppsUsageViewModel @Inject constructor(
     }
 
     private suspend fun getRealAppsUsageData(): List<AppUsageData> {
-        // Common social media and entertainment apps to track
-        val appsToTrack = mapOf(
-            "com.zhiliaoapp.musically" to ("TikTok" to AppCategory.SOCIAL_MEDIA),
-            "com.instagram.android" to ("Instagram" to AppCategory.SOCIAL_MEDIA),
-            "com.google.android.youtube" to ("YouTube" to AppCategory.ENTERTAINMENT),
-            "com.facebook.katana" to ("Facebook" to AppCategory.SOCIAL_MEDIA),
-            "com.snapchat.android" to ("Snapchat" to AppCategory.SOCIAL_MEDIA),
-            "com.twitter.android" to ("Twitter" to AppCategory.SOCIAL_MEDIA),
-            "com.reddit.frontpage" to ("Reddit" to AppCategory.SOCIAL_MEDIA),
-            "com.discord" to ("Discord" to AppCategory.COMMUNICATION),
-            "com.whatsapp" to ("WhatsApp" to AppCategory.COMMUNICATION),
-            "com.netflix.mediaclient" to ("Netflix" to AppCategory.ENTERTAINMENT),
-            "com.spotify.music" to ("Spotify" to AppCategory.ENTERTAINMENT),
-            "com.microsoft.teams" to ("Teams" to AppCategory.PRODUCTIVITY),
-            "com.slack" to ("Slack" to AppCategory.PRODUCTIVITY),
-            "com.google.android.gm" to ("Gmail" to AppCategory.PRODUCTIVITY),
-            "com.chrome.browser" to ("Chrome" to AppCategory.PRODUCTIVITY)
+        // List of commonly tracked apps (package names only)
+        val appsToTrack = listOf(
+            "com.zhiliaoapp.musically", // TikTok
+            "com.instagram.android", // Instagram
+            "com.google.android.youtube", // YouTube
+            "com.facebook.katana", // Facebook
+            "com.snapchat.android", // Snapchat
+            "com.twitter.android", // Twitter
+            "com.reddit.frontpage", // Reddit
+            "com.discord", // Discord
+            "com.whatsapp", // WhatsApp
+            "com.netflix.mediaclient", // Netflix
+            "com.spotify.music", // Spotify
+            "com.microsoft.teams", // Teams
+            "com.slack", // Slack
+            "com.google.android.gm", // Gmail
+            "com.android.chrome", // Chrome
+            "com.pinterest", // Pinterest
+            "com.linkedin.android", // LinkedIn
+            "com.tumblr", // Tumblr
+            "com.tinder", // Tinder
+            "com.bumble.app" // Bumble
         )
 
         val appsData = mutableListOf<AppUsageData>()
         
-        for ((packageName, appInfo) in appsToTrack) {
-            val (appName, category) = appInfo
+        for (packageName in appsToTrack) {
             val usageTime = usageRepository.getAppUsageToday(packageName)
             val sessionCount = usageRepository.getSessionCountToday(packageName)
             
             if (usageTime > 0 || sessionCount > 0) {
+                // Use consistent app names
+                val appName = extractAppNameFromPackage(packageName)
+                val category = determineAppCategory(packageName)
+                
                 appsData.add(
                     AppUsageData(
                         packageName = packageName,
@@ -172,6 +181,44 @@ class AppsUsageViewModel @Inject constructor(
         }
         
         return appsData.sortedByDescending { it.usageTimeMillis }
+    }
+    
+    private fun extractAppNameFromPackage(packageName: String): String {
+        // Simple extraction logic as fallback
+        return when (packageName) {
+            "com.zhiliaoapp.musically" -> "TikTok"
+            "com.instagram.android" -> "Instagram"
+            "com.google.android.youtube" -> "YouTube"
+            "com.facebook.katana" -> "Facebook"
+            "com.snapchat.android" -> "Snapchat"
+            "com.twitter.android" -> "Twitter"
+            "com.reddit.frontpage" -> "Reddit"
+            "com.discord" -> "Discord"
+            "com.whatsapp" -> "WhatsApp"
+            "com.netflix.mediaclient" -> "Netflix"
+            "com.spotify.music" -> "Spotify"
+            "com.microsoft.teams" -> "Teams"
+            "com.slack" -> "Slack"
+            "com.google.android.gm" -> "Gmail"
+            "com.android.chrome" -> "Chrome"
+            "com.pinterest" -> "Pinterest"
+            "com.linkedin.android" -> "LinkedIn"
+            "com.tumblr" -> "Tumblr"
+            "com.tinder" -> "Tinder"
+            "com.bumble.app" -> "Bumble"
+            else -> packageName.split(".").lastOrNull()?.replaceFirstChar { it.uppercase() } ?: packageName
+        }
+    }
+    
+    private fun determineAppCategory(packageName: String): AppCategory {
+        return when {
+            AppNameMapper.isSocialMediaApp(packageName) -> AppCategory.SOCIAL_MEDIA
+            AppNameMapper.isEntertainmentApp(packageName) -> AppCategory.ENTERTAINMENT
+            packageName in listOf("com.whatsapp", "com.discord", "com.microsoft.teams", "com.slack") -> AppCategory.COMMUNICATION
+            packageName in listOf("com.google.android.gm", "com.android.chrome") -> AppCategory.PRODUCTIVITY
+            packageName in listOf("com.tinder", "com.bumble.app") -> AppCategory.OTHER
+            else -> AppCategory.OTHER
+        }
     }
 
     private fun categorizeAppsData(appsData: List<AppUsageData>): List<CategoryUsageData> {
