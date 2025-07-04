@@ -22,7 +22,7 @@ data class SettingsUiState(
     }
 }
 
-// @HiltViewModel
+@HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val authRepository: AuthRepository
@@ -38,17 +38,17 @@ class SettingsViewModel @Inject constructor(
     private fun loadSettings() {
         viewModelScope.launch {
             try {
+                val isPremium = authRepository.isUserPremium()
                 combine(
                     settingsRepository.getDailyLimitFlow(),
-                    flowOf(emptySet<String>()), // settingsRepository.getBlockedApps() // TODO: Implement
-                    flowOf(false) // settingsRepository.isPremium() // TODO: Implement
-                ) { dailyLimit, blockedApps, isPremium ->
+                    settingsRepository.getBlockedAppsFlow()
+                ) { dailyLimit, blockedApps ->
                     SettingsUiState(
                         isLoading = false,
                         dailyLimitMillis = dailyLimit,
                         blockedApps = blockedApps,
                         isPremium = isPremium,
-                        notificationsEnabled = true, // TODO: Add to repository
+                        notificationsEnabled = settingsRepository.getNotificationsEnabled(),
                         error = null
                     )
                 }.collect { newState ->
@@ -66,7 +66,7 @@ class SettingsViewModel @Inject constructor(
     fun updateDailyLimit(newLimitMillis: Long) {
         viewModelScope.launch {
             try {
-                // settingsRepository.setDailyLimitMillis(newLimitMillis) // TODO: Implement
+                settingsRepository.setDailyLimitMillis(newLimitMillis)
                 _uiState.value = _uiState.value.copy(
                     dailyLimitMillis = newLimitMillis,
                     error = null
@@ -82,7 +82,7 @@ class SettingsViewModel @Inject constructor(
     fun updateBlockedApps(newBlockedApps: Set<String>) {
         viewModelScope.launch {
             try {
-                // settingsRepository.setBlockedApps(newBlockedApps) // TODO: Implement
+                settingsRepository.setBlockedApps(newBlockedApps)
                 _uiState.value = _uiState.value.copy(
                     blockedApps = newBlockedApps,
                     error = null
@@ -109,16 +109,19 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 // Reset to default values
-                // settingsRepository.setDailyLimitMillis(2 * 60 * 60 * 1000L) // 2 hours // TODO: Implement
-                // settingsRepository.setBlockedApps(...) // TODO: Implement
+                val defaultLimit = 2 * 60 * 60 * 1000L // 2 hours
+                val defaultBlockedApps = setOf(
+                    "com.zhiliaoapp.musically",
+                    "com.instagram.android",
+                    "com.google.android.youtube"
+                )
+                
+                settingsRepository.setDailyLimitMillis(defaultLimit)
+                settingsRepository.setBlockedApps(defaultBlockedApps)
                 
                 _uiState.value = _uiState.value.copy(
-                    dailyLimitMillis = 2 * 60 * 60 * 1000L,
-                    blockedApps = setOf(
-                        "com.zhiliaoapp.musically",
-                        "com.instagram.android",
-                        "com.google.android.youtube"
-                    ),
+                    dailyLimitMillis = defaultLimit,
+                    blockedApps = defaultBlockedApps,
                     error = null
                 )
             } catch (e: Exception) {
@@ -139,8 +142,7 @@ class SettingsViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(isLoading = true)
                 
                 // Delete user account from Firebase Auth
-                authRepository.signOut() // For now, just sign out
-                // TODO: Implement actual account deletion in AuthRepository
+                authRepository.deleteAccount()
                 
                 // Clear all local settings
                 settingsRepository.clearAllData()
