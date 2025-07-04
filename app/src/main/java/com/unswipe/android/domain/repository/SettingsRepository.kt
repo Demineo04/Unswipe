@@ -120,5 +120,25 @@ interface SettingsRepository {
      * Removes a work WiFi SSID.
      */
     suspend fun removeWorkWifiSSID(ssid: String)
+    
+    /**
+     * Clears all user data and settings.
+     */
+    suspend fun clearAllData()
+    
+    /**
+     * Sets blocked apps
+     */
+    suspend fun setBlockedApps(apps: Set<String>)
+    
+    /**
+     * Sets daily limit in milliseconds
+     */
+    suspend fun setDailyLimitMillis(limitMillis: Long)
+    
+    /**
+     * Gets premium status
+     */
+    suspend fun isPremium(): Boolean
 
 }

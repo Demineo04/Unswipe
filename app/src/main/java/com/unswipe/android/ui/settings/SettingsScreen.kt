@@ -10,18 +10,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.unswipe.android.ui.navigation.Screen
 import com.unswipe.android.ui.theme.*
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,6 +33,26 @@ fun SettingsScreen(
     onNavigateTo: (String) -> Unit,
     onLogout: () -> Unit
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    
+    // Function to handle rate app
+    val handleRateApp = {
+        try {
+            val packageName = context.packageName
+            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                data = android.net.Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+                setPackage("com.android.vending")
+            }
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            // If Play Store is not available, open in browser
+            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
+                data = android.net.Uri.parse("https://play.google.com/store/apps/details?id=${context.packageName}")
+            }
+            context.startActivity(intent)
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -57,7 +80,7 @@ fun SettingsScreen(
                     items = listOf(
                         SettingsItemData("Edit Profile", Icons.Default.Person, onClick = { onNavigateTo(Screen.EditProfile.route) }),
                         SettingsItemData("Reset Password", Icons.Default.Lock, onClick = { onNavigateTo(Screen.ResetPassword.route) }),
-                        SettingsItemData("Notifications", Icons.Default.Notifications, onClick = { onNavigateTo(Screen.Notifications.route) })
+                        SettingsItemData("Notifications", Icons.Default.Notifications, onClick = { onNavigateTo(Screen.NotificationSettings.route) })
                     )
                 )
             }
@@ -79,7 +102,7 @@ fun SettingsScreen(
                     title = "Premium",
                     items = listOf(
                         SettingsItemData("Upgrade to Premium", Icons.Default.Star, isPremium = true, onClick = { onNavigateTo(Screen.Premium.route) }),
-                        SettingsItemData("Manage Subscription", Icons.Default.CreditCard, onClick = { onNavigateTo(Screen.ManageSubscription.route) })
+                        SettingsItemData("Manage Subscription", Icons.Default.CreditCard, onClick = { onNavigateTo(Screen.SubscriptionManagement.route) })
                     )
                 )
             }
@@ -88,9 +111,9 @@ fun SettingsScreen(
                 SettingsSection(
                     title = "Support",
                     items = listOf(
-                        SettingsItemData("Help & FAQ", Icons.Default.Help, onClick = { onNavigateTo(Screen.HelpFAQ.route) }),
-                        SettingsItemData("Contact Support", Icons.Default.Email, onClick = { onNavigateTo(Screen.ContactSupport.route) }),
-                        SettingsItemData("Rate App", Icons.Default.ThumbUp, onClick = { onNavigateTo(Screen.RateApp.route) })
+                        SettingsItemData("Help & FAQ", Icons.Default.Help, onClick = { onNavigateTo(Screen.Help.route) }),
+                        SettingsItemData("Contact Support", Icons.Default.Email, onClick = { onNavigateTo(Screen.Support.route) }),
+                        SettingsItemData("Rate App", Icons.Default.ThumbUp, onClick = { handleRateApp() })
                     )
                 )
             }
@@ -100,7 +123,11 @@ fun SettingsScreen(
                     title = "Account Actions",
                     items = listOf(
                         SettingsItemData("Logout", Icons.Default.ExitToApp, isDestructive = true, onClick = onLogout),
-                        SettingsItemData("Delete Account", Icons.Default.DeleteForever, isDestructive = true, onClick = { viewModel.deleteAccount() })
+                        SettingsItemData("Delete Account", Icons.Default.DeleteForever, isDestructive = true, onClick = { 
+                            scope.launch {
+                                viewModel.deleteAccount()
+                            }
+                        })
                     )
                 )
             }

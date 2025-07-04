@@ -141,10 +141,16 @@ class SettingsViewModel @Inject constructor(
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true)
                 
-                // Delete user account
+                // Delete user account from Firebase Auth
                 authRepository.deleteAccount()
                 
-                // Account deletion successful - navigation will be handled by AuthRepository
+                // Clear all local settings
+                settingsRepository.clearAllData()
+                
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = null
+                )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,

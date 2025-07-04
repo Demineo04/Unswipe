@@ -30,13 +30,12 @@ sealed class Screen(val route: String) {
     object DailyLimit : Screen("daily_limit")
     object EditProfile : Screen("edit_profile")
     object ResetPassword : Screen("reset_password")
-    object Notifications : Screen("notifications")
+    object NotificationSettings : Screen("notification_settings")
     object FocusMode : Screen("focus_mode")
     object UsageAnalytics : Screen("usage_analytics")
-    object ManageSubscription : Screen("manage_subscription")
-    object HelpFAQ : Screen("help_faq")
-    object ContactSupport : Screen("contact_support")
-    object RateApp : Screen("rate_app")
+    object SubscriptionManagement : Screen("subscription_management")
+    object Help : Screen("help")
+    object Support : Screen("support")
     
     // Detail Screens
     object UnlocksDetail : Screen("unlocks_detail")

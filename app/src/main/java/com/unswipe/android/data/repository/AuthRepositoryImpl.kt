@@ -86,18 +86,30 @@ class AuthRepositoryImpl @Inject constructor( // <-- Hilt knows how to make this
         return firebaseAuth.currentUser?.uid
     }
     
-    override suspend fun deleteAccount() = withContext(ioDispatcher) {
+    override suspend fun getCurrentUser(): FirebaseUser? {
+        return firebaseAuth.currentUser
+    }
+    
+    override suspend fun deleteAccount(): Result<Unit> = withContext(ioDispatcher) {
         try {
-            val currentUser = firebaseAuth.currentUser
-                ?: throw Exception("No authenticated user found")
-            
-            // Delete the user account
-            currentUser.delete().await()
-            
-            // Sign out to ensure clean state
-            firebaseAuth.signOut()
+            val user = firebaseAuth.currentUser
+            if (user != null) {
+                user.delete().await()
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("No user logged in"))
+            }
         } catch (e: Exception) {
-            throw Exception("Failed to delete account: ${e.message}", e)
+            Result.failure(e)
+        }
+    }
+    
+    override suspend fun sendPasswordResetEmail(email: String): Result<Unit> = withContext(ioDispatcher) {
+        try {
+            firebaseAuth.sendPasswordResetEmail(email).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 }
