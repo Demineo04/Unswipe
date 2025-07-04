@@ -132,32 +132,6 @@ private fun ModernProfileHeader(userName: String, userEmail: String) {
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Profile Avatar
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .background(
-                        brush = Brush.radialGradient(
-                            colors = listOf(
-                                UnswipePrimary,
-                                UnswipeSecondary
-                            )
-                        ),
-                        shape = CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = userName.take(1).uppercase(),
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        color = UnswipeBlack,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
             Text(
                 text = userName,
                 style = MaterialTheme.typography.headlineSmall.copy(
@@ -165,6 +139,8 @@ private fun ModernProfileHeader(userName: String, userEmail: String) {
                     fontWeight = FontWeight.Bold
                 )
             )
+            
+            Spacer(modifier = Modifier.height(8.dp))
             
             Text(
                 text = userEmail,
