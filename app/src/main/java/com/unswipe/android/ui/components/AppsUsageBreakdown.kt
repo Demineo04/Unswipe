@@ -70,15 +70,15 @@ enum class AppCategory(
     val icon: ImageVector,
     val color: Color
 ) {
-    SOCIAL_MEDIA("Social Media", Icons.Default.Group, Color(0xFF1DA1F2)),
-    ENTERTAINMENT("Entertainment", Icons.Default.PlayArrow, Color(0xFFFF4444)),
-    PRODUCTIVITY("Productivity", Icons.Default.Work, Color(0xFF4CAF50)),
-    COMMUNICATION("Communication", Icons.Default.Message, Color(0xFF9C27B0)),
-    SHOPPING("Shopping", Icons.Default.ShoppingCart, Color(0xFFFF9800)),
-    NEWS("News & Information", Icons.Default.Article, Color(0xFF607D8B)),
-    GAMES("Games", Icons.Default.SportsEsports, Color(0xFFE91E63)),
-    UTILITIES("Utilities", Icons.Default.Build, Color(0xFF795548)),
-    OTHER("Other", Icons.Default.Apps, Color(0xFF9E9E9E))
+    SOCIAL_MEDIA("Social Media", Icons.Default.Group, MinimalistBlack),
+    ENTERTAINMENT("Entertainment", Icons.Default.PlayArrow, MinimalistBlack),
+    PRODUCTIVITY("Productivity", Icons.Default.Work, MinimalistBlack),
+    COMMUNICATION("Communication", Icons.Default.Message, MinimalistBlack),
+    SHOPPING("Shopping", Icons.Default.ShoppingCart, MinimalistBlack),
+    NEWS("News & Information", Icons.Default.Article, MinimalistBlack),
+    GAMES("Games", Icons.Default.SportsEsports, MinimalistBlack),
+    UTILITIES("Utilities", Icons.Default.Build, MinimalistBlack),
+    OTHER("Other", Icons.Default.Apps, MinimalistBlack)
 }
 
 data class CategoryUsageData(

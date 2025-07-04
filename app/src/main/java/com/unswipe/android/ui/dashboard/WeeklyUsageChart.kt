@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.unswipe.android.ui.theme.MinimalistBlack
 import kotlin.math.max
 
 @Composable
@@ -112,12 +113,7 @@ private fun UsageBarChart(
             val bottom = size.height
             
             // Determine bar color based on usage level
-            val barColor = when {
-                day.usagePercentage >= 1.0f -> Color(0xFFE53E3E) // Red - over limit
-                day.usagePercentage >= 0.8f -> Color(0xFFF56500) // Orange - approaching limit
-                day.usagePercentage >= 0.5f -> Color(0xFFD69E2E) // Yellow - moderate usage
-                else -> Color(0xFF38A169) // Green - good usage
-            }
+                    val barColor = MinimalistBlack // All bars use pure black for minimalism
             
             // Draw bar with rounded corners
             drawRoundedBar(
