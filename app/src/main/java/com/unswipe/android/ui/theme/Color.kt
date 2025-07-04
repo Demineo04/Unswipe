@@ -45,6 +45,8 @@ val UnswipeAccent = Color(0xFF00FFD1) // Bright accent
 val UnswipeGreen = Color(0xFF4CAF50)
 val UnswipeRed = Color(0xFFFF5252)
 val UnswipeWarning = Color(0xFFFFB74D)
+val UnswipeYellow = Color(0xFFFFC107) // Warning states
+val UnswipeOrange = Color(0xFFFF9800) // Medium urgency
 val UnswipeGray = Color(0xFF757575)
 
 // Modern Dark Theme Colors

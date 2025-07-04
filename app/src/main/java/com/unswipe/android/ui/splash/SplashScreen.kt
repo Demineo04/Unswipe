@@ -31,6 +31,17 @@ import com.unswipe.android.ui.MainActivity
 import com.unswipe.android.ui.theme.*
 import kotlinx.coroutines.delay
 import androidx.core.view.WindowCompat // Import for WindowCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.unswipe.android.domain.repository.AuthRepository
+import com.unswipe.android.domain.repository.OnboardingRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 // Colors for modern design
 // Colors are now defined in theme files
@@ -76,22 +87,95 @@ fun SplashScreenWithNavigation() {
     )
 }
 
+@HiltViewModel
+class SplashViewModel @Inject constructor(
+    private val authRepository: AuthRepository,
+    private val onboardingRepository: OnboardingRepository
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(SplashUiState())
+    val uiState: StateFlow<SplashUiState> = _uiState.asStateFlow()
+
+    init {
+        checkUserStatus()
+    }
+
+    private fun checkUserStatus() {
+        viewModelScope.launch {
+            try {
+                // Add a minimum splash duration for better UX
+                delay(1500)
+                
+                // Check authentication status
+                val currentUser = authRepository.getCurrentUser()
+                val isAuthenticated = currentUser != null
+                
+                if (isAuthenticated) {
+                    // User is authenticated, check onboarding status
+                    val isOnboardingComplete = onboardingRepository.isOnboardingComplete()
+                    
+                    if (isOnboardingComplete) {
+                        // Returning user - go to dashboard
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            destination = SplashDestination.DASHBOARD
+                        )
+                    } else {
+                        // Authenticated but incomplete onboarding - continue onboarding
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            destination = SplashDestination.ONBOARDING
+                        )
+                    }
+                } else {
+                    // User is not authenticated - go to login
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        destination = SplashDestination.LOGIN
+                    )
+                }
+                
+            } catch (e: Exception) {
+                // On error, default to login screen
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    destination = SplashDestination.LOGIN,
+                    error = e.localizedMessage
+                )
+            }
+        }
+    }
+}
+
+data class SplashUiState(
+    val isLoading: Boolean = true,
+    val destination: SplashDestination? = null,
+    val error: String? = null
+)
+
+enum class SplashDestination {
+    LOGIN,
+    ONBOARDING, 
+    DASHBOARD
+}
+
 @Composable
 fun SplashScreen(
-    onNavigateToOnboarding: () -> Unit,
     onNavigateToLogin: () -> Unit,
-    onNavigateToDashboard: () -> Unit
+    onNavigateToOnboarding: () -> Unit,
+    onNavigateToDashboard: () -> Unit,
+    viewModel: SplashViewModel = hiltViewModel()
 ) {
-    // Simulate checking user state
-    var isLoading by remember { mutableStateOf(true) }
-    
-    LaunchedEffect(Unit) {
-        delay(2000) // Show splash for 2 seconds
-        isLoading = false
-        
-        // For now, always go to onboarding to simulate first launch
-        // In a real app, you'd check SharedPreferences or user authentication state
-        onNavigateToOnboarding()
+    val uiState by viewModel.uiState.collectAsState()
+
+    // Handle navigation when destination is determined
+    LaunchedEffect(uiState.destination) {
+        when (uiState.destination) {
+            SplashDestination.LOGIN -> onNavigateToLogin()
+            SplashDestination.ONBOARDING -> onNavigateToOnboarding()
+            SplashDestination.DASHBOARD -> onNavigateToDashboard()
+            null -> {} // Still loading
+        }
     }
 
     Box(
@@ -102,17 +186,17 @@ fun SplashScreen(
                     colors = listOf(
                         UnswipeBlack,
                         UnswipeSurface,
-                        UnswipeCard
+                        UnswipeBlack
                     )
                 )
-            ),
-        contentAlignment = Alignment.Center
+            )
     ) {
         Column(
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // App Logo
+            // Logo
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -137,12 +221,13 @@ fun SplashScreen(
                 )
             }
             
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
             
+            // App name
             Text(
                 text = "Unswipe",
                 style = MaterialTheme.typography.headlineLarge.copy(
-                    fontSize = 32.sp,
+                    fontSize = 36.sp,
                     fontWeight = FontWeight.Bold,
                     color = UnswipeTextPrimary
                 )
@@ -156,16 +241,57 @@ fun SplashScreen(
                 )
             )
             
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(48.dp))
             
-            if (isLoading) {
+            // Loading indicator
+            if (uiState.isLoading) {
                 CircularProgressIndicator(
                     color = UnswipePrimary,
                     strokeWidth = 3.dp,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(36.dp)
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Text(
+                    text = "Loading...",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = UnswipeTextSecondary
+                    )
                 )
             }
+            
+            // Error message if any
+            uiState.error?.let { error ->
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = UnswipeRed.copy(alpha = 0.1f)
+                    ),
+                    modifier = Modifier.padding(horizontal = 32.dp)
+                ) {
+                    Text(
+                        text = "Error: $error",
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = UnswipeRed
+                        ),
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            }
         }
+        
+        // Version info at bottom
+        Text(
+            text = "Version 1.0.0",
+            style = MaterialTheme.typography.labelSmall.copy(
+                color = UnswipeTextSecondary.copy(alpha = 0.6f)
+            ),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 32.dp)
+        )
     }
 }
 
