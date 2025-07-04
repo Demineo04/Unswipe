@@ -8,6 +8,9 @@ import com.unswipe.android.di.IoDispatcher // Assuming you have this Qualifier
 import com.unswipe.android.domain.repository.AuthRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -47,20 +50,54 @@ class AuthRepositoryImpl @Inject constructor( // <-- Hilt knows how to make this
         }
     }
 
-    override suspend fun isUserPremium(): Boolean {
-        TODO("Not yet implemented")
+    override suspend fun isUserPremium(): Boolean = withContext(ioDispatcher) {
+        try {
+            // Check if user exists first
+            val currentUser = firebaseAuth.currentUser ?: return@withContext false
+            
+            // Check custom claims for premium status
+            val idTokenResult = currentUser.getIdToken(false).await()
+            val isPremium = idTokenResult.claims["premium"] as? Boolean ?: false
+            
+            isPremium
+        } catch (e: Exception) {
+            // Log error and default to non-premium
+            e.printStackTrace()
+            false
+        }
     }
 
-    // Note: Implementing a robust Flow for auth state changes requires
-    // using FirebaseAuth.addAuthStateListener and callbackFlow.
-    // This is a simplified placeholder.
-    override fun getCurrentUserFlow(): Flow<FirebaseUser?> {
-        // TODO: Implement properly using callbackFlow and AuthStateListener
-        // For now, returning a simple flow based on current state
-        return kotlinx.coroutines.flow.flowOf(firebaseAuth.currentUser)
+    override fun getCurrentUserFlow(): Flow<FirebaseUser?> = callbackFlow {
+        val authStateListener = FirebaseAuth.AuthStateListener { auth ->
+            trySend(auth.currentUser)
+        }
+        
+        firebaseAuth.addAuthStateListener(authStateListener)
+        
+        // Send current state immediately
+        send(firebaseAuth.currentUser)
+        
+        awaitClose {
+            firebaseAuth.removeAuthStateListener(authStateListener)
+        }
     }
 
     override fun getUserId(): String? {
         return firebaseAuth.currentUser?.uid
+    }
+    
+    override suspend fun deleteAccount() = withContext(ioDispatcher) {
+        try {
+            val currentUser = firebaseAuth.currentUser
+                ?: throw Exception("No authenticated user found")
+            
+            // Delete the user account
+            currentUser.delete().await()
+            
+            // Sign out to ensure clean state
+            firebaseAuth.signOut()
+        } catch (e: Exception) {
+            throw Exception("Failed to delete account: ${e.message}", e)
+        }
     }
 }

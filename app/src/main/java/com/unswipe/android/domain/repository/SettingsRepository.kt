@@ -40,6 +40,11 @@ interface SettingsRepository {
      * Gets a Flow that emits the set of package names marked for blocking/confirmation.
      */
     fun getBlockedApps(): Flow<Set<String>>
+    
+    /**
+     * Alias for getBlockedApps for consistency with other Flow methods.
+     */
+    fun getBlockedAppsFlow(): Flow<Set<String>> = getBlockedApps()
 
     /**
      * Adds an app's package name to the blocked list.
@@ -50,12 +55,27 @@ interface SettingsRepository {
      * Removes an app's package name from the blocked list.
      */
     suspend fun removeBlockedApp(packageName: String)
+    
+    /**
+     * Sets the complete set of blocked apps.
+     */
+    suspend fun setBlockedApps(packageNames: Set<String>)
+    
+    /**
+     * Sets the daily limit in milliseconds.
+     */
+    suspend fun setDailyLimitMillis(limitMillis: Long) = updateDailyLimit(limitMillis)
 
     /**
      * Checks if a specific app is currently in the blocked list.
      * (Optional, might be derived from getBlockedApps().first().contains(...))
      */
     suspend fun isAppBlocked(packageName: String): Boolean
+    
+    /**
+     * Gets whether notifications are enabled.
+     */
+    suspend fun getNotificationsEnabled(): Boolean
 
     suspend fun getTimeLimitMillis(): Long
 

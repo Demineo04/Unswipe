@@ -235,4 +235,15 @@ class SettingsRepositoryImpl @Inject constructor(
             prefs[WORK_WIFI_SSIDS_KEY] = currentSSIDs - ssid
         }
     }
+    
+    override suspend fun setBlockedApps(packageNames: Set<String>) {
+        dataStore.edit { settings ->
+            settings[BLOCKED_APPS_KEY] = packageNames
+        }
+    }
+    
+    override suspend fun getNotificationsEnabled(): Boolean {
+        val prefs = dataStore.data.first()
+        return prefs[booleanPreferencesKey("notifications_enabled")] ?: true
+    }
 }
