@@ -411,4 +411,21 @@ class UsageRepositoryImpl @Inject constructor(
             false
         }
     }
+
+    override suspend fun refreshUsageData() {
+        try {
+            // This would typically refresh data from UsageStatsManager and update local database
+            // For now, this is a placeholder that could trigger data synchronization
+            println("Refreshing usage data from system...")
+            
+            // You could implement logic here to:
+            // 1. Query fresh data from UsageStatsManager
+            // 2. Update local database with latest usage statistics
+            // 3. Trigger UI updates through existing flows
+            
+        } catch (e: Exception) {
+            println("Error refreshing usage data: ${e.message}")
+            // Don't throw - this is for UI refresh so shouldn't break user flow
+        }
+    }
 }
