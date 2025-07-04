@@ -6,109 +6,152 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// Define the light color scheme using the colors from Color.kt
-private val LightColorScheme = lightColorScheme(
-    primary = LightPrimary,
-    onPrimary = LightOnPrimary,
-    primaryContainer = LightPrimaryContainer,
-    onPrimaryContainer = LightOnPrimaryContainer,
-    secondary = LightSecondary,
-    onSecondary = LightOnSecondary,
-    secondaryContainer = LightSecondaryContainer,
-    onSecondaryContainer = LightOnSecondaryContainer,
-    tertiary = LightTertiary,
-    onTertiary = LightOnTertiary,
-    tertiaryContainer = LightTertiaryContainer,
-    onTertiaryContainer = LightOnTertiaryContainer,
-    error = LightError,
-    onError = LightOnError,
-    errorContainer = LightErrorContainer,
-    onErrorContainer = LightOnErrorContainer,
-    background = LightBackground,
-    onBackground = LightOnBackground,
-    surface = LightSurface,
-    onSurface = LightOnSurface,
-    surfaceVariant = LightSurfaceVariant,
-    onSurfaceVariant = LightOnSurfaceVariant,
-    outline = LightOutline,
-    inverseOnSurface = LightInverseOnSurface,
-    inverseSurface = LightInverseSurface,
-    inversePrimary = LightInversePrimary,
-    surfaceTint = LightSurfaceTint,
-    outlineVariant = LightOutlineVariant,
-    scrim = LightScrim,
+// EXAGGERATED MINIMALISM LIGHT THEME - Pure white background, pure black text
+private val MinimalistLightColorScheme = lightColorScheme(
+    primary = MinimalistBlack,
+    onPrimary = MinimalistWhite,
+    primaryContainer = MinimalistWhite,
+    onPrimaryContainer = MinimalistBlack,
+    secondary = MinimalistBlack,
+    onSecondary = MinimalistWhite,
+    secondaryContainer = MinimalistWhite,
+    onSecondaryContainer = MinimalistBlack,
+    tertiary = MinimalistBlack,
+    onTertiary = MinimalistWhite,
+    tertiaryContainer = MinimalistWhite,
+    onTertiaryContainer = MinimalistBlack,
+    error = MinimalistBlack,
+    onError = MinimalistWhite,
+    errorContainer = MinimalistWhite,
+    onErrorContainer = MinimalistBlack,
+    background = MinimalistWhite,
+    onBackground = MinimalistBlack,
+    surface = MinimalistWhite,
+    onSurface = MinimalistBlack,
+    surfaceVariant = MinimalistWhite,
+    onSurfaceVariant = MinimalistBlack,
+    outline = MinimalistBlack,
+    inverseOnSurface = MinimalistWhite,
+    inverseSurface = MinimalistBlack,
+    inversePrimary = MinimalistWhite,
+    surfaceTint = MinimalistBlack,
+    outlineVariant = MinimalistBlack,
+    scrim = MinimalistBlack,
 )
 
-// Define the dark color scheme using the colors from Color.kt
-private val DarkColorScheme = darkColorScheme(
-    primary = UnswipePrimary,
-    onPrimary = UnswipeBlack,
-    primaryContainer = UnswipeSurface,
-    onPrimaryContainer = UnswipeTextPrimary,
-    secondary = UnswipeSecondary,
-    onSecondary = UnswipeBlack,
-    secondaryContainer = UnswipeSurface,
-    onSecondaryContainer = UnswipeTextPrimary,
-    tertiary = UnswipeSecondary,
-    onTertiary = UnswipeBlack,
-    tertiaryContainer = UnswipeSurface,
-    onTertiaryContainer = UnswipeTextPrimary,
-    error = UnswipeRed,
-    onError = UnswipeBlack,
-    errorContainer = UnswipeSurface,
-    onErrorContainer = UnswipeRed,
-    background = UnswipeBlack,
-    onBackground = UnswipeTextPrimary,
-    surface = UnswipeSurface,
-    onSurface = UnswipeTextPrimary,
-    surfaceVariant = UnswipeSurface,
-    onSurfaceVariant = UnswipeTextSecondary,
-    outline = UnswipeTextSecondary,
-    inverseOnSurface = UnswipeTextPrimary,
-    inverseSurface = UnswipeBlack,
-    inversePrimary = UnswipePrimary,
-    surfaceTint = UnswipePrimary,
-    outlineVariant = UnswipeTextSecondary,
-    scrim = UnswipeBlack.copy(alpha = 0.5f),
+// EXAGGERATED MINIMALISM DARK THEME - Pure black background, pure white text
+private val MinimalistDarkColorScheme = darkColorScheme(
+    primary = MinimalistWhite,
+    onPrimary = MinimalistBlack,
+    primaryContainer = MinimalistBlack,
+    onPrimaryContainer = MinimalistWhite,
+    secondary = MinimalistWhite,
+    onSecondary = MinimalistBlack,
+    secondaryContainer = MinimalistBlack,
+    onSecondaryContainer = MinimalistWhite,
+    tertiary = MinimalistWhite,
+    onTertiary = MinimalistBlack,
+    tertiaryContainer = MinimalistBlack,
+    onTertiaryContainer = MinimalistWhite,
+    error = MinimalistWhite,
+    onError = MinimalistBlack,
+    errorContainer = MinimalistBlack,
+    onErrorContainer = MinimalistWhite,
+    background = MinimalistBlack,
+    onBackground = MinimalistWhite,
+    surface = MinimalistBlack,
+    onSurface = MinimalistWhite,
+    surfaceVariant = MinimalistBlack,
+    onSurfaceVariant = MinimalistWhite,
+    outline = MinimalistWhite,
+    inverseOnSurface = MinimalistBlack,
+    inverseSurface = MinimalistWhite,
+    inversePrimary = MinimalistBlack,
+    surfaceTint = MinimalistWhite,
+    outlineVariant = MinimalistWhite,
+    scrim = MinimalistBlack,
 )
 
-// Your main theme composable
+// EXAGGERATED MINIMALISM THEME
 @Composable
 fun UnswipeTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    // Disable dynamic colors for pure minimalism
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    // Always use our minimalist color schemes - no dynamic colors
+    val colorScheme = if (darkTheme) {
+        MinimalistDarkColorScheme
+    } else {
+        MinimalistLightColorScheme
     }
+    
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
+            // Set status bar to match background for seamless minimalism
             window.statusBarColor = colorScheme.background.toArgb()
+            // Set navigation bar to match for complete immersion
+            window.navigationBarColor = colorScheme.background.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography, // From Type.kt
+        typography = MinimalistTypography, // Use minimalist typography
+        content = content
+    )
+}
+
+// Alternative theme function for forcing light mode minimalism
+@Composable
+fun UnswipeMinimalistLightTheme(
+    content: @Composable () -> Unit
+) {
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = MinimalistWhite.toArgb()
+            window.navigationBarColor = MinimalistWhite.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
+        }
+    }
+
+    MaterialTheme(
+        colorScheme = MinimalistLightColorScheme,
+        typography = MinimalistTypography,
+        content = content
+    )
+}
+
+// Alternative theme function for forcing dark mode minimalism
+@Composable
+fun UnswipeMinimalistDarkTheme(
+    content: @Composable () -> Unit
+) {
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = MinimalistBlack.toArgb()
+            window.navigationBarColor = MinimalistBlack.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
+        }
+    }
+
+    MaterialTheme(
+        colorScheme = MinimalistDarkColorScheme,
+        typography = MinimalistTypography,
         content = content
     )
 }

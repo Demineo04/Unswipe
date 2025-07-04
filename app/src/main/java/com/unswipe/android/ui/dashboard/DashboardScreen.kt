@@ -48,49 +48,37 @@ fun DashboardScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        UnswipeBlack,
-                        UnswipeSurface
-                    )
-                )
-            )
+            .background(MinimalistWhite) // Pure white background for minimalism
     ) {
         when {
             uiState.isLoading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(
-                        color = UnswipePrimary,
-                        strokeWidth = 3.dp,
+                        color = MinimalistBlack,
+                        strokeWidth = 2.dp,
                         modifier = Modifier.size(48.dp)
                     )
                 }
             }
             uiState.error != null -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Card(
+                    Surface(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(24.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = UnswipeCard
-                        ),
-                        shape = RoundedCornerShape(16.dp)
+                        color = MinimalistBlack,
+                        shape = RoundedCornerShape(0.dp),
+                        shadowElevation = 0.dp
                     ) {
                         Column(
-                            modifier = Modifier.padding(24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            modifier = Modifier.padding(32.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             Text(
-                                text = "⚠️",
-                                style = MaterialTheme.typography.headlineLarge,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
-                            Text(
-                                text = "Something went wrong",
+                                text = "Error",
                                 style = MaterialTheme.typography.titleLarge.copy(
-                                    color = UnswipeTextPrimary,
+                                    color = MinimalistWhite,
                                     fontWeight = FontWeight.Bold
                                 ),
                                 textAlign = TextAlign.Center
@@ -98,10 +86,9 @@ fun DashboardScreen(
                             Text(
                                 text = uiState.error ?: "Unknown error",
                                 style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = UnswipeTextSecondary
+                                    color = MinimalistWhite
                                 ),
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(top = 8.dp)
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
@@ -199,18 +186,19 @@ private fun ModernDashboardHeader(
     ) {
         Column {
             Text(
-                text = "Hi, $userName",
+                text = userName,
                 style = MaterialTheme.typography.headlineMedium.copy(
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = UnswipeTextPrimary
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Light,
+                    color = MinimalistBlack
                 )
             )
             Text(
-                text = "Let's check your progress",
+                text = "Dashboard",
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    color = UnswipeTextSecondary,
-                    fontSize = 16.sp
+                    color = MinimalistBlack,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal
                 )
             )
         }
@@ -220,15 +208,15 @@ private fun ModernDashboardHeader(
             modifier = Modifier
                 .size(48.dp)
                 .background(
-                    color = UnswipeCard,
-                    shape = CircleShape
+                    color = MinimalistBlack,
+                    shape = RoundedCornerShape(0.dp)
                 )
         ) {
             Icon(
                 imageVector = Icons.Default.Settings,
                 contentDescription = "Settings",
-                tint = UnswipeTextPrimary,
-                modifier = Modifier.size(24.dp)
+                tint = MinimalistWhite,
+                modifier = Modifier.size(20.dp)
             )
         }
     }
@@ -240,119 +228,112 @@ private fun UsageOverviewCard(
     timeRemaining: String,
     usagePercentage: Float
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = UnswipeCard
-        ),
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(1.dp), // Minimal border effect
+        color = MinimalistBlack,
+        shape = RoundedCornerShape(0.dp),
+        shadowElevation = 0.dp
     ) {
-        Box {
-            // Background gradient
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp)
-                    .background(
-                        Brush.horizontalGradient(
-                            colors = listOf(
-                                UnswipePrimary.copy(alpha = 0.1f),
-                                UnswipeSecondary.copy(alpha = 0.1f)
-                            )
-                        )
-                    )
-            )
-            
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(2.dp),
+            color = MinimalistWhite,
+            shape = RoundedCornerShape(0.dp)
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp)
+                    .padding(32.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
+                // Main time display
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Column {
-                        Text(
-                            text = timeUsed,
-                            style = MaterialTheme.typography.headlineLarge.copy(
-                                fontSize = 36.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = UnswipePrimary
-                            )
+                    Text(
+                        text = timeUsed,
+                        style = MaterialTheme.typography.displayLarge.copy(
+                            fontSize = 48.sp,
+                            fontWeight = FontWeight.Light,
+                            color = MinimalistBlack
                         )
-                        Text(
-                            text = "Total screen time today",
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                color = UnswipeTextSecondary,
-                                fontSize = 14.sp
-                            )
+                    )
+                    Text(
+                        text = "Screen time today",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = MinimalistBlack,
+                            fontSize = 14.sp
+                        )
+                    )
+                }
+                
+                // Progress bar (minimalist line)
+                Column {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(2.dp)
+                            .background(MinimalistBlack)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(usagePercentage)
+                                .height(2.dp)
+                                .background(MinimalistBlack)
                         )
                     }
                     
-                    // Circular progress indicator
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.size(64.dp)
-                    ) {
-                        CircularProgressIndicator(
-                            progress = { usagePercentage },
-                            modifier = Modifier.size(64.dp),
-                            color = UnswipePrimary,
-                            strokeWidth = 6.dp,
-                            trackColor = UnswipeGray.copy(alpha = 0.3f)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    Text(
+                        text = "${(usagePercentage * 100).toInt()}% of daily limit",
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = MinimalistBlack,
+                            fontSize = 12.sp
                         )
-                        Text(
-                            text = "${(usagePercentage * 100).toInt()}%",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = UnswipeTextPrimary,
-                                fontSize = 12.sp
-                            )
-                        )
-                    }
+                    )
                 }
                 
-                Spacer(modifier = Modifier.height(20.dp))
-                
+                // Additional stats
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column(modifier = Modifier.weight(1f)) {
+                    Column {
                         Text(
                             text = "Remaining",
                             style = MaterialTheme.typography.labelMedium.copy(
-                                color = UnswipeTextSecondary,
+                                color = MinimalistBlack,
                                 fontSize = 12.sp
                             )
                         )
                         Text(
                             text = timeRemaining,
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                color = UnswipeTextPrimary,
-                                fontSize = 18.sp
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Medium,
+                                color = MinimalistBlack,
+                                fontSize = 16.sp
                             )
                         )
                     }
                     
-                    Column(modifier = Modifier.weight(1f)) {
+                    Column(horizontalAlignment = Alignment.End) {
                         Text(
                             text = "Status",
                             style = MaterialTheme.typography.labelMedium.copy(
-                                color = UnswipeTextSecondary,
+                                color = MinimalistBlack,
                                 fontSize = 12.sp
                             )
                         )
                         Text(
-                            text = if (usagePercentage < 0.8f) "On Track 🎯" else "Over Limit ⚠️",
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                color = if (usagePercentage < 0.8f) UnswipeGreen else UnswipeWarning,
-                                fontSize = 18.sp
+                            text = if (usagePercentage < 0.8f) "On Track" else "Over Limit",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Medium,
+                                color = MinimalistBlack,
+                                fontSize = 16.sp
                             )
                         )
                     }
@@ -372,32 +353,32 @@ private fun StatsCardsRow(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(1.dp) // Minimal spacing for borders
     ) {
         StatCard(
             modifier = Modifier.weight(1f),
-            icon = "🔓",
+            icon = "",
             value = unlocks.toString(),
             label = "Unlocks",
-            color = UnswipeSecondary,
+            color = MinimalistBlack,
             onClick = onUnlocksClick
         )
         
         StatCard(
             modifier = Modifier.weight(1f),
-            icon = "📱",
+            icon = "",
             value = launches.toString(),
-            label = "App Launches",
-            color = UnswipeWarning,
+            label = "Launches",
+            color = MinimalistBlack,
             onClick = onAppLaunchesClick
         )
         
         StatCard(
             modifier = Modifier.weight(1f),
-            icon = "🔥",
+            icon = "",
             value = "${streak}d",
-            label = "Goal Streak",
-            color = UnswipeGreen
+            label = "Streak",
+            color = MinimalistBlack
         )
     }
 }
@@ -411,7 +392,7 @@ private fun StatCard(
     color: androidx.compose.ui.graphics.Color,
     onClick: (() -> Unit)? = null
 ) {
-    Card(
+    Surface(
         modifier = modifier
             .then(
                 if (onClick != null) {
@@ -420,39 +401,30 @@ private fun StatCard(
                     Modifier
                 }
             ),
-        colors = CardDefaults.cardColors(
-            containerColor = UnswipeCard
-        ),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        color = MinimalistBlack,
+        shape = RoundedCornerShape(0.dp),
+        shadowElevation = 0.dp
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = icon,
-                style = MaterialTheme.typography.headlineSmall.copy(
-                    fontSize = 24.sp
-                ),
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            
-            Text(
                 text = value,
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = color,
-                    fontSize = 20.sp
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.Light,
+                    color = MinimalistWhite,
+                    fontSize = 24.sp
                 )
             )
             
             Text(
                 text = label,
                 style = MaterialTheme.typography.bodySmall.copy(
-                    color = UnswipeTextSecondary,
+                    color = MinimalistWhite,
                     fontSize = 12.sp
                 ),
                 textAlign = TextAlign.Center
@@ -465,38 +437,46 @@ private fun StatCard(
 private fun WeeklyProgressCard(
     summaries: List<DailyUsageSummary>
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = UnswipeCard
-        ),
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(1.dp),
+        color = MinimalistBlack,
+        shape = RoundedCornerShape(0.dp),
+        shadowElevation = 0.dp
     ) {
-        Column(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp)
+                .padding(2.dp),
+            color = MinimalistWhite,
+            shape = RoundedCornerShape(0.dp)
         ) {
-            Text(
-                text = "Weekly Progress",
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = UnswipeTextPrimary,
-                    fontSize = 20.sp
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = "Weekly Progress",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Normal,
+                        color = MinimalistBlack,
+                        fontSize = 20.sp
+                    )
                 )
-            )
-            
-            Text(
-                text = "Your daily usage pattern",
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = UnswipeTextSecondary,
-                    fontSize = 14.sp
-                ),
-                modifier = Modifier.padding(bottom = 20.dp)
-            )
-            
-            ModernWeeklyChart(summaries = summaries)
+                
+                Text(
+                    text = "Daily usage pattern",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = MinimalistBlack,
+                        fontSize = 14.sp
+                    )
+                )
+                
+                ModernWeeklyChart(summaries = summaries)
+            }
         }
     }
 }

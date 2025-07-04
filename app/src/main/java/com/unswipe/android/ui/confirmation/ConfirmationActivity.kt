@@ -141,187 +141,154 @@ fun ModernConfirmationOverlay(
     onConfirm: () -> Unit,
     onCancel: () -> Unit
 ) {
-    // Semi-transparent background overlay
+    // EXAGGERATED MINIMALISM - Pure black background
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.7f)),
+            .background(MinimalistBlack),
         contentAlignment = Alignment.Center
     ) {
-        // Main confirmation card
-        Card(
+        // Minimalist confirmation card - pure white on black
+        Surface(
             modifier = Modifier
-                .fillMaxWidth(0.85f)
+                .fillMaxWidth(0.9f)
                 .wrapContentHeight(),
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = UnswipeCard
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 16.dp)
+            shape = RoundedCornerShape(0.dp), // Sharp edges for minimalism
+            color = MinimalistWhite,
+            shadowElevation = 0.dp // No shadows for pure minimalism
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(40.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                // Concentric circles background effect
+                // Minimalist app icon container
                 Box(
-                    modifier = Modifier.size(120.dp),
+                    modifier = Modifier.size(80.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    // Outer circle
-                    Box(
-                        modifier = Modifier
-                            .size(120.dp)
-                            .background(
-                                color = UnswipeGray.copy(alpha = 0.1f),
-                                shape = CircleShape
-                            )
-                    )
-                    
-                    // Middle circle
-                    Box(
-                        modifier = Modifier
-                            .size(90.dp)
-                            .background(
-                                color = UnswipeGray.copy(alpha = 0.15f),
-                                shape = CircleShape
-                            )
-                    )
-                    
-                    // Inner circle with app icon
-                    Box(
-                        modifier = Modifier
-                            .size(60.dp)
-                            .background(
-                                color = UnswipeCard,
-                                shape = CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (appIcon != null) {
+                    if (appIcon != null) {
+                        // App icon with black border
+                        Box(
+                            modifier = Modifier
+                                .size(64.dp)
+                                .background(
+                                    color = MinimalistBlack,
+                                    shape = RoundedCornerShape(0.dp)
+                                )
+                                .padding(2.dp)
+                        ) {
                             Image(
                                 painter = rememberDrawablePainter(drawable = appIcon),
                                 contentDescription = "$appName icon",
                                 modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(RoundedCornerShape(8.dp))
+                                    .fillMaxSize()
+                                    .clip(RoundedCornerShape(0.dp))
                             )
-                        } else {
-                            // Fallback icon
-                            Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .background(
-                                        brush = Brush.radialGradient(
-                                            colors = listOf(
-                                                UnswipePrimary,
-                                                UnswipeSecondary
-                                            )
-                                        ),
-                                        shape = RoundedCornerShape(8.dp)
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = appName.take(1).uppercase(),
-                                    style = MaterialTheme.typography.titleMedium.copy(
-                                        color = UnswipeBlack,
-                                        fontWeight = FontWeight.Bold
-                                    )
+                        }
+                    } else {
+                        // Minimalist fallback - black square with white text
+                        Box(
+                            modifier = Modifier
+                                .size(64.dp)
+                                .background(
+                                    color = MinimalistBlack,
+                                    shape = RoundedCornerShape(0.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = appName.take(1).uppercase(),
+                                style = MaterialTheme.typography.headlineMedium.copy(
+                                    color = MinimalistWhite,
+                                    fontWeight = FontWeight.Bold
                                 )
-                            }
+                            )
                         }
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                // Question text with context-aware messaging
+                // Minimalist question text
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "Do you really want to open $appName?",
-                        style = MaterialTheme.typography.headlineSmall.copy(
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = UnswipeTextPrimary,
-                            lineHeight = 28.sp
-                        ),
-                        textAlign = TextAlign.Center
-                    )
-                    
-                    // Add contextual message for social media apps
-                    if (AppNameMapper.isSocialMediaApp(packageName)) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Consider your digital wellness goals 📱",
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                color = UnswipeTextSecondary,
-                                fontSize = 14.sp
-                            ),
+                        text = "Open $appName?",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            color = MinimalistBlack,
+                            fontWeight = FontWeight.Normal,
                             textAlign = TextAlign.Center
                         )
-                    } else if (AppNameMapper.isEntertainmentApp(packageName)) {
-                        Spacer(modifier = Modifier.height(8.dp))
+                    )
+                    
+                    // Minimalist contextual message (no emojis for pure minimalism)
+                    if (AppNameMapper.isSocialMediaApp(packageName)) {
                         Text(
-                            text = "Remember your time goals ⏰",
+                            text = "Consider your digital wellness",
                             style = MaterialTheme.typography.bodyMedium.copy(
-                                color = UnswipeTextSecondary,
-                                fontSize = 14.sp
-                            ),
-                            textAlign = TextAlign.Center
+                                color = MinimalistBlack,
+                                textAlign = TextAlign.Center
+                            )
+                        )
+                    } else if (AppNameMapper.isEntertainmentApp(packageName)) {
+                        Text(
+                            text = "Consider your time goals",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MinimalistBlack,
+                                textAlign = TextAlign.Center
+                            )
                         )
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(32.dp))
-                
-                // Action buttons
-                Column(
+                // Minimalist action buttons - black and white only
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Yes button
-                    Button(
-                        onClick = onConfirm,
+                    // Cancel button - white background, black text, black border
+                    OutlinedButton(
+                        onClick = onCancel,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = UnswipePrimary.copy(alpha = 0.9f),
-                            contentColor = UnswipeBlack
+                            .weight(1f)
+                            .height(56.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = MinimalistWhite,
+                            contentColor = MinimalistBlack
                         ),
-                        shape = RoundedCornerShape(24.dp)
+                        border = androidx.compose.foundation.BorderStroke(
+                            width = 2.dp,
+                            color = MinimalistBlack
+                        ),
+                        shape = RoundedCornerShape(0.dp)
                     ) {
                         Text(
-                            text = "Yes",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 16.sp
+                            text = "Cancel",
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                fontWeight = FontWeight.Medium
                             )
                         )
                     }
                     
-                    // No button
+                    // Confirm button - black background, white text
                     Button(
-                        onClick = onCancel,
+                        onClick = onConfirm,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp),
+                            .weight(1f)
+                            .height(56.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = UnswipeRed,
-                            contentColor = UnswipeTextPrimary
+                            containerColor = MinimalistBlack,
+                            contentColor = MinimalistWhite
                         ),
-                        shape = RoundedCornerShape(24.dp)
+                        shape = RoundedCornerShape(0.dp)
                     ) {
                         Text(
-                            text = "No",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 16.sp
+                            text = "Open",
+                            style = MaterialTheme.typography.labelLarge.copy(
+                                fontWeight = FontWeight.Medium
                             )
                         )
                     }
