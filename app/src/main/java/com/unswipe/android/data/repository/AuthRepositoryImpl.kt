@@ -63,4 +63,31 @@ class AuthRepositoryImpl @Inject constructor( // <-- Hilt knows how to make this
     override fun getUserId(): String? {
         return firebaseAuth.currentUser?.uid
     }
+    
+    override suspend fun getCurrentUser(): FirebaseUser? {
+        return firebaseAuth.currentUser
+    }
+    
+    override suspend fun deleteAccount(): Result<Unit> = withContext(ioDispatcher) {
+        try {
+            val user = firebaseAuth.currentUser
+            if (user != null) {
+                user.delete().await()
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("No user logged in"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    override suspend fun sendPasswordResetEmail(email: String): Result<Unit> = withContext(ioDispatcher) {
+        try {
+            firebaseAuth.sendPasswordResetEmail(email).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

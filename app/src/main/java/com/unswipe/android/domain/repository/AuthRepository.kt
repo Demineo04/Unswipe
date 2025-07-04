@@ -11,4 +11,7 @@ interface AuthRepository {
     suspend fun isUserPremium(): Boolean
     fun getCurrentUserFlow(): Flow<FirebaseUser?>
     fun getUserId(): String?
+    suspend fun getCurrentUser(): FirebaseUser?
+    suspend fun deleteAccount(): Result<Unit>
+    suspend fun sendPasswordResetEmail(email: String): Result<Unit>
 }

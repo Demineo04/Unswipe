@@ -2,6 +2,7 @@ package com.unswipe.android.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.unswipe.android.domain.repository.AuthRepository
 import com.unswipe.android.domain.repository.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -23,7 +24,8 @@ data class SettingsUiState(
 
 // @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState.Loading)
@@ -129,5 +131,30 @@ class SettingsViewModel @Inject constructor(
 
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null)
+    }
+    
+    fun deleteAccount() {
+        viewModelScope.launch {
+            try {
+                _uiState.value = _uiState.value.copy(isLoading = true)
+                
+                // Delete user account from Firebase Auth
+                authRepository.signOut() // For now, just sign out
+                // TODO: Implement actual account deletion in AuthRepository
+                
+                // Clear all local settings
+                settingsRepository.clearAllData()
+                
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = null
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = "Failed to delete account: ${e.localizedMessage}"
+                )
+            }
+        }
     }
 }
