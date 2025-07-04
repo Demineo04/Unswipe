@@ -91,7 +91,12 @@ private fun InsightsSuccessContent(
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(20.dp),
+        contentPadding = PaddingValues(
+            start = 20.dp,
+            end = 20.dp,
+            top = 20.dp,
+            bottom = 100.dp // Added padding for bottom navigation
+        ),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
@@ -166,9 +171,6 @@ private fun InsightsSuccessContent(
                 TrendCard(trend)
             }
         }
-
-        // Bottom padding
-        item { Spacer(modifier = Modifier.height(32.dp)) }
     }
 }
 

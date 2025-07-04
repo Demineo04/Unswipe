@@ -17,6 +17,7 @@ sealed class Screen(val route: String) {
 
     // Main App
     object Dashboard : Screen("dashboard")
+    object Insights : Screen("insights")
     object Settings : Screen("settings")
     object AppSelection : Screen("app_selection")
     object Premium : Screen("premium") // For future use

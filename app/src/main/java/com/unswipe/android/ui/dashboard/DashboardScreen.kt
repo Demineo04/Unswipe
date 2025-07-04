@@ -132,11 +132,13 @@ fun ModernDashboardContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 20.dp),
+        contentPadding = PaddingValues(
+            top = 40.dp,
+            bottom = 100.dp // Padding for bottom navigation
+        ),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         item {
-            Spacer(modifier = Modifier.height(40.dp))
-            
             // Header with greeting and settings
             ModernDashboardHeader(
                 userName = "Eddie", // TODO: Get from user preferences
@@ -179,10 +181,6 @@ fun ModernDashboardContent(
             WeeklyProgressCard(
                 summaries = state.weeklyProgress
             )
-        }
-        
-        item {
-            Spacer(modifier = Modifier.height(100.dp)) // Bottom padding
         }
     }
 }
