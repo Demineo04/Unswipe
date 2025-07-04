@@ -55,6 +55,7 @@ enum class PatternType {
     WEEKEND_EXCESS,        // Weekend usage excess
     MINDLESS_SCROLLING,    // Unconscious scrolling behavior
     NOTIFICATION_ADDICTION // Addiction to notifications
+
 }
 
 /**
@@ -72,6 +73,7 @@ data class EmotionalUsageInsights(
     val dominantEmotion: EmotionalState = getDominantEmotion(stressScore, boredomScore, anxietyScore),
     val overallWellnessScore: Float = calculateOverallWellness(stressScore, boredomScore, anxietyScore),
     val analysisTimestamp: Long = System.currentTimeMillis()
+
 ) {
     companion object {
         private fun getDominantEmotion(stress: Float, boredom: Float, anxiety: Float): EmotionalState {
@@ -148,6 +150,7 @@ data class RiskAssessment(
         WORK_INTERRUPTIONS,
         EMOTIONAL_TRIGGERS,
         SOCIAL_PRESSURE
+
     }
 }
 
@@ -200,6 +203,7 @@ data class UsageTrend(
         STRESS_SCORE,
         WELLNESS_SCORE,
         PRODUCTIVITY_SCORE
+
     }
     
     enum class TrendDirection {
@@ -233,3 +237,4 @@ data class ComparativeInsights(
         CONCERNING    // Bottom 10%
     }
 }
+

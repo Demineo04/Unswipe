@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.unswipe.android.domain.model.DashboardData
 import com.unswipe.android.domain.repository.UsageRepository
+import com.unswipe.android.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import java.util.concurrent.TimeUnit
@@ -18,8 +19,22 @@ import com.unswipe.android.domain.model.DailyUsageSummary as DomainDailyUsageSum
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
-    private val usageRepository: UsageRepository
+    private val usageRepository: UsageRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
+    
+    // User name flow
+    val userName: StateFlow<String> = authRepository.getCurrentUserFlow()
+        .map { user ->
+            user?.displayName?.takeIf { it.isNotBlank() } 
+                ?: user?.email?.substringBefore("@")?.capitalize() 
+                ?: "User"
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = "User"
+        )
 
     // Renamed the flow exposed to the UI
     val uiState: StateFlow<DashboardUiState> = usageRepository.getDashboardDataFlow()

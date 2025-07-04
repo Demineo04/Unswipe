@@ -199,12 +199,108 @@ fun UnswipeNavGraph(
         }
         
         composable(Screen.DailyLimit.route) {
-            Text("Daily Limit Screen - Working!")
-            /*
             DailyLimitScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
-            */
+        }
+        
+        composable(Screen.EditProfile.route) {
+            com.unswipe.android.ui.settings.EditProfileScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
+        composable(Screen.ResetPassword.route) {
+            com.unswipe.android.ui.settings.ResetPasswordScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
+        composable(Screen.NotificationSettings.route) {
+            com.unswipe.android.ui.settings.NotificationSettingsScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
+        composable(Screen.FocusMode.route) {
+            com.unswipe.android.ui.settings.FocusModeScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
+        composable(Screen.UsageAnalytics.route) {
+            com.unswipe.android.ui.settings.UsageAnalyticsScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
+        composable(Screen.Premium.route) {
+            com.unswipe.android.ui.settings.PremiumScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
+        composable(Screen.SubscriptionManagement.route) {
+            com.unswipe.android.ui.settings.SubscriptionManagementScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
+        composable(Screen.Help.route) {
+            com.unswipe.android.ui.settings.HelpScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
+        composable(Screen.Support.route) {
+            com.unswipe.android.ui.settings.SupportScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
+        // Settings Sub-screens
+        composable(Screen.EditProfile.route) {
+            com.unswipe.android.ui.settings.EditProfileScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
+        composable(Screen.ResetPassword.route) {
+            Text("Reset Password - Coming Soon!")
+        }
+        
+        composable(Screen.Notifications.route) {
+            com.unswipe.android.ui.settings.NotificationsScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
+        composable(Screen.FocusMode.route) {
+            Text("Focus Mode - Coming Soon!")
+        }
+        
+        composable(Screen.UsageAnalytics.route) {
+            Text("Usage Analytics - Coming Soon!")
+        }
+        
+        composable(Screen.ManageSubscription.route) {
+            Text("Manage Subscription - Coming Soon!")
+        }
+        
+        composable(Screen.HelpFAQ.route) {
+            Text("Help & FAQ - Coming Soon!")
+        }
+        
+        composable(Screen.ContactSupport.route) {
+            Text("Contact Support - Coming Soon!")
+        }
+        
+        composable(Screen.RateApp.route) {
+            Text("Rate App - Coming Soon!")
+        }
+        
+        composable(Screen.Premium.route) {
+            Text("Premium Upgrade - Coming Soon!")
         }
         
         // Detail Screens

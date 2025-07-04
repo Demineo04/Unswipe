@@ -126,7 +126,7 @@ fun ModernDashboardContent(
             
             // Header with greeting and settings
             ModernDashboardHeader(
-                userName = "Eddie", // TODO: Get from user preferences
+                userName = viewModel.userName.collectAsState().value,
                 onNavigateToSettings = onNavigateToSettings
             )
         }
@@ -710,7 +710,7 @@ fun DashboardContent(
              StatCard(
                 modifier = Modifier.weight(1f),
                 label = "Goal",
-                value = "80%" // Placeholder
+                value = "${(state.usagePercentage * 100).toInt()}%"
             )
         }
     }

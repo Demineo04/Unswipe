@@ -9,6 +9,10 @@ interface AuthRepository {
     suspend fun register(email: String, pass: String): Result<Unit>
     suspend fun logout()
     suspend fun isUserPremium(): Boolean
+    suspend fun deleteAccount()
     fun getCurrentUserFlow(): Flow<FirebaseUser?>
     fun getUserId(): String?
+    suspend fun getCurrentUser(): FirebaseUser?
+    suspend fun deleteAccount(): Result<Unit>
+    suspend fun sendPasswordResetEmail(email: String): Result<Unit>
 }
