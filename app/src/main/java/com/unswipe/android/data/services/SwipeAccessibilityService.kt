@@ -16,6 +16,7 @@ import com.unswipe.android.data.model.EventType
 import com.unswipe.android.data.model.UsageEvent
 import com.unswipe.android.domain.repository.SettingsRepository
 import com.unswipe.android.ui.confirmation.ConfirmationActivity
+import com.unswipe.android.util.AppNameMapper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.firstOrNull
@@ -124,13 +125,8 @@ class SwipeAccessibilityService : AccessibilityService() {
     }
 
     private fun showConfirmation(packageName: String) {
-        val appName = try {
-            val appInfo: ApplicationInfo = injectedPackageManager.getApplicationInfo(packageName, 0)
-            injectedPackageManager.getApplicationLabel(appInfo).toString()
-        } catch (e: PackageManager.NameNotFoundException) {
-            Log.w(TAG, "Could not get app name for $packageName", e)
-            packageName // Fallback
-        }
+        // Use AppNameMapper for reliable user-friendly app names
+        val appName = AppNameMapper.getAppName(this, packageName)
         Log.i(TAG, "Showing confirmation prompt for $appName ($packageName)")
 
         val intent = ConfirmationActivity.newIntent(this, appName, packageName)

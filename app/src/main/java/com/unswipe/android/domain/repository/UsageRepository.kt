@@ -92,4 +92,9 @@ interface UsageRepository {
      */
     suspend fun isFrequentWorkInterruption(packageName: String): Boolean
 
+    /**
+     * Refreshes usage data from the system.
+     */
+    suspend fun refreshUsageData()
+
 }

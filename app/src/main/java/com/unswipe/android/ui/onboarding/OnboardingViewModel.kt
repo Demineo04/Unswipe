@@ -17,10 +17,11 @@ data class OnboardingUiState(
     val wakeupTime: LocalTime? = null,
     val workStartTime: LocalTime? = null,
     val workEndTime: LocalTime? = null,
-    val sleepTime: LocalTime? = null
+    val sleepTime: LocalTime? = null,
+    val isOnboardingComplete: Boolean = false
 )
 
-// @HiltViewModel
+@HiltViewModel
 class OnboardingViewModel @Inject constructor(
     private val onboardingRepository: OnboardingRepository
 ) : ViewModel() {
@@ -28,7 +29,49 @@ class OnboardingViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(OnboardingUiState())
     val uiState: StateFlow<OnboardingUiState> = _uiState.asStateFlow()
 
-    fun saveWakeupTime(hour: Int, minute: Int) {
+    init {
+        loadSavedData()
+    }
+
+    private fun loadSavedData() {
+        viewModelScope.launch {
+            try {
+                // Load any previously saved onboarding data
+                // This would typically come from the repository
+                _uiState.value = _uiState.value.copy(isLoading = false)
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = "Failed to load saved data: ${e.localizedMessage}"
+                )
+            }
+        }
+    }
+
+    // Method names that match what the screens are calling
+    fun setWakeupTime(hour: Int, minute: Int) {
+        val time = LocalTime.of(hour, minute)
+        _uiState.value = _uiState.value.copy(wakeupTime = time)
+        saveWakeupTime(hour, minute)
+    }
+
+    fun setWorkTime(startHour: Int, startMinute: Int, endHour: Int, endMinute: Int) {
+        val startTime = LocalTime.of(startHour, startMinute)
+        val endTime = LocalTime.of(endHour, endMinute)
+        _uiState.value = _uiState.value.copy(
+            workStartTime = startTime,
+            workEndTime = endTime
+        )
+        saveWorkSchedule(startHour, startMinute, endHour, endMinute)
+    }
+
+    fun setSleepTime(hour: Int, minute: Int) {
+        val time = LocalTime.of(hour, minute)
+        _uiState.value = _uiState.value.copy(sleepTime = time)
+        saveSleepTime(hour, minute)
+    }
+
+    private fun saveWakeupTime(hour: Int, minute: Int) {
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true)
@@ -38,7 +81,6 @@ class OnboardingViewModel @Inject constructor(
                 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    wakeupTime = time,
                     error = null
                 )
             } catch (e: Exception) {
@@ -50,7 +92,7 @@ class OnboardingViewModel @Inject constructor(
         }
     }
 
-    fun saveWorkSchedule(startHour: Int, startMinute: Int, endHour: Int, endMinute: Int) {
+    private fun saveWorkSchedule(startHour: Int, startMinute: Int, endHour: Int, endMinute: Int) {
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true)
@@ -62,8 +104,6 @@ class OnboardingViewModel @Inject constructor(
                 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    workStartTime = startTime,
-                    workEndTime = endTime,
                     error = null
                 )
             } catch (e: Exception) {
@@ -75,7 +115,7 @@ class OnboardingViewModel @Inject constructor(
         }
     }
 
-    fun saveSleepTime(hour: Int, minute: Int) {
+    private fun saveSleepTime(hour: Int, minute: Int) {
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(isLoading = true)
@@ -85,7 +125,6 @@ class OnboardingViewModel @Inject constructor(
                 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    sleepTime = time,
                     error = null
                 )
             } catch (e: Exception) {
@@ -106,6 +145,7 @@ class OnboardingViewModel @Inject constructor(
                 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
+                    isOnboardingComplete = true,
                     error = null
                 )
             } catch (e: Exception) {

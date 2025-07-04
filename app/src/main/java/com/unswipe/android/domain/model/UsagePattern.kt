@@ -49,7 +49,13 @@ enum class PatternType {
     EVENING_ESCAPE,        // Evening usage as stress relief
     SOCIAL_COMPARISON,     // Patterns suggesting social comparison
     HABIT_LOOP,            // Repetitive usage patterns
-    NOTIFICATION_DRIVEN    // Usage driven by notifications
+    NOTIFICATION_DRIVEN,   // Usage driven by notifications
+    LATE_NIGHT_USAGE,      // Usage during late night hours
+    MORNING_RUSH,          // Excessive morning usage
+    WEEKEND_EXCESS,        // Weekend usage excess
+    MINDLESS_SCROLLING,    // Unconscious scrolling behavior
+    NOTIFICATION_ADDICTION // Addiction to notifications
+
 }
 
 /**
@@ -65,11 +71,14 @@ data class EmotionalUsageInsights(
     val hasWeekendSpikes: Boolean,       // Higher weekend usage
     val recommendations: List<String>,    // Actionable recommendations
     val dominantEmotion: EmotionalState = getDominantEmotion(stressScore, boredomScore, anxietyScore),
-    val overallWellnessScore: Float = calculateOverallWellness(stressScore, boredomScore, anxietyScore)
+    val overallWellnessScore: Float = calculateOverallWellness(stressScore, boredomScore, anxietyScore),
+    val analysisTimestamp: Long = System.currentTimeMillis()
+
 ) {
     companion object {
         private fun getDominantEmotion(stress: Float, boredom: Float, anxiety: Float): EmotionalState {
             return when {
+                stress > 0.7f && boredom > 0.7f && anxiety > 0.7f -> EmotionalState.OVERWHELMED
                 stress > boredom && stress > anxiety -> EmotionalState.STRESSED
                 boredom > stress && boredom > anxiety -> EmotionalState.BORED
                 anxiety > stress && anxiety > boredom -> EmotionalState.ANXIOUS
@@ -139,7 +148,9 @@ data class RiskAssessment(
         BINGE_HISTORY,
         POOR_SLEEP_PATTERN,
         WORK_INTERRUPTIONS,
-        EMOTIONAL_TRIGGERS
+        EMOTIONAL_TRIGGERS,
+        SOCIAL_PRESSURE
+
     }
 }
 
@@ -187,9 +198,12 @@ data class UsageTrend(
         TOTAL_USAGE_TIME,
         SESSION_COUNT,
         AVERAGE_SESSION_LENGTH,
+        APP_LAUNCHES,
         INTERRUPTION_FREQUENCY,
         STRESS_SCORE,
-        WELLNESS_SCORE
+        WELLNESS_SCORE,
+        PRODUCTIVITY_SCORE
+
     }
     
     enum class TrendDirection {
@@ -222,4 +236,5 @@ data class ComparativeInsights(
         NEEDS_WORK,   // Bottom 25%
         CONCERNING    // Bottom 10%
     }
-} 
+}
+

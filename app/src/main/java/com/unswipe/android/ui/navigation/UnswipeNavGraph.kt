@@ -97,9 +97,9 @@ fun UnswipeNavGraph(
                 viewModel = authViewModel,
                 onNavigateToLogin = { navController.popBackStack() },
                 onRegisterSuccess = {
-                    // Go directly to onboarding after successful registration
+                    // Go directly to onboarding after successful registration for new users
                     navController.navigate(Screen.WakeupTime.route) {
-                        popUpTo(Screen.Login.route) { inclusive = true }
+                        popUpTo(Screen.Register.route) { inclusive = true }
                         launchSingleTop = true
                     }
                 }
@@ -116,12 +116,12 @@ fun UnswipeNavGraph(
 
         // --- ONBOARDING ---
         composable(Screen.WakeupTime.route) {
-            OnboardingWakeupScreen(
+            WakeupTimeScreen(
                 onNavigateToNext = {
                     navController.navigate(Screen.WorkTime.route)
                 },
                 onSkip = {
-                    navController.navigate(Screen.Login.route) {
+                    navController.navigate(Screen.Dashboard.route) {
                         popUpTo(Screen.WakeupTime.route) { inclusive = true }
                         launchSingleTop = true
                     }
@@ -130,7 +130,7 @@ fun UnswipeNavGraph(
         }
 
         composable(Screen.WorkTime.route) {
-            OnboardingWorkScreen(
+            WorkTimeScreen(
                 onNavigateToNext = {
                     navController.navigate(Screen.SleepTime.route)
                 },
@@ -141,7 +141,7 @@ fun UnswipeNavGraph(
         }
 
         composable(Screen.SleepTime.route) {
-            OnboardingSleepScreen(
+            SleepTimeScreen(
                 onNavigateToNext = {
                     navController.navigate(Screen.PermissionRequest.route)
                 },
@@ -155,7 +155,8 @@ fun UnswipeNavGraph(
         composable(Screen.PermissionRequest.route) {
             OnboardingPermissionsScreen(
                 onNavigateToLogin = {
-                    navController.navigate(Screen.Login.route) {
+                    // After completing onboarding, go to dashboard
+                    navController.navigate(Screen.Dashboard.route) {
                         popUpTo(Screen.WakeupTime.route) { inclusive = true } // Clear the entire onboarding back stack
                         launchSingleTop = true
                     }
