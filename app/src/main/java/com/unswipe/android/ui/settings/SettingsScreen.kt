@@ -26,7 +26,7 @@ import com.unswipe.android.ui.theme.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    // viewModel: SettingsViewModel = hiltViewModel(),
+    viewModel: SettingsViewModel = hiltViewModel(),
     onNavigateTo: (String) -> Unit,
     onLogout: () -> Unit
 ) {
@@ -55,9 +55,9 @@ fun SettingsScreen(
                 SettingsSection(
                     title = "Account",
                     items = listOf(
-                        SettingsItemData("Edit Profile", Icons.Default.Person, onClick = { /* onNavigateTo("edit_profile") */ }),
-                        SettingsItemData("Reset Password", Icons.Default.Lock, onClick = { /* onNavigateTo("reset_password") */ }),
-                        SettingsItemData("Notifications", Icons.Default.Notifications, onClick = { /* onNavigateTo("notifications") */ })
+                        SettingsItemData("Edit Profile", Icons.Default.Person, onClick = { onNavigateTo(Screen.EditProfile.route) }),
+                        SettingsItemData("Reset Password", Icons.Default.Lock, onClick = { onNavigateTo(Screen.ResetPassword.route) }),
+                        SettingsItemData("Notifications", Icons.Default.Notifications, onClick = { onNavigateTo(Screen.Notifications.route) })
                     )
                 )
             }
@@ -67,9 +67,9 @@ fun SettingsScreen(
                     title = "App Controls",
                     items = listOf(
                         SettingsItemData("Daily Limit", Icons.Default.Schedule, onClick = { onNavigateTo(Screen.DailyLimit.route) }),
-                        SettingsItemData("App Blocker", Icons.Default.Block, onClick = { onNavigateTo("app_selection") }),
-                        SettingsItemData("Focus Mode", Icons.Default.DoNotDisturb, onClick = { /* onNavigateTo("focus_mode") */ }),
-                        SettingsItemData("Usage Analytics", Icons.Default.Analytics, onClick = { /* onNavigateTo("analytics") */ })
+                        SettingsItemData("App Blocker", Icons.Default.Block, onClick = { onNavigateTo(Screen.AppSelection.route) }),
+                        SettingsItemData("Focus Mode", Icons.Default.DoNotDisturb, onClick = { onNavigateTo(Screen.FocusMode.route) }),
+                        SettingsItemData("Usage Analytics", Icons.Default.Analytics, onClick = { onNavigateTo(Screen.UsageAnalytics.route) })
                     )
                 )
             }
@@ -78,8 +78,8 @@ fun SettingsScreen(
                 SettingsSection(
                     title = "Premium",
                     items = listOf(
-                        SettingsItemData("Upgrade to Premium", Icons.Default.Star, isPremium = true, onClick = { /* onNavigateTo("premium") */ }),
-                        SettingsItemData("Manage Subscription", Icons.Default.CreditCard, onClick = { /* onNavigateTo("subscription") */ })
+                        SettingsItemData("Upgrade to Premium", Icons.Default.Star, isPremium = true, onClick = { onNavigateTo(Screen.Premium.route) }),
+                        SettingsItemData("Manage Subscription", Icons.Default.CreditCard, onClick = { onNavigateTo(Screen.ManageSubscription.route) })
                     )
                 )
             }
@@ -88,9 +88,9 @@ fun SettingsScreen(
                 SettingsSection(
                     title = "Support",
                     items = listOf(
-                        SettingsItemData("Help & FAQ", Icons.Default.Help, onClick = { /* onNavigateTo("help") */ }),
-                        SettingsItemData("Contact Support", Icons.Default.Email, onClick = { /* onNavigateTo("support") */ }),
-                        SettingsItemData("Rate App", Icons.Default.ThumbUp, onClick = { /* onNavigateTo("rate") */ })
+                        SettingsItemData("Help & FAQ", Icons.Default.Help, onClick = { onNavigateTo(Screen.HelpFAQ.route) }),
+                        SettingsItemData("Contact Support", Icons.Default.Email, onClick = { onNavigateTo(Screen.ContactSupport.route) }),
+                        SettingsItemData("Rate App", Icons.Default.ThumbUp, onClick = { onNavigateTo(Screen.RateApp.route) })
                     )
                 )
             }
@@ -100,7 +100,7 @@ fun SettingsScreen(
                     title = "Account Actions",
                     items = listOf(
                         SettingsItemData("Logout", Icons.Default.ExitToApp, isDestructive = true, onClick = onLogout),
-                        SettingsItemData("Delete Account", Icons.Default.DeleteForever, isDestructive = true, onClick = { /* viewModel.deleteAccount() */ })
+                        SettingsItemData("Delete Account", Icons.Default.DeleteForever, isDestructive = true, onClick = { viewModel.deleteAccount() })
                     )
                 )
             }

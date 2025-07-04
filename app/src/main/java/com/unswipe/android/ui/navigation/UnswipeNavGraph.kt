@@ -206,6 +206,51 @@ fun UnswipeNavGraph(
             */
         }
         
+        // Settings Sub-screens
+        composable(Screen.EditProfile.route) {
+            com.unswipe.android.ui.settings.EditProfileScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
+        composable(Screen.ResetPassword.route) {
+            Text("Reset Password - Coming Soon!")
+        }
+        
+        composable(Screen.Notifications.route) {
+            com.unswipe.android.ui.settings.NotificationsScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        
+        composable(Screen.FocusMode.route) {
+            Text("Focus Mode - Coming Soon!")
+        }
+        
+        composable(Screen.UsageAnalytics.route) {
+            Text("Usage Analytics - Coming Soon!")
+        }
+        
+        composable(Screen.ManageSubscription.route) {
+            Text("Manage Subscription - Coming Soon!")
+        }
+        
+        composable(Screen.HelpFAQ.route) {
+            Text("Help & FAQ - Coming Soon!")
+        }
+        
+        composable(Screen.ContactSupport.route) {
+            Text("Contact Support - Coming Soon!")
+        }
+        
+        composable(Screen.RateApp.route) {
+            Text("Rate App - Coming Soon!")
+        }
+        
+        composable(Screen.Premium.route) {
+            Text("Premium Upgrade - Coming Soon!")
+        }
+        
         // Detail Screens
         composable(Screen.UnlocksDetail.route) {
             UnlocksDetailScreen(

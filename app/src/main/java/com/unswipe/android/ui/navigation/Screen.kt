@@ -28,6 +28,15 @@ sealed class Screen(val route: String) {
     
     // Settings Screens
     object DailyLimit : Screen("daily_limit")
+    object EditProfile : Screen("edit_profile")
+    object ResetPassword : Screen("reset_password")
+    object Notifications : Screen("notifications")
+    object FocusMode : Screen("focus_mode")
+    object UsageAnalytics : Screen("usage_analytics")
+    object ManageSubscription : Screen("manage_subscription")
+    object HelpFAQ : Screen("help_faq")
+    object ContactSupport : Screen("contact_support")
+    object RateApp : Screen("rate_app")
     
     // Detail Screens
     object UnlocksDetail : Screen("unlocks_detail")
