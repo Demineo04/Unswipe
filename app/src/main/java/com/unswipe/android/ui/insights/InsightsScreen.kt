@@ -29,7 +29,7 @@ fun InsightsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    when (uiState) {
+    when (val state = uiState) {
         is InsightsUiState.Loading -> {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -54,7 +54,7 @@ fun InsightsScreen(
                         )
                     )
                     Text(
-                        text = (uiState as InsightsUiState.Error).message,
+                        text = state.message,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = UnswipeTextSecondary
                         )
@@ -77,7 +77,7 @@ fun InsightsScreen(
         
         is InsightsUiState.Success -> {
             InsightsSuccessContent(
-                uiState = uiState as InsightsUiState.Success,
+                uiState = state,
                 viewModel = viewModel
             )
         }
@@ -332,7 +332,7 @@ private fun EmotionalScoreItem(
         Spacer(modifier = Modifier.height(4.dp))
         
         LinearProgressIndicator(
-            progress = { score },
+            progress = score,
             modifier = Modifier.width(60.dp),
             color = color,
             trackColor = color.copy(alpha = 0.2f)

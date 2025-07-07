@@ -1,5 +1,6 @@
 package com.unswipe.android.ui.dashboard;
 
+import com.unswipe.android.domain.repository.AuthRepository;
 import com.unswipe.android.domain.repository.UsageRepository;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
@@ -25,21 +26,26 @@ import javax.inject.Provider;
 public final class DashboardViewModel_Factory implements Factory<DashboardViewModel> {
   private final Provider<UsageRepository> usageRepositoryProvider;
 
-  public DashboardViewModel_Factory(Provider<UsageRepository> usageRepositoryProvider) {
+  private final Provider<AuthRepository> authRepositoryProvider;
+
+  public DashboardViewModel_Factory(Provider<UsageRepository> usageRepositoryProvider,
+      Provider<AuthRepository> authRepositoryProvider) {
     this.usageRepositoryProvider = usageRepositoryProvider;
+    this.authRepositoryProvider = authRepositoryProvider;
   }
 
   @Override
   public DashboardViewModel get() {
-    return newInstance(usageRepositoryProvider.get());
+    return newInstance(usageRepositoryProvider.get(), authRepositoryProvider.get());
   }
 
-  public static DashboardViewModel_Factory create(
-      Provider<UsageRepository> usageRepositoryProvider) {
-    return new DashboardViewModel_Factory(usageRepositoryProvider);
+  public static DashboardViewModel_Factory create(Provider<UsageRepository> usageRepositoryProvider,
+      Provider<AuthRepository> authRepositoryProvider) {
+    return new DashboardViewModel_Factory(usageRepositoryProvider, authRepositoryProvider);
   }
 
-  public static DashboardViewModel newInstance(UsageRepository usageRepository) {
-    return new DashboardViewModel(usageRepository);
+  public static DashboardViewModel newInstance(UsageRepository usageRepository,
+      AuthRepository authRepository) {
+    return new DashboardViewModel(usageRepository, authRepository);
   }
 }

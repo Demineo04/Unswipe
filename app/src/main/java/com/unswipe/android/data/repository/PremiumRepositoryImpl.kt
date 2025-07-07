@@ -533,28 +533,20 @@ class PremiumRepositoryImpl @Inject constructor(
             SmartFocusMode(
                 id = "work_meeting_focus",
                 name = "Work Meeting",
-                description = "Auto-activated during calendar meetings",
-                isActive = false,
+                isEnabled = false,
                 blockedApps = setOf(
                     "com.zhiliaoapp.musically",
                     "com.instagram.android",
                     "com.twitter.android",
                     "com.reddit.frontpage"
                 ),
-                allowedApps = setOf(
-                    "com.google.android.gm", // Gmail
-                    "com.microsoft.teams", // Teams
-                    "us.zoom.videomeetings" // Zoom
-                ),
-                scheduleType = ScheduleType.EVENT_TRIGGERED,
-                customMessage = "You're in a meeting. Stay focused!",
-                strictnessLevel = FocusStrictnessLevel.HIGH
+                triggers = setOf(FocusTrigger.CalendarEvent(keywords = setOf("meeting", "call", "standup"))),
+                customMessage = "You're in a meeting. Stay focused!"
             ),
             SmartFocusMode(
                 id = "deep_work_focus",
                 name = "Deep Work",
-                description = "For focused work sessions",
-                isActive = false,
+                isEnabled = false,
                 blockedApps = setOf(
                     "com.zhiliaoapp.musically",
                     "com.instagram.android",
@@ -562,10 +554,8 @@ class PremiumRepositoryImpl @Inject constructor(
                     "com.reddit.frontpage",
                     "com.google.android.youtube"
                 ),
-                allowedApps = setOf(),
-                scheduleType = ScheduleType.EVENT_TRIGGERED,
-                customMessage = "Deep work time. Distractions blocked.",
-                strictnessLevel = FocusStrictnessLevel.MAXIMUM
+                triggers = setOf(FocusTrigger.CalendarEvent(keywords = setOf("focus", "deep work", "coding"))),
+                customMessage = "Deep work time. Distractions blocked."
             )
         )
     }
@@ -718,9 +708,9 @@ class PremiumRepositoryImpl @Inject constructor(
         if (trends.isEmpty()) return 0f
         
         // Calculate based on usage patterns and interruptions
-        val avgUsageMinutes = trends.map { it.usageMinutes }.average()
-        val avgInterruptions = trends.map { it.focusInterruptions }.average()
-        val avgSessionCount = trends.map { it.sessionCount }.average()
+        val avgUsageMinutes = trends.map { it.usageMinutes }.average().toFloat()
+        val avgInterruptions = trends.map { it.focusInterruptions }.average().toFloat()
+        val avgSessionCount = trends.map { it.sessionCount }.average().toFloat()
         
         // Lower usage, fewer interruptions, and fewer sessions = higher productivity
         val usageScore = (1f - (avgUsageMinutes / 480f)).coerceIn(0f, 1f) // 8 hours max
@@ -734,8 +724,8 @@ class PremiumRepositoryImpl @Inject constructor(
         if (trends.isEmpty()) return 0f
         
         // Calculate based on interruptions and session patterns
-        val avgInterruptions = trends.map { it.focusInterruptions }.average()
-        val avgSessionDuration = trends.map { it.usageMinutes.toFloat() / it.sessionCount }.average()
+        val avgInterruptions = trends.map { it.focusInterruptions }.average().toFloat()
+        val avgSessionDuration = trends.map { it.usageMinutes.toFloat() / it.sessionCount }.average().toFloat()
         
         val interruptionScore = (1f - (avgInterruptions / 15f)).coerceIn(0f, 1f)
         val sessionDurationScore = (avgSessionDuration / 30f).coerceIn(0f, 1f) // 30 min ideal session
@@ -747,7 +737,7 @@ class PremiumRepositoryImpl @Inject constructor(
         if (trends.isEmpty()) return 0f
         
         // Combine usage, productivity, and focus quality
-        val avgUsageMinutes = trends.map { it.usageMinutes }.average()
+        val avgUsageMinutes = trends.map { it.usageMinutes }.average().toFloat()
         val productivityScore = calculateProductivityScore(trends)
         val focusQuality = calculateFocusQuality(trends)
         
@@ -821,9 +811,11 @@ class PremiumRepositoryImpl @Inject constructor(
                 PersonalizedRecommendation(
                     title = "Improve Your Productivity",
                     description = "Your productivity score is below average. Consider using focus modes more frequently.",
-                    priority = RecommendationPriority.HIGH,
-                    category = RecommendationCategory.PRODUCTIVITY,
-                    estimatedImpact = "25% improvement in daily focus"
+                    actionType = PersonalizedRecommendation.ActionType.ENABLE_FEATURE,
+                    priority = PersonalizedRecommendation.Priority.HIGH,
+                    category = PersonalizedRecommendation.RecommendationCategory.PRODUCTIVITY,
+                    estimatedImpact = PersonalizedRecommendation.ImpactLevel.SIGNIFICANT,
+                    implementationSteps = listOf("Enable Smart Focus modes for work hours.", "Review your blocked apps list.")
                 )
             )
         }
@@ -833,9 +825,11 @@ class PremiumRepositoryImpl @Inject constructor(
                 PersonalizedRecommendation(
                     title = "Reduce Distractions",
                     description = "You're experiencing frequent interruptions. Try longer focus sessions.",
-                    priority = RecommendationPriority.MEDIUM,
-                    category = RecommendationCategory.FOCUS,
-                    estimatedImpact = "Fewer context switches throughout the day"
+                    actionType = PersonalizedRecommendation.ActionType.BEHAVIORAL_CHANGE,
+                    priority = PersonalizedRecommendation.Priority.MEDIUM,
+                    category = PersonalizedRecommendation.RecommendationCategory.FOCUS,
+                    estimatedImpact = PersonalizedRecommendation.ImpactLevel.MODERATE,
+                    implementationSteps = listOf("Try to keep focus sessions at least 25 minutes long.", "Disable non-essential notifications.")
                 )
             )
         }
@@ -880,16 +874,20 @@ class PremiumRepositoryImpl @Inject constructor(
             PersonalizedRecommendation(
                 title = "Optimize Your Morning Routine",
                 description = "Your productivity is 40% higher when you avoid social media for the first hour after waking up",
-                priority = RecommendationPriority.HIGH,
-                category = RecommendationCategory.PRODUCTIVITY,
-                estimatedImpact = "15% improvement in daily focus"
+                actionType = PersonalizedRecommendation.ActionType.BEHAVIORAL_CHANGE,
+                priority = PersonalizedRecommendation.Priority.HIGH,
+                category = PersonalizedRecommendation.RecommendationCategory.PRODUCTIVITY,
+                estimatedImpact = PersonalizedRecommendation.ImpactLevel.SIGNIFICANT,
+                implementationSteps = listOf("Keep your phone away for the first hour of your day.", "Try a mindfulness exercise instead.")
             ),
             PersonalizedRecommendation(
                 title = "Improve Sleep Hygiene",
                 description = "Using your phone within 30 minutes of bedtime reduces your sleep quality score by 20%",
-                priority = RecommendationPriority.MEDIUM,
-                category = RecommendationCategory.SLEEP,
-                estimatedImpact = "Better sleep quality and morning energy"
+                actionType = PersonalizedRecommendation.ActionType.CHANGE_SETTING,
+                priority = PersonalizedRecommendation.Priority.MEDIUM,
+                category = PersonalizedRecommendation.RecommendationCategory.SLEEP,
+                estimatedImpact = PersonalizedRecommendation.ImpactLevel.MODERATE,
+                implementationSteps = listOf("Enable Bedtime Enforcement feature in settings.", "Charge your phone outside of your bedroom.")
             )
         )
     }

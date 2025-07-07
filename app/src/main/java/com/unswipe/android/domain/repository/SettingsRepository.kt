@@ -64,7 +64,7 @@ interface SettingsRepository {
     /**
      * Sets the daily limit in milliseconds.
      */
-    suspend fun setDailyLimitMillis(limitMillis: Long) = updateDailyLimit(limitMillis)
+    suspend fun setDailyLimitMillis(limitMillis: Long)
 
     /**
      * Checks if a specific app is currently in the blocked list.
@@ -125,17 +125,7 @@ interface SettingsRepository {
      * Clears all user data and settings.
      */
     suspend fun clearAllData()
-    
-    /**
-     * Sets blocked apps
-     */
-    suspend fun setBlockedApps(apps: Set<String>)
-    
-    /**
-     * Sets daily limit in milliseconds
-     */
-    suspend fun setDailyLimitMillis(limitMillis: Long)
-    
+
     /**
      * Gets premium status
      */

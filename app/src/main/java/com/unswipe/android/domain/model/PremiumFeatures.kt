@@ -257,19 +257,3 @@ data class PatternInsight(
     val actionable: Boolean,
     val suggestedAction: String?
 )
-
-data class PersonalizedRecommendation(
-    val title: String,
-    val description: String,
-    val priority: RecommendationPriority,
-    val category: RecommendationCategory,
-    val estimatedImpact: String
-)
-
-enum class RecommendationPriority {
-    LOW, MEDIUM, HIGH, CRITICAL
-}
-
-enum class RecommendationCategory {
-    PRODUCTIVITY, WELLNESS, SLEEP, FOCUS, SOCIAL
-}

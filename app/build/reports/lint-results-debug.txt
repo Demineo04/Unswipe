@@ -1,0 +1,909 @@
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\notifications\ContextAwareNotificationEngine.kt:319: Error: Call requires permission which may be rejected by user: code should explicitly check to see if permission is available (with checkPermission) or explicitly handle a potential SecurityException [MissingPermission]
+        notificationManager.notify(notificationId, notification)
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "MissingPermission":
+   This check scans through your code and libraries and looks at the APIs
+   being used, and checks this against the set of permissions required to
+   access those APIs. If the code using those APIs is called at runtime, then
+   the program will crash.
+
+   Furthermore, for permissions that are revocable (with targetSdkVersion 23),
+   client code must also be prepared to handle the calls throwing an exception
+   if the user rejects the request for permission at runtime.
+
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\notifications\ContextAwareNotificationEngine.kt:362: Warning: Implicitly using the default locale is a common source of bugs: Use capitalize(Locale) instead. For strings meant to be internal use Locale.ROOT, otherwise Locale.getDefault(). [DefaultLocale]
+            packageName.split(".").lastOrNull()?.capitalize() ?: "App"
+                                                 ~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\interventions\ContextualInterventionEngine.kt:360: Warning: Implicitly using the default locale is a common source of bugs: Use capitalize(Locale) instead. For strings meant to be internal use Locale.ROOT, otherwise Locale.getDefault(). [DefaultLocale]
+            else -> packageName.split(".").lastOrNull()?.capitalize() ?: "App"
+                                                         ~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\UnlocksDetailScreen.kt:157: Warning: Implicitly using the default locale is a common source of bugs: Use String.format(Locale, ...) instead [DefaultLocale]
+                    value = String.format("%.1f", averagePerHour),
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\UnlocksDetailScreen.kt:162: Warning: Implicitly using the default locale is a common source of bugs: Use String.format(Locale, ...) instead [DefaultLocale]
+                    value = String.format("%02d:00", peakHour),
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\UnlocksDetailScreen.kt:256: Warning: Implicitly using the default locale is a common source of bugs: Use String.format(Locale, ...) instead [DefaultLocale]
+                                text = String.format("%02d", hour),
+                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "DefaultLocale":
+   Calling String#toLowerCase() or #toUpperCase() without specifying an
+   explicit locale is a common source of bugs. The reason for that is that
+   those methods will use the current locale on the user's device, and even
+   though the code appears to work correctly when you are developing the app,
+   it will fail in some locales. For example, in the Turkish locale, the
+   uppercase replacement for i is not I.
+
+   If you want the methods to just perform ASCII replacement, for example to
+   convert an enum name, call String#toUpperCase(Locale.ROOT) instead. If you
+   really want to use the current locale, call
+   String#toUpperCase(Locale.getDefault()) instead.
+
+   https://developer.android.com/reference/java/util/Locale.html#default_locale
+
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:28: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#truncatedTo [NewApi]
+        val dayStart = date.truncatedTo(ChronoUnit.DAYS)
+                            ~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:28: Error: Cast from ChronoUnit to TemporalUnit requires API level 26 (current min is 24) [NewApi]
+        val dayStart = date.truncatedTo(ChronoUnit.DAYS)
+                                        ~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:28: Error: Field requires API level 26 (current min is 24): java.time.temporal.ChronoUnit#DAYS [NewApi]
+        val dayStart = date.truncatedTo(ChronoUnit.DAYS)
+                                        ~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:29: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#plusDays [NewApi]
+        val dayEnd = dayStart.plusDays(1)
+                              ~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:33: Error: Call requires API level 26 (current min is 24): java.time.chrono.ChronoLocalDateTime#toEpochSecond [NewApi]
+            dayStart.toEpochSecond(java.time.ZoneOffset.UTC) * 1000,
+                     ~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:33: Error: Field requires API level 26 (current min is 24): java.time.ZoneOffset#UTC [NewApi]
+            dayStart.toEpochSecond(java.time.ZoneOffset.UTC) * 1000,
+                                   ~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:34: Error: Call requires API level 26 (current min is 24): java.time.chrono.ChronoLocalDateTime#toEpochSecond [NewApi]
+            dayEnd.toEpochSecond(java.time.ZoneOffset.UTC) * 1000
+                   ~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:34: Error: Field requires API level 26 (current min is 24): java.time.ZoneOffset#UTC [NewApi]
+            dayEnd.toEpochSecond(java.time.ZoneOffset.UTC) * 1000
+                                 ~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:63: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#minusDays [NewApi]
+            LocalDateTime.now().minusDays(7),
+                                ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:63: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#now [NewApi]
+            LocalDateTime.now().minusDays(7),
+                          ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:64: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#now [NewApi]
+            LocalDateTime.now()
+                          ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:146: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#now [NewApi]
+        val now = LocalDateTime.now()
+                                ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:147: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#minusDays [NewApi]
+        val weekAgo = now.minusDays(7)
+                          ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:203: Error: Call requires API level 26 (current min is 24): java.time.chrono.ChronoLocalDateTime#toEpochSecond [NewApi]
+            startDate.toEpochSecond(java.time.ZoneOffset.UTC) * 1000,
+                      ~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:203: Error: Field requires API level 26 (current min is 24): java.time.ZoneOffset#UTC [NewApi]
+            startDate.toEpochSecond(java.time.ZoneOffset.UTC) * 1000,
+                                    ~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:204: Error: Call requires API level 26 (current min is 24): java.time.chrono.ChronoLocalDateTime#toEpochSecond [NewApi]
+            endDate.toEpochSecond(java.time.ZoneOffset.UTC) * 1000
+                    ~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:204: Error: Field requires API level 26 (current min is 24): java.time.ZoneOffset#UTC [NewApi]
+            endDate.toEpochSecond(java.time.ZoneOffset.UTC) * 1000
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:224: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#minusDays [NewApi]
+            val date = LocalDateTime.now().minusDays(day.toLong())
+                                           ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:224: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#now [NewApi]
+            val date = LocalDateTime.now().minusDays(day.toLong())
+                                     ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:244: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#truncatedTo [NewApi]
+        val dayStart = date.truncatedTo(ChronoUnit.DAYS)
+                            ~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:244: Error: Cast from ChronoUnit to TemporalUnit requires API level 26 (current min is 24) [NewApi]
+        val dayStart = date.truncatedTo(ChronoUnit.DAYS)
+                                        ~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:244: Error: Field requires API level 26 (current min is 24): java.time.temporal.ChronoUnit#DAYS [NewApi]
+        val dayStart = date.truncatedTo(ChronoUnit.DAYS)
+                                        ~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:245: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#plusDays [NewApi]
+        val dayEnd = dayStart.plusDays(1)
+                              ~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:248: Error: Call requires API level 26 (current min is 24): java.time.chrono.ChronoLocalDateTime#toEpochSecond [NewApi]
+            dayStart.toEpochSecond(java.time.ZoneOffset.UTC) * 1000,
+                     ~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:248: Error: Field requires API level 26 (current min is 24): java.time.ZoneOffset#UTC [NewApi]
+            dayStart.toEpochSecond(java.time.ZoneOffset.UTC) * 1000,
+                                   ~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:249: Error: Call requires API level 26 (current min is 24): java.time.chrono.ChronoLocalDateTime#toEpochSecond [NewApi]
+            dayEnd.toEpochSecond(java.time.ZoneOffset.UTC) * 1000
+                   ~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:249: Error: Field requires API level 26 (current min is 24): java.time.ZoneOffset#UTC [NewApi]
+            dayEnd.toEpochSecond(java.time.ZoneOffset.UTC) * 1000
+                                 ~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:262: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#ofEpochSecond [NewApi]
+            val hour = LocalDateTime.ofEpochSecond(
+                                     ~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:265: Error: Field requires API level 26 (current min is 24): java.time.ZoneOffset#UTC [NewApi]
+                java.time.ZoneOffset.UTC
+                ~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:266: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#getHour [NewApi]
+            ).hour
+              ~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:291: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#ofEpochSecond [NewApi]
+            val eventTime = LocalDateTime.ofEpochSecond(
+                                          ~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:294: Error: Field requires API level 26 (current min is 24): java.time.ZoneOffset#UTC [NewApi]
+                java.time.ZoneOffset.UTC
+                ~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:296: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#getHour [NewApi]
+            val hour = eventTime.hour
+                                 ~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:298: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#getHour [NewApi]
+            hour >= userSchedule.workStartTime.hour && 
+                                               ~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:299: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#getHour [NewApi]
+            hour < userSchedule.workEndTime.hour &&
+                                            ~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:337: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#ofEpochSecond [NewApi]
+            val hour = LocalDateTime.ofEpochSecond(
+                                     ~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:340: Error: Field requires API level 26 (current min is 24): java.time.ZoneOffset#UTC [NewApi]
+                java.time.ZoneOffset.UTC
+                ~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:341: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#getHour [NewApi]
+            ).hour
+              ~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:360: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#ofEpochSecond [NewApi]
+            LocalDateTime.ofEpochSecond(
+                          ~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:363: Error: Field requires API level 26 (current min is 24): java.time.ZoneOffset#UTC [NewApi]
+                java.time.ZoneOffset.UTC
+                ~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:364: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#getHour [NewApi]
+            ).hour
+              ~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:473: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#ofEpochSecond [NewApi]
+            val date = LocalDateTime.ofEpochSecond(event.timestamp / 1000, 0, java.time.ZoneOffset.UTC)
+                                     ~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:473: Error: Field requires API level 26 (current min is 24): java.time.ZoneOffset#UTC [NewApi]
+            val date = LocalDateTime.ofEpochSecond(event.timestamp / 1000, 0, java.time.ZoneOffset.UTC)
+                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:474: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#toLocalDate [NewApi]
+            "${date.toLocalDate()},${event.packageName},${event.eventType},${event.timestamp},${analytics.productivityScore}"
+                    ~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\AdvancedAnalyticsEngine.kt:486: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#now [NewApi]
+            "export_date": "${LocalDateTime.now()}",
+                                            ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\AppLaunchesDetailScreen.kt:365: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#format [NewApi]
+                    text = "${launch.time.format(DateTimeFormatter.ofPattern("HH:mm"))} • ${launch.durationMinutes}m",
+                                          ~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\AppLaunchesDetailScreen.kt:365: Error: Call requires API level 26 (current min is 24): java.time.format.DateTimeFormatter#ofPattern [NewApi]
+                    text = "${launch.time.format(DateTimeFormatter.ofPattern("HH:mm"))} • ${launch.durationMinutes}m",
+                                                                   ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\test\ContextAwareIntegrationTest.kt:57: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+            wakeupTime = LocalTime.of(7, 0),
+                                   ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\test\ContextAwareIntegrationTest.kt:58: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+            workStartTime = LocalTime.of(9, 0),
+                                      ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\test\ContextAwareIntegrationTest.kt:59: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+            workEndTime = LocalTime.of(17, 0),
+                                    ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\test\ContextAwareIntegrationTest.kt:60: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+            sleepTime = LocalTime.of(23, 0),
+                                  ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\notifications\ContextAwareNotificationEngine.kt:326: Error: Call requires API level 26 (current min is 24): android.app.NotificationChannel() [NewApi]
+            NotificationChannel(
+            ^
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\notifications\ContextAwareNotificationEngine.kt:331: Error: Call requires API level 26 (current min is 24): android.app.NotificationChannel#setDescription [NewApi]
+                description = "Helpful insights about your digital habits"
+                ~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\notifications\ContextAwareNotificationEngine.kt:334: Error: Call requires API level 26 (current min is 24): android.app.NotificationChannel() [NewApi]
+            NotificationChannel(
+            ^
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\notifications\ContextAwareNotificationEngine.kt:339: Error: Call requires API level 26 (current min is 24): android.app.NotificationChannel#setDescription [NewApi]
+                description = "Important alerts about unhealthy usage patterns"
+                ~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\notifications\ContextAwareNotificationEngine.kt:342: Error: Call requires API level 26 (current min is 24): android.app.NotificationChannel() [NewApi]
+            NotificationChannel(
+            ^
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\notifications\ContextAwareNotificationEngine.kt:347: Error: Call requires API level 26 (current min is 24): android.app.NotificationChannel#setDescription [NewApi]
+                description = "Subtle nudges for better digital wellness"
+                ~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\notifications\ContextAwareNotificationEngine.kt:402: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+            LocalTime.of(23, 0) // Default 11 PM
+                      ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\notifications\ContextAwareNotificationEngine.kt:407: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#now [NewApi]
+        val now = LocalTime.now()
+                            ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\notifications\ContextAwareNotificationEngine.kt:408: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isBefore [NewApi]
+        return if (now.isBefore(sleepTime)) {
+                       ~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\notifications\ContextAwareNotificationEngine.kt:409: Error: Call requires API level 26 (current min is 24): java.time.Duration#between [NewApi]
+            java.time.Duration.between(now, sleepTime).toMinutes()
+                               ~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\notifications\ContextAwareNotificationEngine.kt:409: Error: Call requires API level 26 (current min is 24): java.time.Duration#toMinutes [NewApi]
+            java.time.Duration.between(now, sleepTime).toMinutes()
+                                                       ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\notifications\ContextAwareNotificationEngine.kt:409: Error: Cast from LocalTime to Temporal requires API level 26 (current min is 24) [NewApi]
+            java.time.Duration.between(now, sleepTime).toMinutes()
+                                       ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\notifications\ContextAwareNotificationEngine.kt:409: Error: Cast from LocalTime to Temporal requires API level 26 (current min is 24) [NewApi]
+            java.time.Duration.between(now, sleepTime).toMinutes()
+                                            ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\context\ContextDetectionEngine.kt:28: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#now [NewApi]
+        val currentTime = LocalTime.now()
+                                    ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\context\ContextDetectionEngine.kt:101: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isAfter [NewApi]
+        return if (sleepTime.isAfter(wakeupTime)) {
+                             ~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\context\ContextDetectionEngine.kt:103: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isAfter [NewApi]
+            currentTime.isAfter(sleepTime) || currentTime.isBefore(wakeupTime)
+                        ~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\context\ContextDetectionEngine.kt:103: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isBefore [NewApi]
+            currentTime.isAfter(sleepTime) || currentTime.isBefore(wakeupTime)
+                                                          ~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\context\ContextDetectionEngine.kt:106: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isAfter [NewApi]
+            currentTime.isAfter(sleepTime) && currentTime.isBefore(wakeupTime)
+                        ~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\context\ContextDetectionEngine.kt:106: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isBefore [NewApi]
+            currentTime.isAfter(sleepTime) && currentTime.isBefore(wakeupTime)
+                                                          ~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\context\ContextDetectionEngine.kt:114: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isAfter [NewApi]
+        return currentTime.isAfter(prepTime) && currentTime.isBefore(sleepTime)
+                           ~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\context\ContextDetectionEngine.kt:114: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isBefore [NewApi]
+        return currentTime.isAfter(prepTime) && currentTime.isBefore(sleepTime)
+                                                            ~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\context\ContextDetectionEngine.kt:121: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isAfter [NewApi]
+        return currentTime.isAfter(wakeupTime) && currentTime.isBefore(routineEndTime)
+                           ~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\context\ContextDetectionEngine.kt:121: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isBefore [NewApi]
+        return currentTime.isAfter(wakeupTime) && currentTime.isBefore(routineEndTime)
+                                                              ~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\context\ContextDetectionEngine.kt:129: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isAfter [NewApi]
+        return currentTime.isAfter(schedule.workStartTime) && 
+                           ~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\context\ContextDetectionEngine.kt:130: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isBefore [NewApi]
+               currentTime.isBefore(schedule.workEndTime)
+                           ~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\interventions\ContextualInterventionEngine.kt:366: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        val sleepTime = LocalTime.of(23, 0) // Default 11 PM
+                                  ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\interventions\ContextualInterventionEngine.kt:367: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#now [NewApi]
+        val now = LocalTime.now()
+                            ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\interventions\ContextualInterventionEngine.kt:369: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isBefore [NewApi]
+        return if (now.isBefore(sleepTime)) {
+                       ~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\interventions\ContextualInterventionEngine.kt:370: Error: Call requires API level 26 (current min is 24): java.time.Duration#between [NewApi]
+            java.time.Duration.between(now, sleepTime).toMinutes()
+                               ~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\interventions\ContextualInterventionEngine.kt:370: Error: Call requires API level 26 (current min is 24): java.time.Duration#toMinutes [NewApi]
+            java.time.Duration.between(now, sleepTime).toMinutes()
+                                                       ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\interventions\ContextualInterventionEngine.kt:370: Error: Cast from LocalTime to Temporal requires API level 26 (current min is 24) [NewApi]
+            java.time.Duration.between(now, sleepTime).toMinutes()
+                                       ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\interventions\ContextualInterventionEngine.kt:370: Error: Cast from LocalTime to Temporal requires API level 26 (current min is 24) [NewApi]
+            java.time.Duration.between(now, sleepTime).toMinutes()
+                                            ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\dashboard\DashboardViewModel.kt:64: Error: Call requires API level 26 (current min is 24): java.time.DayOfWeek#getDisplayName [NewApi]
+                        dayLabel = domainSummary.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                                                                ~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\dashboard\DashboardViewModel.kt:64: Error: Call requires API level 26 (current min is 24): java.time.LocalDate#getDayOfWeek [NewApi]
+                        dayLabel = domainSummary.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                                                      ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\dashboard\DashboardViewModel.kt:64: Error: Field requires API level 26 (current min is 24): java.time.format.TextStyle#SHORT [NewApi]
+                        dayLabel = domainSummary.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                                                                               ~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\dashboard\DashboardViewModel.kt:70: Error: Call requires API level 26 (current min is 24): java.time.LocalDate#isEqual [NewApi]
+                        isToday = domainSummary.date.isEqual(LocalDate.now())
+                                                     ~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\dashboard\DashboardViewModel.kt:70: Error: Call requires API level 26 (current min is 24): java.time.LocalDate#now [NewApi]
+                        isToday = domainSummary.date.isEqual(LocalDate.now())
+                                                                       ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\dashboard\DashboardViewModel.kt:70: Error: Cast from LocalDate to ChronoLocalDate requires API level 26 (current min is 24) [NewApi]
+                        isToday = domainSummary.date.isEqual(LocalDate.now())
+                                                             ~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\dashboard\DashboardViewModel.kt:104: Error: Call requires API level 26 (current min is 24): java.time.LocalDate#now [NewApi]
+        val today = LocalDate.now()
+                              ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\dashboard\DashboardViewModel.kt:108: Error: Call requires API level 26 (current min is 24): java.time.LocalDate#minusDays [NewApi]
+            val date = today.minusDays(6 - dayOffset.toLong())
+                             ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\dashboard\DashboardViewModel.kt:109: Error: Call requires API level 26 (current min is 24): java.time.DayOfWeek#getDisplayName [NewApi]
+            val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                                           ~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\dashboard\DashboardViewModel.kt:109: Error: Call requires API level 26 (current min is 24): java.time.LocalDate#getDayOfWeek [NewApi]
+            val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                                 ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\dashboard\DashboardViewModel.kt:109: Error: Field requires API level 26 (current min is 24): java.time.format.TextStyle#SHORT [NewApi]
+            val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                                                          ~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\dashboard\DashboardViewModel.kt:126: Error: Call requires API level 26 (current min is 24): java.time.LocalDate#isEqual [NewApi]
+                isToday = date.isEqual(today)
+                               ~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\dashboard\DashboardViewModel.kt:126: Error: Cast from LocalDate to ChronoLocalDate requires API level 26 (current min is 24) [NewApi]
+                isToday = date.isEqual(today)
+                                       ~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:11: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        UnlockEvent(LocalTime.of(7, 30), "Morning routine"),
+                              ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:12: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        UnlockEvent(LocalTime.of(8, 15), "Commute"),
+                              ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:13: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        UnlockEvent(LocalTime.of(9, 0), "Work start"),
+                              ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:14: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        UnlockEvent(LocalTime.of(10, 30), "Coffee break"),
+                              ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:15: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        UnlockEvent(LocalTime.of(12, 0), "Lunch break"),
+                              ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:16: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        UnlockEvent(LocalTime.of(14, 30), "Afternoon check"),
+                              ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:17: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        UnlockEvent(LocalTime.of(17, 0), "Work end"),
+                              ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:18: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        UnlockEvent(LocalTime.of(18, 30), "Dinner time"),
+                              ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:19: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        UnlockEvent(LocalTime.of(20, 15), "Evening leisure"),
+                              ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:20: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        UnlockEvent(LocalTime.of(22, 0), "Before bed")
+                              ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:25: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        AppLaunchEvent("Instagram", LocalTime.of(7, 35), 8, "Social"),
+                                              ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:26: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        AppLaunchEvent("WhatsApp", LocalTime.of(8, 20), 5, "Communication"),
+                                             ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:27: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        AppLaunchEvent("Gmail", LocalTime.of(9, 10), 12, "Productivity"),
+                                          ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:28: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        AppLaunchEvent("Slack", LocalTime.of(9, 25), 45, "Productivity"),
+                                          ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:29: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        AppLaunchEvent("Chrome", LocalTime.of(10, 15), 20, "Productivity"),
+                                           ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:30: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        AppLaunchEvent("YouTube", LocalTime.of(12, 30), 25, "Entertainment"),
+                                            ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:31: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        AppLaunchEvent("Spotify", LocalTime.of(14, 0), 120, "Entertainment"),
+                                            ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:32: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        AppLaunchEvent("Twitter", LocalTime.of(16, 45), 15, "Social"),
+                                            ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:33: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        AppLaunchEvent("Netflix", LocalTime.of(19, 30), 90, "Entertainment"),
+                                            ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\MockDataManager.kt:34: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        AppLaunchEvent("Reddit", LocalTime.of(21, 15), 30, "Social")
+                                           ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\services\NotificationService.kt:137: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#now [NewApi]
+            currentTime = LocalTime.now(),
+                                    ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\services\NotificationService.kt:182: Error: Call requires API level 26 (current min is 24): java.time.format.DateTimeFormatter#ofPattern [NewApi]
+        val timeFormatter = DateTimeFormatter.ofPattern("h:mm a")
+                                              ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\services\NotificationService.kt:183: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#format [NewApi]
+        val currentTimeStr = context.currentTime.format(timeFormatter)
+                                                 ~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:31: Error: Call requires API level 26 (current min is 24): java.time.format.DateTimeFormatter#ofPattern [NewApi]
+        private val TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm")
+                                                       ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:48: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#format [NewApi]
+            preferences[WAKEUP_TIME_KEY] = time.format(TIME_FORMATTER)
+                                                ~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:54: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#format [NewApi]
+            preferences[WORK_START_TIME_KEY] = startTime.format(TIME_FORMATTER)
+                                                         ~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:55: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#format [NewApi]
+            preferences[WORK_END_TIME_KEY] = endTime.format(TIME_FORMATTER)
+                                                     ~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:61: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#format [NewApi]
+            preferences[SLEEP_TIME_KEY] = time.format(TIME_FORMATTER)
+                                               ~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:76: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#parse [NewApi]
+                    wakeupTime = LocalTime.parse(wakeupTimeStr, TIME_FORMATTER),
+                                           ~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:77: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#parse [NewApi]
+                    workStartTime = LocalTime.parse(workStartTimeStr, TIME_FORMATTER),
+                                              ~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:78: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#parse [NewApi]
+                    workEndTime = LocalTime.parse(workEndTimeStr, TIME_FORMATTER),
+                                            ~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:79: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#parse [NewApi]
+                    sleepTime = LocalTime.parse(sleepTimeStr, TIME_FORMATTER),
+                                          ~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:97: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#parse [NewApi]
+                    wakeupTime = LocalTime.parse(wakeupTimeStr, TIME_FORMATTER),
+                                           ~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:98: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#parse [NewApi]
+                    workStartTime = LocalTime.parse(workStartTimeStr, TIME_FORMATTER),
+                                              ~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:99: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#parse [NewApi]
+                    workEndTime = LocalTime.parse(workEndTimeStr, TIME_FORMATTER),
+                                            ~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:100: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#parse [NewApi]
+                    sleepTime = LocalTime.parse(sleepTimeStr, TIME_FORMATTER),
+                                          ~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:113: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#now [NewApi]
+        val currentTime = LocalTime.now()
+                                    ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:127: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#plusHours [NewApi]
+            isTimeBetween(currentTime, schedule.wakeupTime, schedule.wakeupTime.plusHours(2)) -> {
+                                                                                ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:132: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#minusHours [NewApi]
+            isTimeBetween(currentTime, schedule.sleepTime.minusHours(2), schedule.sleepTime) -> {
+                                                          ~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:141: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isBefore [NewApi]
+        return if (start.isBefore(end)) {
+                         ~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:143: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isAfter [NewApi]
+            current.isAfter(start) && current.isBefore(end)
+                    ~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:143: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isBefore [NewApi]
+            current.isAfter(start) && current.isBefore(end)
+                                              ~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:146: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isAfter [NewApi]
+            current.isAfter(start) || current.isBefore(end)
+                    ~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\OnboardingRepositoryImpl.kt:146: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#isBefore [NewApi]
+            current.isAfter(start) || current.isBefore(end)
+                                              ~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\onboarding\OnboardingViewModel.kt:36: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+                val time = LocalTime.of(hour, minute)
+                                     ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\onboarding\OnboardingViewModel.kt:58: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+                val startTime = LocalTime.of(startHour, startMinute)
+                                          ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\onboarding\OnboardingViewModel.kt:59: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+                val endTime = LocalTime.of(endHour, endMinute)
+                                        ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\onboarding\OnboardingViewModel.kt:83: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+                val time = LocalTime.of(hour, minute)
+                                     ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\domain\model\PremiumFeatures.kt:82: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#isBefore [NewApi]
+        return expirationDate?.isBefore(LocalDateTime.now()) == true
+                               ~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\domain\model\PremiumFeatures.kt:82: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#now [NewApi]
+        return expirationDate?.isBefore(LocalDateTime.now()) == true
+                                                      ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\domain\model\PremiumFeatures.kt:82: Error: Cast from LocalDateTime to ChronoLocalDateTime requires API level 26 (current min is 24) [NewApi]
+        return expirationDate?.isBefore(LocalDateTime.now()) == true
+                                        ~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\domain\model\PremiumFeatures.kt:98: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#plusMonths [NewApi]
+                expirationDate = purchaseDate.plusMonths(1),
+                                              ~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\domain\model\PremiumFeatures.kt:120: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#plusMonths [NewApi]
+                expirationDate = purchaseDate.plusMonths(1),
+                                              ~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\domain\model\PremiumFeatures.kt:135: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#plusMonths [NewApi]
+                expirationDate = purchaseDate.plusMonths(1),
+                                              ~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:57: Error: Field requires API level 26 (current min is 24): java.time.format.DateTimeFormatter#ISO_LOCAL_DATE_TIME [NewApi]
+        private val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:78: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#parse [NewApi]
+                LocalDateTime.parse(it, dateFormatter) 
+                              ~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:81: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#parse [NewApi]
+                LocalDateTime.parse(it, dateFormatter) 
+                              ~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:87: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#now [NewApi]
+                    purchaseDate ?: LocalDateTime.now()
+                                                  ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:90: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#now [NewApi]
+                    purchaseDate ?: LocalDateTime.now()
+                                                  ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:119: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#format [NewApi]
+                preferences[PREMIUM_EXPIRATION_KEY] = it.format(dateFormatter)
+                                                         ~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:123: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#format [NewApi]
+                preferences[PREMIUM_PURCHASE_DATE_KEY] = it.format(dateFormatter)
+                                                            ~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:152: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#parse [NewApi]
+            LocalDateTime.parse(it, dateFormatter) 
+                          ~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:153: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#minusDays [NewApi]
+        } ?: LocalDateTime.now().minusDays(1)
+                                 ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:153: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#now [NewApi]
+        } ?: LocalDateTime.now().minusDays(1)
+                           ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:156: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#now [NewApi]
+        val now = LocalDateTime.now()
+                                ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:157: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#toLocalDate [NewApi]
+        val shouldReset = lastReset.toLocalDate() != now.toLocalDate()
+                                    ~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:157: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#toLocalDate [NewApi]
+        val shouldReset = lastReset.toLocalDate() != now.toLocalDate()
+                                                         ~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:207: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#now [NewApi]
+            lastResetDate = LocalDateTime.now()
+                                          ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:216: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#parse [NewApi]
+                LocalDateTime.parse(it, dateFormatter) 
+                              ~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:217: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#minusDays [NewApi]
+            } ?: LocalDateTime.now().minusDays(1)
+                                     ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:217: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#now [NewApi]
+            } ?: LocalDateTime.now().minusDays(1)
+                               ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:233: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#format [NewApi]
+            preferences[BYPASS_CREDITS_LAST_RESET_KEY] = credits.lastResetDate.format(dateFormatter)
+                                                                               ~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:505: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#now [NewApi]
+            val now = LocalDateTime.now()
+                                    ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:506: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#isAfter [NewApi]
+            allAdjustments.filter { it.isActive && it.endTime.isAfter(now) }
+                                                              ~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:506: Error: Cast from LocalDateTime to ChronoLocalDateTime requires API level 26 (current min is 24) [NewApi]
+            allAdjustments.filter { it.isActive && it.endTime.isAfter(now) }
+                                                                      ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:560: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#now [NewApi]
+        val now = LocalDateTime.now()
+                                ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\PremiumRepositoryImpl.kt:563: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#minusDays [NewApi]
+                date = now.minusDays(daysAgo.toLong()),
+                           ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\SettingsRepositoryImpl.kt:139: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        val wakeupTime = LocalTime.of(
+                                   ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\SettingsRepositoryImpl.kt:144: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        val workStartTime = LocalTime.of(
+                                      ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\SettingsRepositoryImpl.kt:149: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        val workEndTime = LocalTime.of(
+                                    ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\SettingsRepositoryImpl.kt:154: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+        val sleepTime = LocalTime.of(
+                                  ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\SettingsRepositoryImpl.kt:175: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#getHour [NewApi]
+            prefs[WAKEUP_HOUR_KEY] = schedule.wakeupTime.hour
+                                                         ~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\SettingsRepositoryImpl.kt:176: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#getMinute [NewApi]
+            prefs[WAKEUP_MINUTE_KEY] = schedule.wakeupTime.minute
+                                                           ~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\SettingsRepositoryImpl.kt:177: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#getHour [NewApi]
+            prefs[WORK_START_HOUR_KEY] = schedule.workStartTime.hour
+                                                                ~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\SettingsRepositoryImpl.kt:178: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#getMinute [NewApi]
+            prefs[WORK_START_MINUTE_KEY] = schedule.workStartTime.minute
+                                                                  ~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\SettingsRepositoryImpl.kt:179: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#getHour [NewApi]
+            prefs[WORK_END_HOUR_KEY] = schedule.workEndTime.hour
+                                                            ~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\SettingsRepositoryImpl.kt:180: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#getMinute [NewApi]
+            prefs[WORK_END_MINUTE_KEY] = schedule.workEndTime.minute
+                                                              ~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\SettingsRepositoryImpl.kt:181: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#getHour [NewApi]
+            prefs[SLEEP_HOUR_KEY] = schedule.sleepTime.hour
+                                                       ~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\SettingsRepositoryImpl.kt:182: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#getMinute [NewApi]
+            prefs[SLEEP_MINUTE_KEY] = schedule.sleepTime.minute
+                                                         ~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\SmartFocusModeManager.kt:189: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#getHour [NewApi]
+                val currentHour = currentTime.hour
+                                              ~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\premium\SmartFocusModeManager.kt:232: Error: Call requires API level 26 (current min is 24): java.time.LocalDateTime#now [NewApi]
+                emit(LocalDateTime.now())
+                                   ~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\UnlocksDetailScreen.kt:313: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#format [NewApi]
+                    text = unlock.time.format(DateTimeFormatter.ofPattern("HH:mm")),
+                                       ~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\details\UnlocksDetailScreen.kt:313: Error: Call requires API level 26 (current min is 24): java.time.format.DateTimeFormatter#ofPattern [NewApi]
+                    text = unlock.time.format(DateTimeFormatter.ofPattern("HH:mm")),
+                                                                ~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\repository\UsageRepositoryImpl.kt:171: Error: Call requires API level 26 (current min is 24): java.time.LocalDate#ofEpochDay [NewApi]
+            date = LocalDate.ofEpochDay(dataSummary.dateMillis / (24*60*60*1000)), // Corrected to use dateMillis
+                             ~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\domain\model\UserSchedule.kt:9: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+    val wakeupTime: LocalTime = LocalTime.of(7, 0), // 7:00 AM
+                                          ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\domain\model\UserSchedule.kt:9: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+    val wakeupTime: LocalTime = LocalTime.of(7, 0), // 7:00 AM
+                                          ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\domain\model\UserSchedule.kt:10: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+    val workStartTime: LocalTime = LocalTime.of(9, 0), // 9:00 AM
+                                             ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\domain\model\UserSchedule.kt:10: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+    val workStartTime: LocalTime = LocalTime.of(9, 0), // 9:00 AM
+                                             ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\domain\model\UserSchedule.kt:11: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+    val workEndTime: LocalTime = LocalTime.of(17, 0), // 5:00 PM
+                                           ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\domain\model\UserSchedule.kt:11: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+    val workEndTime: LocalTime = LocalTime.of(17, 0), // 5:00 PM
+                                           ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\domain\model\UserSchedule.kt:12: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+    val sleepTime: LocalTime = LocalTime.of(23, 0), // 11:00 PM
+                                         ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\domain\model\UserSchedule.kt:12: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#of [NewApi]
+    val sleepTime: LocalTime = LocalTime.of(23, 0), // 11:00 PM
+                                         ~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\domain\model\UserSchedule.kt:21: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#minusHours [NewApi]
+        get() = sleepTime.minusHours(2)
+                          ~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\domain\model\UserSchedule.kt:27: Error: Call requires API level 26 (current min is 24): java.time.LocalTime#plusHours [NewApi]
+        get() = wakeupTime.plusHours(2)
+                           ~~~~~~~~~
+
+   Explanation for issues of type "NewApi":
+   This check scans through all the Android API calls in the application and
+   warns about any calls that are not available on all versions targeted by
+   this application (according to its minimum SDK attribute in the manifest).
+
+   If you really want to use this API and don't need to support older devices
+   just set the minSdkVersion in your build.gradle or AndroidManifest.xml
+   files.
+
+   If your code is deliberately accessing newer APIs, and you have ensured
+   (e.g. with conditional execution) that this code will only ever be called
+   on a supported platform, then you can annotate your class or method with
+   the @TargetApi annotation specifying the local minimum SDK to apply, such
+   as @TargetApi(11), such that this check considers 11 rather than your
+   manifest file's minimum SDK as the required API level.
+
+   If you are deliberately setting android: attributes in style definitions,
+   make sure you place this in a values-vNN folder in order to avoid running
+   into runtime conflicts on certain devices where manufacturers have added
+   custom attributes whose ids conflict with the new ones on later platforms.
+
+   Similarly, you can use tools:targetApi="11" in an XML file to indicate that
+   the element will only be inflated in an adequate context.
+
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\build.gradle.kts:22: Warning: Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the android.os.Build.VERSION_CODES javadoc for details. [OldTargetApi]
+        targetSdk = 34
+        ~~~~~~~~~~~~~~
+
+   Explanation for issues of type "OldTargetApi":
+   When your application runs on a version of Android that is more recent than
+   your targetSdkVersion specifies that it has been tested with, various
+   compatibility modes kick in. This ensures that your application continues
+   to work, but it may look out of place. For example, if the targetSdkVersion
+   is less than 14, your app may get an option button in the UI.
+
+   To fix this issue, set the targetSdkVersion to the highest available value.
+   Then test your app to make sure everything works correctly. You may want to
+   consult the compatibility notes to see what changes apply to each version
+   you are adding support for:
+   https://developer.android.com/reference/android/os/Build.VERSION_CODES.html
+   as well as follow this guide:
+   https://developer.android.com/distribute/best-practices/develop/target-sdk.
+   html
+
+   https://developer.android.com/distribute/best-practices/develop/target-sdk.html
+
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\settings\AppSelectionViewModel.kt:34: Warning: As of Android 11, this method no longer returns information about all apps; see https://g.co/dev/packagevisibility for details [QueryPermissionsNeeded]
+            val installedApps = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+                                               ~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "QueryPermissionsNeeded":
+   Apps that target Android 11 cannot query or interact with other installed
+   apps by default. If you need to query or interact with other installed
+   apps, you may need to add a <queries> declaration in your manifest.
+
+   As a corollary, the methods PackageManager#getInstalledPackages and
+   PackageManager#getInstalledApplications will no longer return information
+   about all installed apps. To query specific apps or types of apps, you can
+   use methods like PackageManager#getPackageInfo or
+   PackageManager#queryIntentActivities.
+
+   https://g.co/dev/packagevisibility
+
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\build.gradle.kts:66: Warning: A newer version of androidx.core:core-ktx than 1.13.1 is available: 1.16.0 [GradleDependency]
+    implementation("androidx.core:core-ktx:1.13.1") // Downgraded from 1.16.0
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\build.gradle.kts:67: Warning: A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.8.7 is available: 2.9.1 [GradleDependency]
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7") // Note: Very new
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\build.gradle.kts:68: Warning: A newer version of androidx.lifecycle:lifecycle-runtime-compose than 2.8.7 is available: 2.9.1 [GradleDependency]
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7") // For collectAsStateWithLifecycle
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\build.gradle.kts:69: Warning: A newer version of androidx.activity:activity-compose than 1.9.0 is available: 1.10.1 [GradleDependency]
+    implementation("androidx.activity:activity-compose:1.9.0") // Downgraded from 1.10.1
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\build.gradle.kts:78: Warning: A newer version of androidx.compose:compose-bom than 2025.04.00 is available: 2025.06.01 [GradleDependency]
+    implementation(platform("androidx.compose:compose-bom:2025.04.00")) // Note: Very new BOM
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\build.gradle.kts:83: Warning: A newer version of androidx.lifecycle:lifecycle-viewmodel-compose than 2.8.7 is available: 2.9.1 [GradleDependency]
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7") // Note: Very new
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\build.gradle.kts:92: Warning: A newer version of androidx.navigation:navigation-compose than 2.8.9 is available: 2.9.0 [GradleDependency]
+    implementation("androidx.navigation:navigation-compose:2.8.9") // Note: Very new
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\build.gradle.kts:102: Warning: A newer version of androidx.room:room-runtime than 2.7.1 is available: 2.7.2 [GradleDependency]
+    implementation("androidx.room:room-runtime:2.7.1") // Note: Very new, consider 2.6.1
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\build.gradle.kts:103: Warning: A newer version of androidx.room:room-ktx than 2.7.1 is available: 2.7.2 [GradleDependency]
+    implementation("androidx.room:room-ktx:2.7.1")     // Note: Very new, consider 2.6.1
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\build.gradle.kts:104: Warning: A newer version of androidx.room:room-compiler than 2.7.1 is available: 2.7.2 [GradleDependency]
+    ksp("androidx.room:room-compiler:2.7.1")           // <-- Using KSP for Room
+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\build.gradle.kts:107: Warning: A newer version of androidx.datastore:datastore-preferences than 1.1.4 is available: 1.1.7 [GradleDependency]
+    implementation("androidx.datastore:datastore-preferences:1.1.4") // Note: Very new, consider 1.0.0 or 1.1.1
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\build.gradle.kts:110: Warning: A newer version of com.google.firebase:firebase-bom than 33.12.0 is available: 33.16.0 [GradleDependency]
+    implementation(platform("com.google.firebase:firebase-bom:33.12.0")) // Note: Very new BOM
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\build.gradle.kts:115: Warning: A newer version of com.android.billingclient:billing-ktx than 6.1.0 is available: 8.0.0 [GradleDependency]
+    implementation("com.android.billingclient:billing-ktx:6.1.0")
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\build.gradle.kts:118: Warning: A newer version of androidx.work:work-runtime-ktx than 2.9.0 is available: 2.10.2 [GradleDependency]
+    implementation("androidx.work:work-runtime-ktx:2.9.0") // Downgraded from 2.10.0
+                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\build.gradle.kts:137: Warning: A newer version of androidx.compose:compose-bom than 2025.04.00 is available: 2025.06.01 [GradleDependency]
+    androidTestImplementation(platform("androidx.compose:compose-bom:2025.04.00"))
+                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "GradleDependency":
+   This detector looks for usages of libraries where the version you are using
+   is not the current stable release. Using older versions is fine, and there
+   are cases where you deliberately want to stick with an older version.
+   However, you may simply not be aware that a more recent version is
+   available, and that is what this lint check helps find.
+
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\data\services\SwipeAccessibilityService.kt:65: Warning: Switch statement on an int with known associated constant missing case AccessibilityEvent.TYPE_ANNOUNCEMENT, AccessibilityEvent.TYPE_ASSIST_READING_CONTEXT, AccessibilityEvent.TYPE_GESTURE_DETECTION_END, AccessibilityEvent.TYPE_GESTURE_DETECTION_START, AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED, AccessibilityEvent.TYPE_SPEECH_STATE_CHANGE, AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END, AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_START, AccessibilityEvent.TYPE_TOUCH_INTERACTION_END, AccessibilityEvent.TYPE_TOUCH_INTERACTION_START, AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED, AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED, AccessibilityEvent.TYPE_VIEW_CLICKED, AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED, AccessibilityEvent.TYPE_VIEW_FOCUSED, AccessibilityEvent.TYPE_VIEW_HOVER_ENTER, AccessibilityEvent.TYPE_VIEW_HOVER_EXIT, AccessibilityEvent.TYPE_VIEW_LONG_CLICKED, AccessibilityEvent.TYPE_VIEW_SELECTED, AccessibilityEvent.TYPE_VIEW_TARGETED_BY_SCROLL, AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED, AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY, AccessibilityEvent.TYPE_WINDOWS_CHANGED, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED [SwitchIntDef]
+        when (event.eventType) {
+        ~~~~
+
+   Explanation for issues of type "SwitchIntDef":
+   This check warns if a switch statement does not explicitly include all the
+   values declared by the typedef @IntDef declaration.
+
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\themes.xml:12: Warning: Unnecessary; SDK_INT is always >= 21 [ObsoleteSdkInt]
+         <item name="android:statusBarColor" tools:targetApi="l">@color/splash_background</item>
+                                             ~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\themes.xml:13: Warning: Unnecessary; SDK_INT is always >= 21 [ObsoleteSdkInt]
+         <item name="android:navigationBarColor" tools:targetApi="l">@color/splash_background</item>
+                                                 ~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\themes.xml:14: Warning: Unnecessary; SDK_INT is always >= 23 [ObsoleteSdkInt]
+         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item> <!-- Adjust based on splash background color -->
+                                                   ~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\themes.xml:33: Warning: Unnecessary; SDK_INT is always >= 23 [ObsoleteSdkInt]
+         <item name="android:windowLightStatusBar" tools:targetApi="m">@bool/use_light_status</item> <!-- Define use_light_status in values/bools.xml and values-night/bools.xml -->
+                                                   ~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "ObsoleteSdkInt":
+   This check flags version checks that are not necessary, because the
+   minSdkVersion (or surrounding known API level) is already at least as high
+   as the version checked for.
+
+   Similarly, it also looks for resources in -vNN folders, such as values-v14
+   where the version qualifier is less than or equal to the minSdkVersion,
+   where the contents should be merged into the best folder.
+
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\onboarding\SleepTimeScreen.kt:14: Information: Prefer mutableIntStateOf instead of mutableStateOf [AutoboxingStateCreation from androidx.compose.runtime]
+    var hour by remember { mutableStateOf(22) } // Default sleep time
+                           ~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\onboarding\SleepTimeScreen.kt:15: Information: Prefer mutableIntStateOf instead of mutableStateOf [AutoboxingStateCreation from androidx.compose.runtime]
+    var minute by remember { mutableStateOf(0) }
+                             ~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\onboarding\WorkTimeScreen.kt:14: Information: Prefer mutableIntStateOf instead of mutableStateOf [AutoboxingStateCreation from androidx.compose.runtime]
+    var hour by remember { mutableStateOf(9) } // Default work start time
+                           ~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\java\com\unswipe\android\ui\onboarding\WorkTimeScreen.kt:15: Information: Prefer mutableIntStateOf instead of mutableStateOf [AutoboxingStateCreation from androidx.compose.runtime]
+    var minute by remember { mutableStateOf(0) }
+                             ~~~~~~~~~~~~~~
+
+   Explanation for issues of type "AutoboxingStateCreation":
+   Calling mutableStateOf<T>() when T is either backed by a primitive type on
+   the JVM or is a value class results in a state implementation that requires
+   all state values to be boxed. This usually causes an additional allocation
+   for each state write, and adds some additional work to auto-unbox values
+   when reading the value of the state. Instead, prefer to use a specialized
+   primitive state implementation for Int, Long, Float, and Double when the
+   state does not need to track null values and does not override the default
+   SnapshotMutationPolicy. See mutableIntStateOf(), mutableLongStateOf(),
+   mutableFloatStateOf(), and mutableDoubleStateOf() for more information.
+
+   Vendor: Jetpack Compose
+   Identifier: androidx.compose.runtime
+   Feedback: https://issuetracker.google.com/issues/new?component=612128
+
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\colors.xml:3: Warning: The resource R.color.splash_background appears to be unused [UnusedResources]
+    <color name="splash_background">#FFFFFF</color> <!-- Example white background -->
+           ~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\colors.xml:5: Warning: The resource R.color.md_theme_light_primary appears to be unused [UnusedResources]
+    <color name="md_theme_light_primary">#6750A4</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\colors.xml:6: Warning: The resource R.color.md_theme_light_onPrimary appears to be unused [UnusedResources]
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\colors.xml:7: Warning: The resource R.color.md_theme_light_primaryContainer appears to be unused [UnusedResources]
+    <color name="md_theme_light_primaryContainer">#EADDFF</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\colors.xml:8: Warning: The resource R.color.md_theme_light_onPrimaryContainer appears to be unused [UnusedResources]
+    <color name="md_theme_light_onPrimaryContainer">#21005D</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\colors.xml:11: Warning: The resource R.color.md_theme_dark_primary appears to be unused [UnusedResources]
+    <color name="md_theme_dark_primary">#D0BCFF</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\colors.xml:12: Warning: The resource R.color.md_theme_dark_onPrimary appears to be unused [UnusedResources]
+    <color name="md_theme_dark_onPrimary">#381E72</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\colors.xml:13: Warning: The resource R.color.md_theme_dark_primaryContainer appears to be unused [UnusedResources]
+    <color name="md_theme_dark_primaryContainer">#4F378B</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\colors.xml:14: Warning: The resource R.color.md_theme_dark_onPrimaryContainer appears to be unused [UnusedResources]
+    <color name="md_theme_dark_onPrimaryContainer">#EADDFF</color>
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\mipmap-anydpi-v26\ic_default_app.xml:2: Warning: The resource R.mipmap.ic_default_app appears to be unused [UnusedResources]
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+^
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\strings.xml:16: Warning: The resource R.string.login_email_label appears to be unused [UnusedResources]
+    <string name="login_email_label">Email</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\strings.xml:17: Warning: The resource R.string.login_password_label appears to be unused [UnusedResources]
+    <string name="login_password_label">Password</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\strings.xml:18: Warning: The resource R.string.login_button appears to be unused [UnusedResources]
+    <string name="login_button">Login</string>
+            ~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\strings.xml:19: Warning: The resource R.string.login_register_prompt appears to be unused [UnusedResources]
+    <string name="login_register_prompt">Don\'t have an account? Register</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\strings.xml:20: Warning: The resource R.string.register_button appears to be unused [UnusedResources]
+    <string name="register_button">Register</string>
+            ~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\strings.xml:21: Warning: The resource R.string.register_login_prompt appears to be unused [UnusedResources]
+    <string name="register_login_prompt">Already have an account? Login</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\strings.xml:22: Warning: The resource R.string.dashboard_time_remaining_label appears to be unused [UnusedResources]
+    <string name="dashboard_time_remaining_label">Time Remaining Today</string>
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\values\themes.xml:4: Warning: The resource R.style.Theme_App_Starting appears to be unused [UnusedResources]
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+           ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Explanation for issues of type "UnusedResources":
+   Unused resources make applications larger and slow down builds.
+
+
+   The unused resource check can ignore tests. If you want to include
+   resources that are only referenced from tests, consider packaging them in a
+   test source set instead.
+
+   You can include test sources in the unused resource check by setting the
+   system property lint.unused-resources.include-tests =true, and to exclude
+   them (usually for performance reasons), use
+   lint.unused-resources.exclude-tests =true.
+   ,
+
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\mipmap-anydpi-v26\ic_launcher.xml:2: Warning: The application adaptive icon is missing a monochrome tag [MonochromeLauncherIcon]
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+^
+C:\Users\kp_ss\Code\Unswipe\Unswipe\app\src\main\res\mipmap-anydpi-v26\ic_launcher_round.xml:2: Warning: The application adaptive roundIcon is missing a monochrome tag [MonochromeLauncherIcon]
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+^
+
+   Explanation for issues of type "MonochromeLauncherIcon":
+   If android:roundIcon and android:icon are both in your manifest, you must
+   either remove the reference to android:roundIcon if it is not needed; or,
+   supply the monochrome icon in the drawable defined by the android:roundIcon
+   and android:icon attribute.
+
+   For example, if android:roundIcon and android:icon are both in the
+   manifest, a launcher might choose to use android:roundIcon over
+   android:icon to display the adaptive app icon. Therefore, your themed
+   application iconwill not show if your monochrome attribute is not also
+   specified in android:roundIcon.
+
+201 errors, 47 warnings

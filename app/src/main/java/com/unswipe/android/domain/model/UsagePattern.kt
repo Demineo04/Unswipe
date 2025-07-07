@@ -162,6 +162,7 @@ data class PersonalizedRecommendation(
     val description: String,
     val actionType: ActionType,
     val priority: Priority,
+    val category: RecommendationCategory,
     val estimatedImpact: ImpactLevel,
     val relatedPatterns: List<PatternType> = emptyList(),
     val implementationSteps: List<String> = emptyList()
@@ -176,6 +177,10 @@ data class PersonalizedRecommendation(
     
     enum class Priority {
         LOW, MEDIUM, HIGH, URGENT
+    }
+    
+    enum class RecommendationCategory {
+        PRODUCTIVITY, WELLNESS, SLEEP, FOCUS, SOCIAL
     }
     
     enum class ImpactLevel {

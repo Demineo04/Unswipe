@@ -246,4 +246,21 @@ class SettingsRepositoryImpl @Inject constructor(
         val prefs = dataStore.data.first()
         return prefs[booleanPreferencesKey("notifications_enabled")] ?: true
     }
+
+    override suspend fun setDailyLimitMillis(limitMillis: Long) {
+        dataStore.edit { settings ->
+            settings[DAILY_LIMIT_KEY] = limitMillis
+        }
+    }
+
+    override suspend fun clearAllData() {
+        dataStore.edit {
+            it.clear()
+        }
+    }
+
+    override suspend fun isPremium(): Boolean {
+        val prefs = dataStore.data.first()
+        return prefs[IS_PREMIUM_KEY] ?: false
+    }
 }

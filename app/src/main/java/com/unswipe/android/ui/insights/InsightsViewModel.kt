@@ -65,7 +65,7 @@ class InsightsViewModel @Inject constructor(
                 
                 // Load all insights in parallel
                 val patterns = usagePatternAnalyzer.detectUsagePatterns()
-                val emotionalInsights = usagePatternAnalyzer.analyzeEmotionalUsagePatterns()
+                val emotionalInsights = usageRepository.getEmotionalUsageInsights().first()
                 val recommendations = generatePersonalizedRecommendations(patterns, emotionalInsights)
                 val riskAssessment = generateRiskAssessment(patterns, emotionalInsights)
                 val trends = generateUsageTrends()
@@ -102,6 +102,7 @@ class InsightsViewModel @Inject constructor(
                             description = "Set 30-minute session timers to break up long usage periods and improve awareness",
                             actionType = PersonalizedRecommendation.ActionType.ENABLE_FEATURE,
                             priority = PersonalizedRecommendation.Priority.HIGH,
+                            category = PersonalizedRecommendation.RecommendationCategory.FOCUS,
                             estimatedImpact = PersonalizedRecommendation.ImpactLevel.SIGNIFICANT,
                             relatedPatterns = listOf(PatternType.BINGE_USAGE),
                             implementationSteps = listOf(
@@ -121,6 +122,7 @@ class InsightsViewModel @Inject constructor(
                             description = "Your usage patterns suggest stress. Try mindfulness exercises when reaching for your phone",
                             actionType = PersonalizedRecommendation.ActionType.BEHAVIORAL_CHANGE,
                             priority = PersonalizedRecommendation.Priority.HIGH,
+                            category = PersonalizedRecommendation.RecommendationCategory.WELLNESS,
                             estimatedImpact = PersonalizedRecommendation.ImpactLevel.TRANSFORMATIVE,
                             relatedPatterns = listOf(PatternType.STRESS_USAGE),
                             implementationSteps = listOf(
@@ -140,6 +142,7 @@ class InsightsViewModel @Inject constructor(
                             description = "Block distracting apps during work hours to improve productivity and focus",
                             actionType = PersonalizedRecommendation.ActionType.ENABLE_FEATURE,
                             priority = PersonalizedRecommendation.Priority.MEDIUM,
+                            category = PersonalizedRecommendation.RecommendationCategory.PRODUCTIVITY,
                             estimatedImpact = PersonalizedRecommendation.ImpactLevel.SIGNIFICANT,
                             relatedPatterns = listOf(PatternType.WORK_INTERRUPTION, PatternType.PROCRASTINATION),
                             implementationSteps = listOf(
@@ -159,6 +162,7 @@ class InsightsViewModel @Inject constructor(
                             description = "Protect your sleep by limiting screen time before bed",
                             actionType = PersonalizedRecommendation.ActionType.ENABLE_FEATURE,
                             priority = PersonalizedRecommendation.Priority.HIGH,
+                            category = PersonalizedRecommendation.RecommendationCategory.SLEEP,
                             estimatedImpact = PersonalizedRecommendation.ImpactLevel.SIGNIFICANT,
                             relatedPatterns = listOf(PatternType.SLEEP_DISRUPTION),
                             implementationSteps = listOf(
@@ -179,8 +183,10 @@ class InsightsViewModel @Inject constructor(
                             description = "Establish healthy boundaries with specific time limits for problematic apps",
                             actionType = PersonalizedRecommendation.ActionType.CHANGE_SETTING,
                             priority = PersonalizedRecommendation.Priority.MEDIUM,
+                            category = PersonalizedRecommendation.RecommendationCategory.WELLNESS,
                             estimatedImpact = PersonalizedRecommendation.ImpactLevel.MODERATE,
-                            relatedPatterns = listOf(pattern.type)
+                            relatedPatterns = listOf(pattern.type),
+                            implementationSteps = listOf("Go to Settings > Daily Limit", "Set a limit for ${pattern.apps.firstOrNull() ?: "problematic apps"}")
                         )
                     )
                 }
@@ -195,6 +201,7 @@ class InsightsViewModel @Inject constructor(
                     description = "Your usage patterns suggest high stress levels. Consider professional support or stress management techniques",
                     actionType = PersonalizedRecommendation.ActionType.SEEK_SUPPORT,
                     priority = PersonalizedRecommendation.Priority.HIGH,
+                    category = PersonalizedRecommendation.RecommendationCategory.WELLNESS,
                     estimatedImpact = PersonalizedRecommendation.ImpactLevel.TRANSFORMATIVE,
                     implementationSteps = listOf(
                         "Try meditation apps like Headspace or Calm",
@@ -213,6 +220,7 @@ class InsightsViewModel @Inject constructor(
                     description = "Replace mindless scrolling with meaningful activities that bring you joy",
                     actionType = PersonalizedRecommendation.ActionType.SCHEDULE_ACTIVITY,
                     priority = PersonalizedRecommendation.Priority.MEDIUM,
+                    category = PersonalizedRecommendation.RecommendationCategory.PRODUCTIVITY,
                     estimatedImpact = PersonalizedRecommendation.ImpactLevel.SIGNIFICANT,
                     implementationSteps = listOf(
                         "List 5 activities you enjoy (reading, exercise, cooking, etc.)",

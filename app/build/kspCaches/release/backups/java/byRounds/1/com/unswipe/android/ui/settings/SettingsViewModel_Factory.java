@@ -1,5 +1,6 @@
 package com.unswipe.android.ui.settings;
 
+import com.unswipe.android.domain.repository.AuthRepository;
 import com.unswipe.android.domain.repository.SettingsRepository;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
@@ -25,21 +26,27 @@ import javax.inject.Provider;
 public final class SettingsViewModel_Factory implements Factory<SettingsViewModel> {
   private final Provider<SettingsRepository> settingsRepositoryProvider;
 
-  public SettingsViewModel_Factory(Provider<SettingsRepository> settingsRepositoryProvider) {
+  private final Provider<AuthRepository> authRepositoryProvider;
+
+  public SettingsViewModel_Factory(Provider<SettingsRepository> settingsRepositoryProvider,
+      Provider<AuthRepository> authRepositoryProvider) {
     this.settingsRepositoryProvider = settingsRepositoryProvider;
+    this.authRepositoryProvider = authRepositoryProvider;
   }
 
   @Override
   public SettingsViewModel get() {
-    return newInstance(settingsRepositoryProvider.get());
+    return newInstance(settingsRepositoryProvider.get(), authRepositoryProvider.get());
   }
 
   public static SettingsViewModel_Factory create(
-      Provider<SettingsRepository> settingsRepositoryProvider) {
-    return new SettingsViewModel_Factory(settingsRepositoryProvider);
+      Provider<SettingsRepository> settingsRepositoryProvider,
+      Provider<AuthRepository> authRepositoryProvider) {
+    return new SettingsViewModel_Factory(settingsRepositoryProvider, authRepositoryProvider);
   }
 
-  public static SettingsViewModel newInstance(SettingsRepository settingsRepository) {
-    return new SettingsViewModel(settingsRepository);
+  public static SettingsViewModel newInstance(SettingsRepository settingsRepository,
+      AuthRepository authRepository) {
+    return new SettingsViewModel(settingsRepository, authRepository);
   }
 }
