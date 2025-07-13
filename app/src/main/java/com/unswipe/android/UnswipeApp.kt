@@ -15,8 +15,8 @@ import javax.inject.Inject // <-- UNCOMMENTED
 // Only ONE class declaration, implementing the interface
 class UnswipeApp : Application(), Configuration.Provider { // <-- CORRECTED Class line
 
-    // @Inject // Inject annotation // TEMPORARILY DISABLED
-    // lateinit var workerFactory: HiltWorkerFactory // Field for the factory // TEMPORARILY DISABLED
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
 
     override fun onCreate() {
         super.onCreate()
@@ -34,8 +34,8 @@ class UnswipeApp : Application(), Configuration.Provider { // <-- CORRECTED Clas
     // Provide HiltWorkerFactory for WorkManager DI
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
-            // .setWorkerFactory(workerFactory) // TEMPORARILY DISABLED
-            .setMinimumLoggingLevel(android.util.Log.INFO) // Adjust logging level
+            .setWorkerFactory(workerFactory)
+            .setMinimumLoggingLevel(android.util.Log.INFO)
             .build()
 
     // The function to set up the worker

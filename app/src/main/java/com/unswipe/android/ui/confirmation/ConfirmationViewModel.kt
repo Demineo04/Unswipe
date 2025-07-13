@@ -96,7 +96,7 @@ class ConfirmationViewModel @Inject constructor(
                 val bypassCredits = if (isPremium) premiumRepository.getBypassCredits() else null
                 
                 // Check focus mode status
-                val activeFocusMode = null // focusModeManager.getActiveFocusMode() // TODO: Implement this method
+                val activeFocusMode = focusModeManager.getActiveFocusMode()
                 val isBlockedByFocusMode = focusModeManager.isAppBlockedByFocusMode(packageName)
                 val focusModeMessage = if (isBlockedByFocusMode) {
                     focusModeManager.getFocusModeInterventionMessage(packageName)
@@ -144,7 +144,7 @@ class ConfirmationViewModel @Inject constructor(
                     // Premium features
                     bypassCreditsAvailable = bypassCredits?.available ?: 0,
                     canUseBypassCredit = bypassCredits?.canUseBypass == true && isPremium,
-                    focusModeActive = null, // activeFocusMode?.name // TODO: Implement focus mode
+                    focusModeActive = activeFocusMode?.name
                     canUseEmergencyBypass = focusModeManager.canUseEmergencyBypass() && isPremium,
                     customMessage = customMessages[packageName],
                     showUpgradePrompt = !isPremium && (isOverLimit || sessionCount > 10),
