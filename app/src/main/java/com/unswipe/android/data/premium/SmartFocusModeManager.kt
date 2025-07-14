@@ -24,6 +24,13 @@ class SmartFocusModeManager @Inject constructor(
 ) {
     
     /**
+     * Gets the currently active focus mode
+     */
+    suspend fun getActiveFocusMode(): SmartFocusMode? {
+        return premiumRepository.getActiveFocusMode()
+    }
+
+    /**
      * Monitors triggers and automatically activates/deactivates focus modes
      */
     fun monitorFocusModeTriggers(): Flow<SmartFocusMode?> {

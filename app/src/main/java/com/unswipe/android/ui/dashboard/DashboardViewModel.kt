@@ -1,7 +1,14 @@
 package com.unswipe.android.ui.dashboard
 
+import android.app.AppOpsManager
+import android.app.Application
+import android.content.ComponentName
+import android.content.Context
+import android.provider.Settings
+import android.text.TextUtils
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.unswipe.android.data.services.SwipeAccessibilityService
 import com.unswipe.android.domain.model.DashboardData
 import com.unswipe.android.domain.repository.UsageRepository
 import com.unswipe.android.domain.repository.AuthRepository
@@ -107,10 +114,55 @@ class DashboardViewModel @Inject constructor(
         return "${minutes}m"
     }
 
-    // TODO: Add permission/accessibility check logic
     private fun checkPermissions(): Pair<Boolean, Boolean> {
-        // Placeholder
-        return Pair(first = false, second = false) // (hasUsageStatsPermission, isAccessibilityEnabled)
+        val hasUsageStatsPermission = hasUsageStatsPermission()
+        val isAccessibilityEnabled = isAccessibilityServiceEnabled()
+        return Pair(hasUsageStatsPermission, isAccessibilityEnabled)
+    }
+
+    private fun hasUsageStatsPermission(): Boolean {
+        return try {
+            val appOpsManager = getApplication<Application>().getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+            val mode = appOpsManager.checkOpNoThrow(
+                AppOpsManager.OPSTR_GET_USAGE_STATS,
+                android.os.Process.myUid(),
+                getApplication<Application>().packageName
+            )
+            mode == AppOpsManager.MODE_ALLOWED
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    private fun isAccessibilityServiceEnabled(): Boolean {
+        return try {
+            val expectedServiceName = ComponentName(
+                getApplication<Application>(),
+                SwipeAccessibilityService::class.java
+            ).flattenToString()
+            
+            val enabledServicesSetting = Settings.Secure.getString(
+                getApplication<Application>().contentResolver,
+                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+            )
+            
+            if (enabledServicesSetting.isNullOrEmpty()) {
+                return false
+            }
+            
+            val colonSplitter = TextUtils.SimpleStringSplitter(':')
+            colonSplitter.setString(enabledServicesSetting)
+            
+            while (colonSplitter.hasNext()) {
+                val componentNameString = colonSplitter.next()
+                if (componentNameString.equals(expectedServiceName, ignoreCase = true)) {
+                    return true
+                }
+            }
+            false
+        } catch (e: Exception) {
+            false
+        }
     }
 
     // Generate sample weekly data for demonstration

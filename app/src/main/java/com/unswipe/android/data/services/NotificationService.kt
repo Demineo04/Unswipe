@@ -70,7 +70,7 @@ class NotificationService @Inject constructor(
         private const val MAX_NOTIFICATIONS_PER_DAY = 3
         
         // You'll need to add your OpenAI API key (consider using BuildConfig for security)
-        private const val OPENAI_API_KEY = "your-openai-api-key-here" // TODO: Move to BuildConfig
+        private const val OPENAI_API_KEY = "" // OpenAI API key disabled for now - feature optional
     }
 
     init {
