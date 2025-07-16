@@ -36,7 +36,7 @@ class SwipeAccessibilityService : AccessibilityService() {
     private var isConfirmationEnabled = true // Default, should be fetched
     private var lastConfirmationTime = 0L
     private var lastConfirmationPackage = ""
-    private val CONFIRMATION_DEBOUNCE_MS = 3000L // 3 seconds between confirmations for same app
+    private val CONFIRMATION_DEBOUNCE_MS = 5000L // 5 seconds between confirmations for same app
 
     // --- FIX: Move constants to companion object ---
     companion object {
@@ -133,8 +133,8 @@ class SwipeAccessibilityService : AccessibilityService() {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         try {
             startActivity(intent)
-            // Block the target app from opening by going back
-            performGlobalAction(GLOBAL_ACTION_BACK)
+            // Note: We don't perform GLOBAL_ACTION_BACK here anymore to prevent auto-dismissal
+            // The confirmation dialog will handle user interaction and app launching
         } catch (e: Exception) {
             Log.e(TAG,"Error starting ConfirmationActivity", e)
         }

@@ -37,13 +37,15 @@ import com.unswipe.android.ui.theme.*
 
 @Composable
 fun DashboardScreen(
-    viewModel: DashboardViewModel,
+    dashboardViewModel: DashboardViewModel,
     onNavigateToSettings: () -> Unit,
     onNavigateToUnlocksDetail: () -> Unit = {},
     onNavigateToAppLaunchesDetail: () -> Unit = {},
+    onNavigateToScreenTimeInsights: () -> Unit = {},
+    onNavigateToWeeklyProgress: () -> Unit = {},
     onLogout: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by dashboardViewModel.uiState.collectAsState()
 
     Box(
         modifier = Modifier
@@ -100,6 +102,8 @@ fun DashboardScreen(
                     onNavigateToSettings = onNavigateToSettings,
                     onNavigateToUnlocksDetail = onNavigateToUnlocksDetail,
                     onNavigateToAppLaunchesDetail = onNavigateToAppLaunchesDetail,
+                    onNavigateToScreenTimeInsights = onNavigateToScreenTimeInsights,
+                    onNavigateToWeeklyProgress = onNavigateToWeeklyProgress,
                     onLogout = onLogout
                 )
             }
@@ -113,6 +117,8 @@ fun ModernDashboardContent(
     onNavigateToSettings: () -> Unit,
     onNavigateToUnlocksDetail: () -> Unit = {},
     onNavigateToAppLaunchesDetail: () -> Unit = {},
+    onNavigateToScreenTimeInsights: () -> Unit = {},
+    onNavigateToWeeklyProgress: () -> Unit = {},
     onLogout: () -> Unit
 ) {
     LazyColumn(
@@ -126,7 +132,7 @@ fun ModernDashboardContent(
             
             // Header with greeting and settings
             ModernDashboardHeader(
-                userName = viewModel.userName.collectAsState().value,
+                userName = "User", // TODO: Get actual user name from state
                 onNavigateToSettings = onNavigateToSettings
             )
         }
@@ -136,7 +142,8 @@ fun ModernDashboardContent(
             UsageOverviewCard(
                 timeUsed = state.timeUsedTodayFormatted,
                 timeRemaining = state.timeRemainingFormatted,
-                usagePercentage = state.usagePercentage
+                usagePercentage = state.usagePercentage,
+                onScreenTimeClick = onNavigateToScreenTimeInsights
             )
         }
         
@@ -164,7 +171,8 @@ fun ModernDashboardContent(
         item {
             // Weekly progress chart
             WeeklyProgressCard(
-                summaries = state.weeklyProgress
+                summaries = state.weeklyProgress,
+                onWeeklyProgressClick = onNavigateToWeeklyProgress
             )
         }
         
@@ -226,7 +234,8 @@ private fun ModernDashboardHeader(
 private fun UsageOverviewCard(
     timeUsed: String,
     timeRemaining: String,
-    usagePercentage: Float
+    usagePercentage: Float,
+    onScreenTimeClick: () -> Unit = {}
 ) {
     Surface(
         modifier = Modifier
@@ -239,7 +248,8 @@ private fun UsageOverviewCard(
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(2.dp),
+                .padding(2.dp)
+                .clickable { onScreenTimeClick() },
             color = MinimalistWhite,
             shape = RoundedCornerShape(0.dp)
         ) {
@@ -435,7 +445,8 @@ private fun StatCard(
 
 @Composable
 private fun WeeklyProgressCard(
-    summaries: List<DailyUsageSummary>
+    summaries: List<DailyUsageSummary>,
+    onWeeklyProgressClick: () -> Unit = {}
 ) {
     Surface(
         modifier = Modifier
@@ -448,7 +459,8 @@ private fun WeeklyProgressCard(
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(2.dp),
+                .padding(2.dp)
+                .clickable { onWeeklyProgressClick() },
             color = MinimalistWhite,
             shape = RoundedCornerShape(0.dp)
         ) {

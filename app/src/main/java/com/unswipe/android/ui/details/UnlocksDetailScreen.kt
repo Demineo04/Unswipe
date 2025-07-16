@@ -211,49 +211,96 @@ private fun HourlyUnlocksChart(hourlyUnlocks: Map<Int, Int>) {
                     fontWeight = FontWeight.Bold,
                     color = UnswipeTextPrimary
                 ),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            
+            Text(
+                text = "Phone unlocks throughout the day",
+                style = MaterialTheme.typography.bodySmall.copy(
+                    color = UnswipeTextSecondary
+                ),
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
             val maxUnlocks = hourlyUnlocks.values.maxOrNull() ?: 1
-            val maxBarHeight = 60.dp
+            val maxBarHeight = 80.dp
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom
+            // Chart container with proper spacing
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                (0..23).forEach { hour ->
-                    val unlocks = hourlyUnlocks[hour] ?: 0
-                    val barHeight = if (maxUnlocks > 0) {
-                        maxBarHeight * (unlocks.toFloat() / maxUnlocks)
-                    } else 0.dp
+                // Main chart
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    (0..23).forEach { hour ->
+                        val unlocks = hourlyUnlocks[hour] ?: 0
+                        val barHeight = if (maxUnlocks > 0) {
+                            maxBarHeight * (unlocks.toFloat() / maxUnlocks)
+                        } else 4.dp // Minimum height for visibility
 
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .width(8.dp)
-                                .height(barHeight)
-                                .background(
-                                    brush = Brush.verticalGradient(
-                                        colors = listOf(
-                                            UnswipePrimary,
-                                            UnswipePrimary.copy(alpha = 0.6f)
-                                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            // Value on top of bar if significant
+                            if (unlocks > 0) {
+                                Text(
+                                    text = unlocks.toString(),
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        color = UnswipeTextPrimary,
+                                        fontSize = 9.sp,
+                                        fontWeight = FontWeight.Medium
                                     ),
-                                    shape = RoundedCornerShape(4.dp)
+                                    modifier = Modifier.padding(bottom = 4.dp)
                                 )
-                        )
-
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        if (hour % 4 == 0) {
+                            } else {
+                                Spacer(modifier = Modifier.height(16.dp))
+                            }
+                            
+                            // Bar with better styling
+                            Box(
+                                modifier = Modifier
+                                    .width(12.dp)
+                                    .height(barHeight)
+                                    .background(
+                                        color = when {
+                                            unlocks == 0 -> UnswipeTextSecondary.copy(alpha = 0.2f)
+                                            unlocks == maxUnlocks -> UnswipePrimary
+                                            unlocks > maxUnlocks * 0.7f -> UnswipePrimary.copy(alpha = 0.8f)
+                                            unlocks > maxUnlocks * 0.4f -> UnswipePrimary.copy(alpha = 0.6f)
+                                            else -> UnswipePrimary.copy(alpha = 0.4f)
+                                        },
+                                        shape = RoundedCornerShape(
+                                            topStart = 6.dp,
+                                            topEnd = 6.dp,
+                                            bottomStart = 2.dp,
+                                            bottomEnd = 2.dp
+                                        )
+                                    )
+                            )
+                        }
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // Time labels
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    (0..23 step 3).forEach { hour ->
+                        Box(
+                            modifier = Modifier.weight(3f),
+                            contentAlignment = Alignment.Center
+                        ) {
                             Text(
-                                text = String.format("%02d", hour),
+                                text = String.format("%02d:00", hour),
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     color = UnswipeTextSecondary,
                                     fontSize = 10.sp
@@ -262,8 +309,57 @@ private fun HourlyUnlocksChart(hourlyUnlocks: Map<Int, Int>) {
                         }
                     }
                 }
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                // Legend
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    LegendItem(
+                        color = UnswipePrimary,
+                        label = "High activity",
+                        modifier = Modifier.padding(end = 16.dp)
+                    )
+                    LegendItem(
+                        color = UnswipePrimary.copy(alpha = 0.5f),
+                        label = "Medium activity",
+                        modifier = Modifier.padding(end = 16.dp)
+                    )
+                    LegendItem(
+                        color = UnswipeTextSecondary.copy(alpha = 0.3f),
+                        label = "Low activity"
+                    )
+                }
             }
         }
+    }
+}
+
+@Composable
+private fun LegendItem(
+    color: androidx.compose.ui.graphics.Color,
+    label: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .background(color, RoundedCornerShape(2.dp))
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall.copy(
+                color = UnswipeTextSecondary,
+                fontSize = 10.sp
+            )
+        )
     }
 }
 

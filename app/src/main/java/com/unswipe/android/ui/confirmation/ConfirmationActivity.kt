@@ -88,6 +88,7 @@ class ConfirmationActivity : ComponentActivity() {
                     onCancel = {
                         setResult(Activity.RESULT_CANCELED)
                         finish()
+                        // Do not launch the app when user selects "No"
                     }
                 )
             }
@@ -141,20 +142,20 @@ fun ModernConfirmationOverlay(
     onConfirm: () -> Unit,
     onCancel: () -> Unit
 ) {
-    // EXAGGERATED MINIMALISM - Pure black background
+    // Semi-transparent background for better visibility
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MinimalistBlack),
+            .background(MinimalistBlack.copy(alpha = 0.8f)),
         contentAlignment = Alignment.Center
     ) {
-        // Minimalist confirmation card - pure white on black
+        // Wider confirmation card with subtle transparency
         Surface(
             modifier = Modifier
-                .fillMaxWidth(0.9f)
+                .fillMaxWidth(0.95f)
                 .wrapContentHeight(),
             shape = RoundedCornerShape(0.dp), // Sharp edges for minimalism
-            color = MinimalistWhite,
+            color = MinimalistWhite.copy(alpha = 0.95f),
             shadowElevation = 0.dp // No shadows for pure minimalism
         ) {
             Column(
@@ -266,7 +267,7 @@ fun ModernConfirmationOverlay(
                         shape = RoundedCornerShape(0.dp)
                     ) {
                         Text(
-                            text = "Cancel",
+                            text = "No",
                             style = MaterialTheme.typography.labelLarge.copy(
                                 fontWeight = FontWeight.Medium
                             )
@@ -286,7 +287,7 @@ fun ModernConfirmationOverlay(
                         shape = RoundedCornerShape(0.dp)
                     ) {
                         Text(
-                            text = "Open",
+                            text = "Yes",
                             style = MaterialTheme.typography.labelLarge.copy(
                                 fontWeight = FontWeight.Medium
                             )
