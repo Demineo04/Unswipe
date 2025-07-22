@@ -3,6 +3,8 @@
 package com.unswipe.android.ui.dashboard
 
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.BorderStroke
@@ -13,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.Image
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Settings
@@ -24,6 +27,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.core.graphics.drawable.toBitmap
+
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -34,6 +41,28 @@ import com.unswipe.android.ui.components.DashboardHeader
 import com.unswipe.android.ui.components.HourlyUsageChart
 import com.unswipe.android.ui.components.StatCard
 import com.unswipe.android.ui.theme.*
+
+data class AppCategoryUsage(
+    val category: String,
+    val totalTime: String,
+    val percentage: Float,
+    val topApps: List<AppUsage>
+)
+
+data class AppUsage(
+    val name: String,
+    val time: String,
+    val packageName: String
+)
+
+@Composable
+fun getAppIcon(packageName: String, context: android.content.Context): Drawable? {
+    return try {
+        context.packageManager.getApplicationIcon(packageName)
+    } catch (e: PackageManager.NameNotFoundException) {
+        null
+    }
+}
 
 @Composable
 fun DashboardScreen(
@@ -132,7 +161,6 @@ fun ModernDashboardContent(
             
             // Header with greeting and settings
             ModernDashboardHeader(
-                userName = "User", // TODO: Get actual user name from state
                 onNavigateToSettings = onNavigateToSettings
             )
         }
@@ -169,10 +197,9 @@ fun ModernDashboardContent(
         }
         
         item {
-            // Weekly progress chart
-            WeeklyProgressCard(
-                summaries = state.weeklyProgress,
-                onWeeklyProgressClick = onNavigateToWeeklyProgress
+            // Today's App Breakdown
+            TodayAppBreakdownCard(
+                state = state
             )
         }
         
@@ -184,7 +211,6 @@ fun ModernDashboardContent(
 
 @Composable
 private fun ModernDashboardHeader(
-    userName: String,
     onNavigateToSettings: () -> Unit
 ) {
     Row(
@@ -194,19 +220,11 @@ private fun ModernDashboardHeader(
     ) {
         Column {
             Text(
-                text = userName,
+                text = "Dashboard",
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Light,
                     color = MinimalistBlack
-                )
-            )
-            Text(
-                text = "Dashboard",
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    color = MinimalistBlack,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Normal
                 )
             )
         }
@@ -444,6 +462,194 @@ private fun StatCard(
 }
 
 @Composable
+private fun TodayAppBreakdownCard(
+    state: DashboardUiState
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(1.dp),
+        color = MinimalistBlack,
+        shape = RoundedCornerShape(0.dp),
+        shadowElevation = 0.dp
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(2.dp),
+            color = MinimalistWhite,
+            shape = RoundedCornerShape(0.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = "App Usage Breakdown",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Normal,
+                        color = MinimalistBlack,
+                        fontSize = 20.sp
+                    )
+                )
+                
+                // Top apps breakdown with specific apps
+                val appCategories = listOf(
+                    AppCategoryUsage(
+                        category = "Social Media",
+                        totalTime = "2h 30m",
+                        percentage = 0.7f,
+                        topApps = listOf(
+                            AppUsage("Instagram", "1h 20m", "com.instagram.android"),
+                            AppUsage("TikTok", "45m", "com.zhiliaoapp.musically"),
+                            AppUsage("Twitter", "25m", "com.twitter.android")
+                        )
+                    ),
+                    AppCategoryUsage(
+                        category = "Communication",
+                        totalTime = "45m",
+                        percentage = 0.2f,
+                        topApps = listOf(
+                            AppUsage("WhatsApp", "20m", "com.whatsapp"),
+                            AppUsage("KakaoTalk", "15m", "com.kakao.talk"),
+                            AppUsage("Messenger", "10m", "com.facebook.orca")
+                        )
+                    ),
+                    AppCategoryUsage(
+                        category = "Entertainment",
+                        totalTime = "30m",
+                        percentage = 0.15f,
+                        topApps = listOf(
+                            AppUsage("YouTube", "20m", "com.google.android.youtube"),
+                            AppUsage("Netflix", "10m", "com.netflix.mediaclient")
+                        )
+                    ),
+                    AppCategoryUsage(
+                        category = "Productivity",
+                        totalTime = "25m",
+                        percentage = 0.12f,
+                        topApps = listOf(
+                            AppUsage("Notion", "15m", "notion.id"),
+                            AppUsage("Slack", "10m", "com.Slack")
+                        )
+                    )
+                )
+                
+                appCategories.forEach { categoryUsage ->
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        // Category header
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = categoryUsage.category,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MinimalistBlack,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            )
+                            Text(
+                                text = categoryUsage.totalTime,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MinimalistBlack,
+                                    fontSize = 14.sp
+                                )
+                            )
+                        }
+                        
+                        // Usage bar
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(4.dp)
+                                .background(MinimalistBlack.copy(alpha = 0.1f))
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(categoryUsage.percentage)
+                                    .height(4.dp)
+                                    .background(MinimalistBlack)
+                            )
+                        }
+                        
+                        // Individual apps within category
+                        Column(
+                            modifier = Modifier.padding(start = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            categoryUsage.topApps.forEach { app ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        val context = LocalContext.current
+                                        val appIcon = getAppIcon(app.packageName, context)
+                                        
+                                        if (appIcon != null) {
+                                            Image(
+                                                painter = BitmapPainter(appIcon.toBitmap().asImageBitmap()),
+                                                contentDescription = "${app.name} icon",
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                        } else {
+                                            // Fallback to a generic icon if app not found
+                                            Surface(
+                                                modifier = Modifier.size(20.dp),
+                                                color = MinimalistBlack.copy(alpha = 0.1f),
+                                                shape = RoundedCornerShape(4.dp)
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier.fillMaxSize(),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(
+                                                        text = "?",
+                                                        style = MaterialTheme.typography.bodySmall.copy(
+                                                            color = MinimalistBlack,
+                                                            fontSize = 10.sp
+                                                        )
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        Text(
+                                            text = app.name,
+                                            style = MaterialTheme.typography.bodySmall.copy(
+                                                color = MinimalistBlack.copy(alpha = 0.7f),
+                                                fontSize = 12.sp
+                                            )
+                                        )
+                                    }
+                                    Text(
+                                        text = app.time,
+                                        style = MaterialTheme.typography.bodySmall.copy(
+                                            color = MinimalistBlack.copy(alpha = 0.7f),
+                                            fontSize = 12.sp
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun WeeklyProgressCard(
     summaries: List<DailyUsageSummary>,
     onWeeklyProgressClick: () -> Unit = {}
@@ -497,12 +703,13 @@ private fun WeeklyProgressCard(
 private fun ModernWeeklyChart(
     summaries: List<DailyUsageSummary>
 ) {
-    val maxBarHeight = 80.dp
+    // 3 hours = 10800000 milliseconds (3 * 60 * 60 * 1000)
+    val threeHoursInMillis = 10800000L
     
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp),
+            .height(100.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Bottom
     ) {
@@ -511,40 +718,39 @@ private fun ModernWeeklyChart(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.weight(1f)
             ) {
-                val barHeight = maxBarHeight * summary.usagePercentage
-                val barColor = when {
-                    summary.isToday -> UnswipePrimary
-                    summary.usagePercentage < 0.5f -> UnswipeGreen
-                    summary.usagePercentage < 0.8f -> UnswipeWarning
-                    else -> UnswipeRed
-                }
+                // Show failure (X) or success (simple dot) based on usage percentage 
+                // Assuming usage percentage > 1.0 indicates failure (over limit)
+                val exceeded3Hours = summary.usagePercentage > 1.0f
                 
                 Box(
                     modifier = Modifier
-                        .width(24.dp)
-                        .height(barHeight)
+                        .size(32.dp)
                         .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    barColor,
-                                    barColor.copy(alpha = 0.6f)
-                                )
-                            ),
-                            shape = RoundedCornerShape(
-                                topStart = 12.dp,
-                                topEnd = 12.dp
+                            color = if (exceeded3Hours) MinimalistBlack else MinimalistBlack.copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(0.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (exceeded3Hours) {
+                        Text(
+                            text = "×",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                color = MinimalistWhite,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Normal
                             )
                         )
-                )
+                    }
+                }
                 
                 Spacer(modifier = Modifier.height(8.dp))
                 
                 Text(
                     text = summary.dayLabel,
                     style = MaterialTheme.typography.labelSmall.copy(
-                        color = if (summary.isToday) UnswipePrimary else UnswipeTextSecondary,
-                        fontWeight = if (summary.isToday) FontWeight.Bold else FontWeight.Normal,
-                        fontSize = 11.sp
+                        color = MinimalistBlack,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Light
                     )
                 )
             }
@@ -740,7 +946,7 @@ private fun DashboardContent(
     ) {
         Text(text = "Time used today: ${state.timeUsedTodayFormatted}")
         Text(text = "Time remaining: ${state.timeRemainingFormatted}")
-        LinearProgressIndicator(progress = state.usagePercentage)
+        LinearProgressIndicator(progress = { state.usagePercentage })
 
         Text(text = "Streak: ${state.currentStreak} days")
         Text(text = "Swipes today: ${state.swipesToday}")
@@ -908,7 +1114,7 @@ fun DayProgressView(summary: DailyUsageSummary) {
                 .align(Alignment.CenterHorizontally)
         ) {
             LinearProgressIndicator(
-                progress = summary.usagePercentage,
+                progress = { summary.usagePercentage },
                 modifier = Modifier
                     .fillMaxHeight() // Fill the height of the Box
                     .width(20.dp),   // Ensure the indicator itself also has a width

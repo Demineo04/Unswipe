@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -56,29 +57,18 @@ fun SettingsScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        UnswipeBlack,
-                        UnswipeSurface
-                    )
-                )
-            )
+            .background(MinimalistWhite)
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item {
-                ModernProfileHeader(userName = "Grace J.", userEmail = "grace@example.com")
-            }
             
             item {
                 SettingsSection(
                     title = "Account",
                     items = listOf(
-                        SettingsItemData("Edit Profile", Icons.Default.Person, onClick = { onNavigateTo(Screen.EditProfile.route) }),
                         SettingsItemData("Reset Password", Icons.Default.Lock, onClick = { onNavigateTo(Screen.ResetPassword.route) }),
                         SettingsItemData("Notifications", Icons.Default.Notifications, onClick = { onNavigateTo(Screen.NotificationSettings.route) })
                     )
@@ -90,9 +80,8 @@ fun SettingsScreen(
                     title = "App Controls",
                     items = listOf(
                         SettingsItemData("Daily Limit", Icons.Default.Schedule, onClick = { onNavigateTo(Screen.DailyLimit.route) }),
-                        SettingsItemData("App Blocker", Icons.Default.Block, onClick = { onNavigateTo(Screen.AppSelection.route) }),
                         SettingsItemData("Focus Mode", Icons.Default.DoNotDisturb, onClick = { onNavigateTo(Screen.FocusMode.route) }),
-                        SettingsItemData("Usage Analytics", Icons.Default.Analytics, onClick = { onNavigateTo(Screen.UsageAnalytics.route) })
+                        SettingsItemData("Rules", Icons.Default.Rule, onClick = { onNavigateTo(Screen.Rules.route) })
                     )
                 )
             }
@@ -146,68 +135,6 @@ data class SettingsItemData(
     val onClick: () -> Unit
 )
 
-@Composable
-private fun ModernProfileHeader(userName: String, userEmail: String) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = UnswipeCard),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = userName,
-                style = MaterialTheme.typography.headlineSmall.copy(
-                    color = UnswipeTextPrimary,
-                    fontWeight = FontWeight.Bold
-                )
-            )
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
-            Text(
-                text = userEmail,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = UnswipeTextSecondary
-                )
-            )
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            // Premium badge
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = UnswipePrimary.copy(alpha = 0.2f)
-                ),
-                shape = RoundedCornerShape(20.dp)
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = null,
-                        tint = UnswipePrimary,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "Premium Member",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            color = UnswipePrimary,
-                            fontWeight = FontWeight.Medium
-                        )
-                    )
-                }
-            }
-        }
-    }
-}
 
 @Composable
 private fun SettingsSection(
@@ -218,23 +145,35 @@ private fun SettingsSection(
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium.copy(
-                color = UnswipeTextPrimary,
+                color = MinimalistBlack,
                 fontWeight = FontWeight.Bold
             ),
             modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)
         )
         
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = UnswipeCard),
-            shape = RoundedCornerShape(12.dp)
+        // Use minimalist design consistent with the rest of the app
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(1.dp),
+            color = MinimalistBlack,
+            shape = RoundedCornerShape(0.dp),
+            shadowElevation = 0.dp
         ) {
-            Column {
-                items.forEachIndexed { index, item ->
-                    ModernSettingsItem(
-                        item = item,
-                        showDivider = index < items.size - 1
-                    )
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(2.dp),
+                color = MinimalistWhite,
+                shape = RoundedCornerShape(0.dp)
+            ) {
+                Column {
+                    items.forEachIndexed { index, item ->
+                        ModernSettingsItem(
+                            item = item,
+                            showDivider = index < items.size - 1
+                        )
+                    }
                 }
             }
         }
@@ -254,30 +193,23 @@ private fun ModernSettingsItem(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Icon background
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(
-                        color = when {
-                            item.isDestructive -> UnswipeRed.copy(alpha = 0.1f)
-                            item.isPremium -> UnswipePrimary.copy(alpha = 0.1f)
-                            else -> UnswipeGray.copy(alpha = 0.1f)
-                        },
-                        shape = RoundedCornerShape(8.dp)
-                    ),
-                contentAlignment = Alignment.Center
+            // Icon background - consistent minimalist design
+            Surface(
+                modifier = Modifier.size(32.dp),
+                color = MinimalistBlack,
+                shape = RoundedCornerShape(0.dp)
             ) {
-                Icon(
-                    imageVector = item.icon,
-                    contentDescription = null,
-                    tint = when {
-                        item.isDestructive -> UnswipeRed
-                        item.isPremium -> UnswipePrimary
-                        else -> UnswipeTextSecondary
-                    },
-                    modifier = Modifier.size(20.dp)
-                )
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = item.icon,
+                        contentDescription = null,
+                        tint = MinimalistWhite,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
             }
             
             Spacer(modifier = Modifier.width(16.dp))
@@ -285,23 +217,21 @@ private fun ModernSettingsItem(
             Text(
                 text = item.title,
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    color = if (item.isDestructive) UnswipeRed else UnswipeTextPrimary,
+                    color = MinimalistBlack,
                     fontWeight = FontWeight.Medium
                 ),
                 modifier = Modifier.weight(1f)
             )
             
             if (item.isPremium) {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = UnswipePrimary
-                    ),
-                    shape = RoundedCornerShape(12.dp)
+                Surface(
+                    color = MinimalistBlack,
+                    shape = RoundedCornerShape(0.dp)
                 ) {
                     Text(
                         text = "PRO",
                         style = MaterialTheme.typography.labelSmall.copy(
-                            color = UnswipeBlack,
+                            color = MinimalistWhite,
                             fontWeight = FontWeight.Bold
                         ),
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
@@ -312,9 +242,9 @@ private fun ModernSettingsItem(
             
             if (!item.isDestructive) {
                 Icon(
-                    imageVector = Icons.Default.ChevronRight,
+                    imageVector = Icons.Default.ArrowForward,
                     contentDescription = null,
-                    tint = UnswipeTextSecondary,
+                    tint = MinimalistBlack.copy(alpha = 0.6f),
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -323,7 +253,7 @@ private fun ModernSettingsItem(
         if (showDivider) {
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                color = UnswipeGray.copy(alpha = 0.2f)
+                color = MinimalistBlack.copy(alpha = 0.1f)
             )
         }
     }
